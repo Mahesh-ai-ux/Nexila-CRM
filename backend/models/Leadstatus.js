@@ -12,5 +12,6 @@ const leadstatusSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Leadstatus = mongoose.model("Leadstatus", leadstatusSchema);
-export default Leadstatus;
+
+module.exports= mongoose.model("Leadstatus", leadstatusSchema);
+

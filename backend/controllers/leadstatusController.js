@@ -1,7 +1,7 @@
 
 const Leadstatus = require("../models/Leadstatus.js");
 // ✅ Create Lead Status
-export const createLeadStatus = async (req, res) => {
+exports.createLeadStatus = async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) {
@@ -24,7 +24,7 @@ export const createLeadStatus = async (req, res) => {
 };
 
 // ✅ Get All Lead Statuses
-export const getAllLeadStatuses = async (req, res) => {
+exports.getAllLeadStatuses = async (req, res) => {
   try {
     const leadStatuses = await Leadstatus.find();
     return res.status(200).json(leadStatuses);
@@ -35,7 +35,7 @@ export const getAllLeadStatuses = async (req, res) => {
 };
 
 // ✅ Update Lead Status
-export const updateLeadStatus = async (req, res) => {
+exports.updateLeadStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
@@ -58,7 +58,7 @@ export const updateLeadStatus = async (req, res) => {
 };
 
 // ✅ Delete Lead Status
-export const deleteLeadStatus = async (req, res) => {
+exports.deleteLeadStatus = async (req, res) => {
   try { 
     const { id } = req.params;
     const leadStatus = await Leadstatus.findByIdAndDelete(id);

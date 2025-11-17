@@ -182,8 +182,10 @@ useEffect(() => {
 
       console.log("Fetched users:", res.data);
       const formatted = res.data.map((u: any) => ({
-        label: `${u.name} `,
-        value: u._id,
+        // label: `${u.name} `,
+        // value: u._id,
+          label: u.name,
+          value: u.name,
       }));
       setUserList(formatted);
     } catch (err: any) {
@@ -864,7 +866,7 @@ const handleDelete = async () => {
               <div className="col-md-6">
             <div className="mb-3">
               <label className="form-label">
-                Follow-UP Date <span className="text-danger">*</span>
+                Follow-UP Date
               </label>
               <div className="input-group w-auto input-group-flat">
                 <CommonDatePicker
@@ -885,7 +887,7 @@ const handleDelete = async () => {
           <div className="col-md-6">
             <div className="mb-3">
               <label className="form-label">
-                Demo Date <span className="text-danger">*</span>
+                Demo Date 
               </label>
               <div className="input-group w-auto input-group-flat">
                 <CommonDatePicker

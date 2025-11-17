@@ -2,18 +2,19 @@ import  { useState, useEffect } from "react";
 import axios from "axios";
 import API_URL from "../../../../../api/apiconfig";
 
-const token = localStorage.getItem("token"); // Or however you store it
-const config = {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-};
 
 
 const LeadStatus = () => {
   const [leadStatuses, setLeadStatuses] = useState([]);
   const [statusName, setStatusName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  
+const token = localStorage.getItem("token"); // Or however you store it
+const config = {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+};
 
   // ✅ Fetch existing statuses
   const fetchLeadStatuses = async () => {
