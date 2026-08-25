@@ -1,0 +1,44 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: Nexila
+      MONGO_INITDB_ROOT_PASSWORD: Nexila@123
+      MONGO_INITDB_DATABASE: crm
+    command: ["--auth"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: always
+    depends_on:
+      - mongo
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+    # 🟢 Run admincreate.js in the background, then start server.js
+    command: >
+      sh -c "node server.js"
+
+  frontend:
+    build:
+      context: ./template
+      dockerfile: Dockerfile
+    container_name: template
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  mongo_data:
