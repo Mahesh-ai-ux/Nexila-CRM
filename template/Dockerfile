@@ -8,7 +8,7 @@ RUN npm install
 COPY . .
 
 # Build Vite
-RUN npm run build || true
+RUN npm run build
 
 # Copy images manually to build output
 RUN mkdir -p /app/dist/assets/img && \
