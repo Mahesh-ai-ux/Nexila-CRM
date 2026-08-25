@@ -93,7 +93,7 @@ const LeadsDetails = () => {
 
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:5000/api/leads/${id}`, {
+    fetch(`http://3.16.128.134:5000/api/leads/${id}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -171,7 +171,7 @@ const LeadsDetails = () => {
 
     const fetchLogs = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/leads/logs/${lead._id}`, {
+        const res = await fetch(`http://3.16.128.134:5000/api/leads/logs/${lead._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

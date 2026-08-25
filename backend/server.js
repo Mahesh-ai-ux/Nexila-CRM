@@ -45,7 +45,7 @@ connectDB(process.env.MONGO_URI);
 
 app.use(cors({
   origin: ["http://3.16.128.134", "http://localhost:5173"],
-  //origin: 'http://localhost:5173', // your Vite frontend
+  //origin: 'http://3.16.128.134:5173', // your Vite frontend
   credentials: true
 }));
 

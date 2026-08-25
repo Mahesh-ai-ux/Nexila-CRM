@@ -77,7 +77,7 @@ const LeadsList = () => {
   // const fetchLeads = async () => {
   //   try {
   //     console.log("Fetching leads from backend...");
-  //     const res = await axios.get("http://localhost:5000/api/leads");
+  //     const res = await axios.get("http://3.16.128.134:5000/api/leads");
   //     console.log("Raw response:", res.data);
 
   //     const leadsArr = parseLeadsResponse(res.data);

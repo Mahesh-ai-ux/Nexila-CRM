@@ -298,7 +298,7 @@ const NexilaHackathon: React.FC = () => {
 
             const orderResponse =
                 await fetch(
-                    "http://localhost:5000/api/hackathon/public/create-order",
+                    "http://3.16.128.134:5000/api/hackathon/public/create-order",
                     {
                         method: "POST",
 
@@ -420,7 +420,7 @@ const NexilaHackathon: React.FC = () => {
 
                             const verifyResponse =
                                 await fetch(
-                                    "http://localhost:5000/api/hackathon/public/verify-payment",
+                                    "http://3.16.128.134:5000/api/hackathon/public/verify-payment",
                                     {
                                         method: "POST",
 

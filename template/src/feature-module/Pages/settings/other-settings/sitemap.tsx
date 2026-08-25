@@ -109,7 +109,7 @@ const Sitemap = () => {
                   <tbody>
                     <tr>
                       <td>
-                        <Link to="#">https://localhost/crms</Link>
+                        <Link to="#">https://3.16.128.134/crms</Link>
                       </td>
                       <td>sitemap18725604.xml</td>
                       <td>
