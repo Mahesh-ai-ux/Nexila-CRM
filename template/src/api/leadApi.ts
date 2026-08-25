@@ -1,7 +1,7 @@
 // src/api/leadsApi.ts
 import axios from "axios";
 import API_URL from "./apiconfig";
-import Config from "./authenticationjwt";
+//import Config from "./authenticationjwt";
 
 export const createLead = async (data: any) => {
   const token = localStorage.getItem("token"); // if you use auth
