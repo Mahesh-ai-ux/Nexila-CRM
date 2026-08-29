@@ -131,7 +131,7 @@ type HackathonStudent = {
 // =====================================================
 
 const HACKATHON_API =
-    "http://3.16.128.134:5000/api/hackathon";
+    "https://crm.nexilatechnologies.com:5000/api/hackathon";
 
 // =====================================================
 // STATUS OPTIONS
