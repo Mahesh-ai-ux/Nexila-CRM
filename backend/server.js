@@ -6,7 +6,9 @@ const connectDB = require('./config/db');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
 
-
+const {
+    verifyMailTransporter,
+} = require("./services/hackathonEmailService");
 
 
 
@@ -45,10 +47,10 @@ connectDB(process.env.MONGO_URI);
 
 app.use(cors({
   origin: ["http://3.16.128.134", "http://localhost:5173"],
-  //origin: 'http://3.16.128.134:5173', // your Vite frontend
+  //origin: 'http://localhost:5173', // your Vite frontend
   credentials: true
 }));
-
+verifyMailTransporter();
 // routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
@@ -60,6 +62,6 @@ app.use("/api/students", require("./routes/student"));
 app.use("/api/hackathon", require("./routes/hackathon"));
 app.get('/', (req, res) => res.send('Leads backend running'));
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT} - server.js:63`);
-  console.log('Mongo URI: - server.js:64', process.env.MONGO_URI);
+  console.log(`Server running on port ${PORT} - server.js:65`);
+  console.log('Mongo URI: - server.js:66', process.env.MONGO_URI);
 });;

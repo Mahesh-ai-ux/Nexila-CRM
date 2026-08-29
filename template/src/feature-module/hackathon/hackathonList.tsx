@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-
 import axios from "axios";
 import dayjs from "dayjs";
 
@@ -11,9 +10,8 @@ import Datatable from "../../components/dataTable";
 import { all_routes } from "../../routes/all_routes";
 import API_URL from "../../api/apiconfig";
 
-
 // =====================================================
-// TEAM MEMBER INTERFACE
+// TEAM MEMBER
 // =====================================================
 
 interface TeamMember {
@@ -22,38 +20,67 @@ interface TeamMember {
     collegeRollNo: string;
 }
 
+// =====================================================
+// REGISTRATION STATUS
+// =====================================================
+
+type RegistrationStatus =
+    | "REGISTERED"
+    | "QUALIFIED"
+    | "SHORTLISTED"
+    | "SEMI_FINALIST"
+    | "FINALIST"
+    | "WINNER"
+    | string;
 
 // =====================================================
-// HACKATHON STUDENT INTERFACE
+// STATUS OPTIONS
+// =====================================================
+
+const STATUS_OPTIONS: RegistrationStatus[] = [
+    "REGISTERED",
+    "QUALIFIED",
+    "SHORTLISTED",
+    "SEMI_FINALIST",
+    "FINALIST",
+    "WINNER",
+];
+
+// =====================================================
+// HACKATHON STUDENT
 // =====================================================
 
 interface HackathonStudent {
     _id: string;
+
+    registrationId: string;
 
     fullName: string;
     phone: string;
     email: string;
 
     collegeName: string;
-    degree: string;
-    department: string;
-    collegeRollNo: string;
 
-    city: string;
-
-    projectTitle: string;
-    projectDescription: string;
-    projectAbstract: string;
-
+    teamName: string;
     teamMembers: TeamMember[];
 
-    paymentStatus: "Pending" | "Paid";
-    registrationStatus: "Registered" | "Cancelled";
+    hackathonTrack: string;
+
+    primaryTechnicalSkill: string;
+
+    yearOfStudy: string;
+
+    teamSize: number | string;
+
+    projectTitle: string;
+
+    paymentStatus: string;
+
+    status: RegistrationStatus;
 
     createdAt?: string;
     updatedAt?: string;
 }
-
 
 // =====================================================
 // COMPONENT
@@ -61,100 +88,150 @@ interface HackathonStudent {
 
 const HackathonList = () => {
 
-    // =====================================================
+    // =================================================
     // STATES
-    // =====================================================
+    // =================================================
 
     const [data, setData] = useState<HackathonStudent[]>([]);
 
-    const [searchText, setSearchText] =
-        useState<string>("");
+    const [searchText, setSearchText] = useState("");
 
-    const [loading, setLoading] =
-        useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
 
+    const [changingStatusId, setChangingStatusId] =
+        useState<string | null>(null);
 
-    // =====================================================
+    // =================================================
+    // FILTER STATES
+    // =================================================
+
+    const [statusFilter, setStatusFilter] =
+        useState<string>("ALL");
+
+    const [trackFilter, setTrackFilter] =
+        useState<string>("ALL");
+
+    const [skillFilter, setSkillFilter] =
+        useState<string>("ALL");
+
+    const [yearFilter, setYearFilter] =
+        useState<string>("ALL");
+
+    const [teamSizeFilter, setTeamSizeFilter] =
+        useState<string>("ALL");
+
+    const [projectFilter, setProjectFilter] =
+        useState<string>("ALL");
+
+    // =================================================
     // SEARCH
-    // =====================================================
+    // =================================================
 
     const handleSearch = (value: string) => {
-
         setSearchText(value);
-
     };
 
+    // =================================================
+    // FETCH DATA
+    // =================================================
 
-    // =====================================================
-    // FETCH HACKATHON STUDENTS
-    // =====================================================
-
-    const fetchHackathonStudents = async () => {
+    const fetchHackathonStudents = useCallback(async () => {
 
         try {
 
             setLoading(true);
 
-            const token =
-                localStorage.getItem("token");
+            // ---------------------------------------------
+            // TOKEN
+            // ---------------------------------------------
 
-
-            // =================================================
-            // TOKEN CHECK
-            // =================================================
+            const token = localStorage.getItem("token");
 
             if (!token) {
 
-                console.error(
-                    "No token found in localStorage"
-                );
+                console.error("No token found");
+
+                setData([]);
 
                 return;
             }
 
-
-            // =================================================
-            // API REQUEST
-            // =================================================
+            // ---------------------------------------------
+            // API
+            // ---------------------------------------------
 
             const response = await axios.get(
                 `${API_URL}/hackathon`,
                 {
                     headers: {
-                        Authorization:
-                            `Bearer ${token}`,
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
 
-
-            // =================================================
-            // HANDLE DIFFERENT RESPONSE STRUCTURES
-            // =================================================
+            // ---------------------------------------------
+            // RESPONSE DATA
+            // ---------------------------------------------
 
             const studentsData =
                 Array.isArray(response.data)
                     ? response.data
-                    : response.data.students ||
-                    response.data.hackathonStudents ||
-                    response.data.data ||
+                    : response.data?.students ||
+                    response.data?.hackathonStudents ||
+                    response.data?.data ||
                     [];
 
-
-            // =================================================
+            // ---------------------------------------------
             // FORMAT DATA
-            // =================================================
+            // ---------------------------------------------
 
-            const formattedData:
-                HackathonStudent[] =
-                studentsData.map(
-                    (student: any) => ({
+            const formattedData: HackathonStudent[] =
+                studentsData.map((student: any) => {
 
-                        _id:
-                            student._id,
+                    // -----------------------------------------
+                    // TEAM MEMBERS
+                    // -----------------------------------------
+
+                    const teamMembers =
+                        Array.isArray(student.teamMembers)
+                            ? student.teamMembers
+                            : [];
+
+                    // -----------------------------------------
+                    // TEAM SIZE
+                    // -----------------------------------------
+
+                    const calculatedTeamSize =
+                        student.teamSize ??
+                        student.teamMembersCount ??
+                        (
+                            teamMembers.length > 0
+                                ? teamMembers.length + 1
+                                : ""
+                        );
+
+                    // -----------------------------------------
+                    // PROJECT TITLE
+                    // -----------------------------------------
+
+                    const projectTitle =
+                        student.projectTitle ||
+                        student.project?.title ||
+                        "";
+
+                    return {
+
+                        _id: student._id,
+
+                        registrationId:
+                            student.registrationId ||
+                            student.registrationID ||
+                            student.registration_id ||
+                            "N/A",
 
                         fullName:
                             student.fullName ||
+                            student.teamLeadName ||
                             "N/A",
 
                         phone:
@@ -169,67 +246,58 @@ const HackathonList = () => {
                             student.collegeName ||
                             "N/A",
 
-                        degree:
-                            student.degree ||
+                        teamName:
+                            student.teamName ||
                             "N/A",
 
-                        department:
-                            student.department ||
+                        teamMembers,
+
+                        hackathonTrack:
+                            student.hackathonTrack ||
+                            student.track ||
                             "N/A",
 
-                        collegeRollNo:
-                            student.collegeRollNo ||
+                        primaryTechnicalSkill:
+                            student.primaryTechnicalSkill ||
+                            student.primarySkill ||
+                            student.technicalSkill ||
                             "N/A",
 
-                        city:
-                            student.city ||
-                            "N/A",
+                        yearOfStudy:
+                            student.yearOfStudy !== undefined &&
+                                student.yearOfStudy !== null
+                                ? String(student.yearOfStudy)
+                                : "N/A",
 
-                        projectTitle:
-                            student.projectTitle ||
-                            "N/A",
+                        teamSize:
+                            calculatedTeamSize,
 
-                        projectDescription:
-                            student.projectDescription ||
-                            "N/A",
-
-                        projectAbstract:
-                            student.projectAbstract ||
-                            "N/A",
-
-                        teamMembers:
-                            Array.isArray(
-                                student.teamMembers
-                            )
-                                ? student.teamMembers
-                                : [],
+                        projectTitle,
 
                         paymentStatus:
                             student.paymentStatus ||
                             "Pending",
 
-                        registrationStatus:
-                            student.registrationStatus ||
-                            "Registered",
+                        status:
+                            student.status ||
+                            "REGISTERED",
 
                         createdAt:
                             student.createdAt,
 
                         updatedAt:
                             student.updatedAt,
-                    })
-                );
+                    };
+                });
 
-
-            // =================================================
+            // ---------------------------------------------
             // SET DATA
-            // =================================================
+            // ---------------------------------------------
 
             setData(formattedData);
 
-
             console.log(
-                "Hackathon students loaded:",
+                "Hackathon students:",
                 formattedData
             );
 
@@ -238,140 +306,576 @@ const HackathonList = () => {
             console.error(
                 "Error fetching hackathon students:",
                 error?.response?.data ||
-                error.message
+                error?.message ||
+                error
             );
+
+            setData([]);
 
         } finally {
 
             setLoading(false);
 
         }
-    };
 
+    }, []);
 
-    // =====================================================
-    // USE EFFECT
-    // =====================================================
+    // =================================================
+    // INITIAL FETCH
+    // =================================================
 
     useEffect(() => {
 
         fetchHackathonStudents();
 
-    }, []);
+    }, [fetchHackathonStudents]);
 
+    // =================================================
+    // GET UNIQUE FILTER VALUES
+    // =================================================
 
-    // =====================================================
-    // FILTER DATA
-    // =====================================================
+    const trackOptions = useMemo(() => {
 
-    const filteredData =
-        data.filter((student) => {
+        return Array.from(
+            new Set(
+                data
+                    .map(
+                        (student) =>
+                            student.hackathonTrack
+                    )
+                    .filter(
+                        (value) =>
+                            value &&
+                            value !== "N/A"
+                    )
+            )
+        ).sort();
 
-            const search =
-                searchText
-                    .toLowerCase()
-                    .trim();
+    }, [data]);
 
+    // =================================================
 
-            // =================================================
-            // NO SEARCH
-            // =================================================
+    const skillOptions = useMemo(() => {
 
-            if (!search) {
+        return Array.from(
+            new Set(
+                data
+                    .map(
+                        (student) =>
+                            student.primaryTechnicalSkill
+                    )
+                    .filter(
+                        (value) =>
+                            value &&
+                            value !== "N/A"
+                    )
+            )
+        ).sort();
 
-                return true;
+    }, [data]);
 
+    // =================================================
+
+    const yearOptions = useMemo(() => {
+
+        return Array.from(
+            new Set(
+                data
+                    .map(
+                        (student) =>
+                            student.yearOfStudy
+                    )
+                    .filter(
+                        (value) =>
+                            value &&
+                            value !== "N/A"
+                    )
+            )
+        ).sort();
+
+    }, [data]);
+
+    // =================================================
+
+    const teamSizeOptions = useMemo(() => {
+
+        return Array.from(
+            new Set(
+                data
+                    .map(
+                        (student) =>
+                            String(student.teamSize || "")
+                    )
+                    .filter(
+                        (value) => value !== ""
+                    )
+            )
+        ).sort(
+            (a, b) =>
+                Number(a) - Number(b)
+        );
+
+    }, [data]);
+
+    // =================================================
+    // PROJECT SUBMISSION CHECK
+    // =================================================
+
+    const hasProjectSubmitted = (
+        student: HackathonStudent
+    ) => {
+
+        return (
+            typeof student.projectTitle === "string" &&
+            student.projectTitle.trim() !== ""
+        );
+
+    };
+
+    // =================================================
+    // SEARCH FILTER
+    // =================================================
+
+    const filteredData = useMemo(() => {
+
+        const search = searchText
+            .toLowerCase()
+            .trim();
+
+        return data.filter((student) => {
+
+            // =============================================
+            // STATUS FILTER
+            // =============================================
+
+            if (
+                statusFilter !== "ALL" &&
+                student.status !== statusFilter
+            ) {
+                return false;
             }
 
+            // =============================================
+            // TRACK FILTER
+            // =============================================
 
-            // =================================================
-            // SEARCH FIELDS
-            // =================================================
+            if (
+                trackFilter !== "ALL" &&
+                student.hackathonTrack !== trackFilter
+            ) {
+                return false;
+            }
+
+            // =============================================
+            // SKILL FILTER
+            // =============================================
+
+            if (
+                skillFilter !== "ALL" &&
+                student.primaryTechnicalSkill !==
+                skillFilter
+            ) {
+                return false;
+            }
+
+            // =============================================
+            // YEAR FILTER
+            // =============================================
+
+            if (
+                yearFilter !== "ALL" &&
+                student.yearOfStudy !== yearFilter
+            ) {
+                return false;
+            }
+
+            // =============================================
+            // TEAM SIZE FILTER
+            // =============================================
+
+            if (
+                teamSizeFilter !== "ALL" &&
+                String(student.teamSize) !==
+                teamSizeFilter
+            ) {
+                return false;
+            }
+
+            // =============================================
+            // PROJECT FILTER
+            // =============================================
+
+            if (
+                projectFilter === "SUBMITTED" &&
+                !hasProjectSubmitted(student)
+            ) {
+                return false;
+            }
+
+            if (
+                projectFilter === "NOT_SUBMITTED" &&
+                hasProjectSubmitted(student)
+            ) {
+                return false;
+            }
+
+            // =============================================
+            // SEARCH
+            // =============================================
+
+            if (!search) {
+                return true;
+            }
+
+            // =============================================
+            // TEAM MEMBER SEARCH
+            // =============================================
+
+            const teamMemberMatch =
+                student.teamMembers?.some(
+                    (member) => {
+
+                        return (
+
+                            member.name
+                                ?.toLowerCase()
+                                .includes(search)
+
+                            ||
+
+                            member.phone
+                                ?.toLowerCase()
+                                .includes(search)
+
+                            ||
+
+                            member.collegeRollNo
+                                ?.toLowerCase()
+                                .includes(search)
+
+                        );
+
+                    }
+                );
+
+            // =============================================
+            // MAIN SEARCH
+            // =============================================
 
             return (
 
+                // Registration ID
+                student.registrationId
+                    ?.toLowerCase()
+                    .includes(search)
+
+                ||
+
+                // Team Lead
                 student.fullName
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
+                // Phone
                 student.phone
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
+                // Email
                 student.email
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
+                // College
                 student.collegeName
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
-                student.department
+                // Team
+                student.teamName
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
-                student.degree
+                // Track
+                student.hackathonTrack
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
-                student.collegeRollNo
+                // Primary Technical Skill
+                student.primaryTechnicalSkill
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
-                student.city
+                // Year
+                student.yearOfStudy
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
+                // Team Size
+                String(student.teamSize)
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                // Project Title
                 student.projectTitle
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
+                // Payment
                 student.paymentStatus
                     ?.toLowerCase()
                     .includes(search)
 
                 ||
 
-                student.registrationStatus
+                // Status
+                student.status
                     ?.toLowerCase()
                     .includes(search)
+
+                ||
+
+                // Team Members
+                teamMemberMatch
+
             );
 
         });
 
+    }, [
+        data,
+        searchText,
+        statusFilter,
+        trackFilter,
+        skillFilter,
+        yearFilter,
+        teamSizeFilter,
+        projectFilter,
+    ]);
 
     // =====================================================
-    // TEAM MEMBER COUNT
+    // STATUS BADGE STYLE
     // =====================================================
 
-    const getTeamCount = (
-        student: HackathonStudent
+    const getStatusStyle = (
+        status: string
     ) => {
 
-        return (
-            student.teamMembers?.length || 0
-        );
+        switch (status) {
+
+            case "REGISTERED":
+
+                return {
+                    backgroundColor: "#0d6efd",
+                    color: "#ffffff",
+                };
+
+            case "QUALIFIED":
+
+                return {
+                    backgroundColor: "#198754",
+                    color: "#ffffff",
+                };
+
+            case "SHORTLISTED":
+
+                return {
+                    backgroundColor: "#0dcaf0",
+                    color: "#000000",
+                };
+
+            case "SEMI_FINALIST":
+
+                return {
+                    backgroundColor: "#6f42c1",
+                    color: "#ffffff",
+                };
+
+            case "FINALIST":
+
+                return {
+                    backgroundColor: "#fd7e14",
+                    color: "#ffffff",
+                };
+
+            case "WINNER":
+
+                return {
+                    backgroundColor: "#ffc107",
+                    color: "#000000",
+                };
+
+            default:
+
+                return {
+                    backgroundColor: "#6c757d",
+                    color: "#ffffff",
+                };
+
+        }
 
     };
 
+    // =====================================================
+    // CHANGE STATUS
+    // =====================================================
+
+    // const handleChangeStatus = async (
+    //     studentId: string,
+    //     newStatus: string
+    // ) => {
+
+    //     if (!studentId || !newStatus) {
+    //         return;
+    //     }
+
+    //     const student = data.find(
+    //         (item) =>
+    //             item._id === studentId
+    //     );
+
+    //     if (!student) {
+    //         return;
+    //     }
+
+    //     const currentStatus =
+    //         student.status || "REGISTERED";
+
+    //     // -----------------------------------------------
+    //     // NO CHANGE
+    //     // -----------------------------------------------
+
+    //     if (
+    //         newStatus === currentStatus
+    //     ) {
+    //         return;
+    //     }
+
+    //     // -----------------------------------------------
+    //     // CONFIRM
+    //     // -----------------------------------------------
+
+    //     const confirmChange =
+    //         window.confirm(
+    //             `Change status from "${currentStatus}" to "${newStatus}"?`
+    //         );
+
+    //     if (!confirmChange) {
+
+    //         // Refresh the table so the select
+    //         // returns to the previous value.
+    //         setData((previous) => [...previous]);
+
+    //         return;
+    //     }
+
+    //     try {
+
+    //         setChangingStatusId(studentId);
+
+    //         // -------------------------------------------
+    //         // TOKEN
+    //         // -------------------------------------------
+
+    //         const token =
+    //             localStorage.getItem("token");
+
+    //         // -------------------------------------------
+    //         // API
+    //         // -------------------------------------------
+
+    //         const response =
+    //             await axios.put(
+    //                 `${API_URL}/hackathon/${studentId}`,
+    //                 {
+    //                     status: newStatus,
+    //                 },
+    //                 {
+    //                     headers: {
+    //                         "Content-Type":
+    //                             "application/json",
+
+    //                         Accept:
+    //                             "application/json",
+
+    //                         ...(token
+    //                             ? {
+    //                                 Authorization:
+    //                                     `Bearer ${token}`,
+    //                             }
+    //                             : {}),
+    //                     },
+    //                 }
+    //             );
+
+    //         console.log(
+    //             "STATUS UPDATE RESPONSE:",
+    //             response.data
+    //         );
+
+    //         // -------------------------------------------
+    //         // UPDATE UI IMMEDIATELY
+    //         // -------------------------------------------
+
+    //         setData((previous) =>
+    //             previous.map(
+    //                 (item) =>
+    //                     item._id === studentId
+    //                         ? {
+    //                             ...item,
+    //                             status:
+    //                                 newStatus,
+    //                         }
+    //                         : item
+    //             )
+    //         );
+
+    //         window.alert(
+    //             `Status changed to ${newStatus}`
+    //         );
+
+    //     } catch (error: any) {
+
+    //         console.error(
+    //             "Change status error:",
+    //             error?.response?.data ||
+    //             error?.message ||
+    //             error
+    //         );
+
+    //         window.alert(
+    //             error?.response?.data?.message ||
+    //             error?.message ||
+    //             "Unable to change status"
+    //         );
+
+    //     } finally {
+
+    //         setChangingStatusId(null);
+
+    //     }
+
+    // };
 
     // =====================================================
     // TABLE COLUMNS
@@ -380,11 +884,49 @@ const HackathonList = () => {
     const columns = [
 
         // =================================================
-        // STUDENT NAME
+        // REGISTRATION ID
         // =================================================
 
         {
-            title: "Student Name",
+            title: "Registration ID",
+
+            dataIndex: "registrationId",
+
+            key: "registrationId",
+
+            render: (text: string) => (
+
+                <span
+                    title={text}
+                    style={{
+                        display: "block",
+                        maxWidth: "160px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {text || "-"}
+                </span>
+
+            ),
+
+            sorter: (
+                a: HackathonStudent,
+                b: HackathonStudent
+            ) =>
+                (a.registrationId || "")
+                    .localeCompare(
+                        b.registrationId || ""
+                    ),
+        },
+
+        // =================================================
+        // TEAM LEAD
+        // =================================================
+
+        {
+            title: "Team Lead",
 
             dataIndex: "fullName",
 
@@ -395,20 +937,16 @@ const HackathonList = () => {
                 record: HackathonStudent
             ) => (
 
-                <h6
-                    className="d-flex align-items-center fs-14 fw-medium mb-0"
-                >
+                <h6 className="d-flex align-items-center fs-14 fw-medium mb-0">
 
                     <Link
-                        to={`${all_routes.hackathonDetails.replace(
+                        to={all_routes.hackathonDetails.replace(
                             ":id",
                             record._id
-                        )}`}
+                        )}
                         className="d-flex flex-column"
                     >
-
                         {text || "-"}
-
                     </Link>
 
                 </h6>
@@ -425,6 +963,43 @@ const HackathonList = () => {
                     ),
         },
 
+        // =================================================
+        // TEAM NAME
+        // =================================================
+
+        {
+            title: "Team Name",
+
+            dataIndex: "teamName",
+
+            key: "teamName",
+
+            render: (text: string) => (
+
+                <span
+                    title={text}
+                    style={{
+                        display: "block",
+                        maxWidth: "180px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {text || "-"}
+                </span>
+
+            ),
+
+            sorter: (
+                a: HackathonStudent,
+                b: HackathonStudent
+            ) =>
+                (a.teamName || "")
+                    .localeCompare(
+                        b.teamName || ""
+                    ),
+        },
 
         // =================================================
         // PHONE
@@ -447,7 +1022,6 @@ const HackathonList = () => {
                     ),
         },
 
-
         // =================================================
         // EMAIL
         // =================================================
@@ -459,6 +1033,23 @@ const HackathonList = () => {
 
             key: "email",
 
+            render: (text: string) => (
+
+                <span
+                    title={text}
+                    style={{
+                        display: "block",
+                        maxWidth: "220px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {text || "-"}
+                </span>
+
+            ),
+
             sorter: (
                 a: HackathonStudent,
                 b: HackathonStudent
@@ -468,7 +1059,6 @@ const HackathonList = () => {
                         b.email || ""
                     ),
         },
-
 
         // =================================================
         // COLLEGE
@@ -481,6 +1071,23 @@ const HackathonList = () => {
 
             key: "collegeName",
 
+            render: (text: string) => (
+
+                <span
+                    title={text}
+                    style={{
+                        display: "block",
+                        maxWidth: "220px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {text || "-"}
+                </span>
+
+            ),
+
             sorter: (
                 a: HackathonStudent,
                 b: HackathonStudent
@@ -491,94 +1098,156 @@ const HackathonList = () => {
                     ),
         },
 
-
         // =================================================
-        // DEGREE
+        // TRACK
         // =================================================
 
         {
-            title: "Degree",
+            title: "Track",
 
-            dataIndex: "degree",
+            dataIndex: "hackathonTrack",
 
-            key: "degree",
+            key: "hackathonTrack",
+
+            render: (text: string) => (
+
+                <span
+                    title={text}
+                    style={{
+                        display: "block",
+                        maxWidth: "180px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {text || "-"}
+                </span>
+
+            ),
 
             sorter: (
                 a: HackathonStudent,
                 b: HackathonStudent
             ) =>
-                (a.degree || "")
+                (a.hackathonTrack || "")
                     .localeCompare(
-                        b.degree || ""
+                        b.hackathonTrack || ""
                     ),
         },
 
-
         // =================================================
-        // DEPARTMENT
+        // PRIMARY TECHNICAL SKILL
         // =================================================
 
         {
-            title: "Department",
+            title: "Primary Skill",
 
-            dataIndex: "department",
+            dataIndex:
+                "primaryTechnicalSkill",
 
-            key: "department",
+            key:
+                "primaryTechnicalSkill",
+
+            render: (text: string) => (
+
+                <span
+                    title={text}
+                    style={{
+                        display: "block",
+                        maxWidth: "180px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {text || "-"}
+                </span>
+
+            ),
 
             sorter: (
                 a: HackathonStudent,
                 b: HackathonStudent
             ) =>
-                (a.department || "")
-                    .localeCompare(
-                        b.department || ""
-                    ),
+                (
+                    a.primaryTechnicalSkill ||
+                    ""
+                ).localeCompare(
+                    b.primaryTechnicalSkill ||
+                    ""
+                ),
         },
 
-
         // =================================================
-        // ROLL NUMBER
+        // YEAR OF STUDY
         // =================================================
 
         {
-            title: "Roll No",
+            title: "Year",
 
-            dataIndex: "collegeRollNo",
+            dataIndex: "yearOfStudy",
 
-            key: "collegeRollNo",
+            key: "yearOfStudy",
+
+            render: (text: string) => (
+
+                <span>
+                    {text || "-"}
+                </span>
+
+            ),
 
             sorter: (
                 a: HackathonStudent,
                 b: HackathonStudent
             ) =>
-                (a.collegeRollNo || "")
-                    .localeCompare(
-                        b.collegeRollNo || ""
-                    ),
+                (
+                    a.yearOfStudy || ""
+                ).localeCompare(
+                    b.yearOfStudy || ""
+                ),
         },
 
-
         // =================================================
-        // CITY
+        // TEAM SIZE
         // =================================================
 
         {
-            title: "City",
+            title: "Team Size",
 
-            dataIndex: "city",
+            dataIndex: "teamSize",
 
-            key: "city",
+            key: "teamSize",
+
+            render: (
+                value: number | string
+            ) => (
+
+                <span
+                    className="badge"
+                    style={{
+                        backgroundColor:
+                            "#6c757d",
+                        color: "#ffffff",
+                        padding: "6px 10px",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                    }}
+                >
+                    {value || "-"}
+                </span>
+
+            ),
 
             sorter: (
                 a: HackathonStudent,
                 b: HackathonStudent
             ) =>
-                (a.city || "")
-                    .localeCompare(
-                        b.city || ""
-                    ),
+                Number(a.teamSize || 0) -
+                Number(b.teamSize || 0),
         },
-
 
         // =================================================
         // PROJECT TITLE
@@ -591,92 +1260,63 @@ const HackathonList = () => {
 
             key: "projectTitle",
 
-            render: (text: string) => (
+            render: (text: string) => {
 
-                <span
-                    title={text}
-                    style={{
-                        display: "block",
-                        maxWidth: "250px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                    }}
-                >
-
-                    {text || "-"}
-
-                </span>
-
-            ),
-
-            sorter: (
-                a: HackathonStudent,
-                b: HackathonStudent
-            ) =>
-                (a.projectTitle || "")
-                    .localeCompare(
-                        b.projectTitle || ""
-                    ),
-        },
-
-
-        // =================================================
-        // TEAM MEMBERS
-        // =================================================
-
-        {
-            title: "Team Members",
-
-            dataIndex: "teamMembers",
-
-            key: "teamMembers",
-
-            render: (
-                _teamMembers: TeamMember[],
-                record: HackathonStudent
-            ) => {
-
-                const count =
-                    getTeamCount(record);
+                const submitted =
+                    text &&
+                    text.trim() !== "";
 
                 return (
 
-                    <span
-                        className="badge"
+                    <div
                         style={{
-                            backgroundColor:
-                                "#6f42c1",
-
-                            color:
-                                "#ffffff",
-
-                            padding:
-                                "6px 10px",
-
-                            borderRadius:
-                                "6px",
-
-                            fontSize:
-                                "12px",
-
-                            fontWeight:
-                                500,
-
-                            minWidth:
-                                "35px",
-
-                            display:
-                                "inline-block",
-
-                            textAlign:
-                                "center",
+                            maxWidth: "220px",
                         }}
                     >
 
-                        {count}
+                        {submitted ? (
 
-                    </span>
+                            <span
+                                title={text}
+                                style={{
+                                    display:
+                                        "block",
+                                    whiteSpace:
+                                        "nowrap",
+                                    overflow:
+                                        "hidden",
+                                    textOverflow:
+                                        "ellipsis",
+                                }}
+                            >
+                                {text}
+                            </span>
+
+                        ) : (
+
+                            <span
+                                className="badge"
+                                style={{
+                                    backgroundColor:
+                                        "#6c757d",
+                                    color:
+                                        "#ffffff",
+                                    padding:
+                                        "6px 10px",
+                                    borderRadius:
+                                        "6px",
+                                    fontSize:
+                                        "12px",
+                                    fontWeight:
+                                        500,
+                                }}
+                            >
+                                Not Submitted
+                            </span>
+
+                        )}
+
+                    </div>
 
                 );
 
@@ -686,17 +1326,19 @@ const HackathonList = () => {
                 a: HackathonStudent,
                 b: HackathonStudent
             ) =>
-                getTeamCount(a) -
-                getTeamCount(b),
+                (
+                    a.projectTitle || ""
+                ).localeCompare(
+                    b.projectTitle || ""
+                ),
         },
-
 
         // =================================================
         // PAYMENT STATUS
         // =================================================
 
         {
-            title: "Payment Status",
+            title: "Payment",
 
             dataIndex: "paymentStatus",
 
@@ -705,8 +1347,8 @@ const HackathonList = () => {
             render: (status: string) => {
 
                 const isPaid =
-                    status === "Paid";
-
+                    status?.toLowerCase() ===
+                    "paid";
 
                 return (
 
@@ -745,82 +1387,7 @@ const HackathonList = () => {
                                 "center",
                         }}
                     >
-
                         {status || "Pending"}
-
-                    </span>
-
-                );
-
-            },
-
-            sorter: (
-                a: HackathonStudent,
-                b: HackathonStudent
-            ) =>
-                (a.paymentStatus || "")
-                    .localeCompare(
-                        b.paymentStatus || ""
-                    ),
-        },
-
-
-        // =================================================
-        // REGISTRATION STATUS
-        // =================================================
-
-        {
-            title: "Registration Status",
-
-            dataIndex: "registrationStatus",
-
-            key: "registrationStatus",
-
-            render: (status: string) => {
-
-                const isRegistered =
-                    status === "Registered";
-
-
-                return (
-
-                    <span
-                        className="badge"
-                        style={{
-                            backgroundColor:
-                                isRegistered
-                                    ? "#198754"
-                                    : "#dc3545",
-
-                            color:
-                                "#ffffff",
-
-                            padding:
-                                "6px 10px",
-
-                            borderRadius:
-                                "6px",
-
-                            fontSize:
-                                "12px",
-
-                            fontWeight:
-                                500,
-
-                            display:
-                                "inline-block",
-
-                            minWidth:
-                                "85px",
-
-                            textAlign:
-                                "center",
-                        }}
-                    >
-
-                        {status ||
-                            "Registered"}
-
                     </span>
 
                 );
@@ -832,17 +1399,65 @@ const HackathonList = () => {
                 b: HackathonStudent
             ) =>
                 (
-                    a.registrationStatus ||
-                    ""
+                    a.paymentStatus || ""
                 ).localeCompare(
-                    b.registrationStatus ||
-                    ""
+                    b.paymentStatus || ""
                 ),
         },
 
+        // =====================================================
+        // STATUS
+        // =====================================================
+
+        {
+            title: "Status",
+
+            dataIndex: "status",
+
+            key: "status",
+
+            render: (status: RegistrationStatus) => {
+
+                const style = getStatusStyle(status);
+
+                return (
+                    <span
+                        className="badge"
+                        style={{
+                            ...style,
+
+                            padding: "6px 10px",
+
+                            borderRadius: "6px",
+
+                            fontSize: "12px",
+
+                            fontWeight: 500,
+
+                            display: "inline-block",
+
+                            minWidth: "110px",
+
+                            textAlign: "center",
+                        }}
+                    >
+                        {status || "REGISTERED"}
+                    </span>
+                );
+
+            },
+
+            sorter: (
+                a: HackathonStudent,
+                b: HackathonStudent
+            ) =>
+                (a.status || "").localeCompare(
+                    b.status || ""
+                ),
+        },
 
         // =================================================
-        // REGISTERED ON
+        // REGISTERED DATE
         // =================================================
 
         {
@@ -855,10 +1470,9 @@ const HackathonList = () => {
             render: (date: string) => (
 
                 date
-                    ? dayjs(date)
-                        .format(
-                            "DD-MM-YYYY"
-                        )
+                    ? dayjs(date).format(
+                        "DD-MM-YYYY"
+                    )
                     : "-"
 
             ),
@@ -867,12 +1481,14 @@ const HackathonList = () => {
                 a: HackathonStudent,
                 b: HackathonStudent
             ) =>
-                (a.createdAt || "")
-                    .localeCompare(
-                        b.createdAt || ""
-                    ),
+                dayjs(
+                    a.createdAt || 0
+                ).valueOf()
+                -
+                dayjs(
+                    b.createdAt || 0
+                ).valueOf(),
         },
-
 
         // =================================================
         // ACTION
@@ -890,9 +1506,9 @@ const HackathonList = () => {
                 record: HackathonStudent
             ) => (
 
-                <div
-                    className="dropdown table-action"
-                >
+                <div className="dropdown table-action">
+
+                    {/* ACTION BUTTON */}
 
                     <Link
                         to="#"
@@ -900,22 +1516,21 @@ const HackathonList = () => {
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                     >
-
                         <i className="ti ti-dots-vertical" />
-
                     </Link>
 
+                    {/* DROPDOWN */}
 
-                    <div
-                        className="dropdown-menu dropdown-menu-right"
-                    >
+                    <div className="dropdown-menu dropdown-menu-right">
+
+                        {/* VIEW */}
 
                         <Link
                             className="dropdown-item"
-                            to={`${all_routes.hackathonDetails.replace(
+                            to={all_routes.hackathonDetails.replace(
                                 ":id",
                                 record._id
-                            )}`}
+                            )}
                         >
 
                             <i className="ti ti-eye text-blue" />
@@ -937,6 +1552,25 @@ const HackathonList = () => {
 
     ];
 
+    // =====================================================
+    // RESET FILTERS
+    // =====================================================
+
+    const resetFilters = () => {
+
+        setStatusFilter("ALL");
+
+        setTrackFilter("ALL");
+
+        setSkillFilter("ALL");
+
+        setYearFilter("ALL");
+
+        setTeamSizeFilter("ALL");
+
+        setProjectFilter("ALL");
+
+    };
 
     // =====================================================
     // RETURN
@@ -950,7 +1584,6 @@ const HackathonList = () => {
 
                 <div className="content pb-0">
 
-
                     {/* =================================================
                         PAGE HEADER
                     ================================================= */}
@@ -963,95 +1596,398 @@ const HackathonList = () => {
                         showModuleTile={false}
                     />
 
-
                     {/* =================================================
                         MAIN CARD
                     ================================================= */}
 
-                    <div
-                        className="card border-0 rounded-0"
-                    >
+                    <div className="card border-0 rounded-0">
 
-
-                        {/* =============================================
+                        {/* =================================================
                             CARD HEADER
-                        ============================================= */}
+                        ================================================= */}
 
-                        <div
-                            className="card-header d-flex align-items-center justify-content-between gap-2 flex-wrap"
-                        >
+                        <div className="card-header">
 
+                            {/* =================================================
+                                TOP ROW
+                            ================================================= */}
 
-                            {/* =========================================
-                                SEARCH
-                            ========================================= */}
+                            <div className="d-flex align-items-center justify-content-between gap-2 flex-wrap">
 
-                            <div
-                                className="input-icon input-icon-start position-relative"
-                            >
+                                {/* SEARCH */}
 
-                                <span
-                                    className="input-icon-addon text-dark"
-                                >
+                                <div className="input-icon input-icon-start position-relative">
 
-                                    <i
-                                        className="ti ti-search"
+                                    <span className="input-icon-addon text-dark">
+
+                                        <i className="ti ti-search" />
+
+                                    </span>
+
+                                    <SearchInput
+                                        value={
+                                            searchText
+                                        }
+                                        onChange={
+                                            handleSearch
+                                        }
                                     />
 
-                                </span>
+                                </div>
 
+                                {/* REFRESH */}
 
-                                <SearchInput
-                                    value={
-                                        searchText
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-light"
+                                    onClick={
+                                        fetchHackathonStudents
                                     }
-                                    onChange={
-                                        handleSearch
+                                    disabled={
+                                        loading
                                     }
-                                />
+                                >
+
+                                    <i className="ti ti-refresh me-1" />
+
+                                    {loading
+                                        ? "Loading..."
+                                        : "Refresh"}
+
+                                </button>
 
                             </div>
 
+                            {/* =================================================
+                                FILTER ROW
+                            ================================================= */}
 
-                            {/* =========================================
-                                REFRESH
-                            ========================================= */}
+                            <div className="row g-2 mt-3">
 
-                            <button
-                                type="button"
-                                className="btn btn-outline-light"
-                                onClick={
-                                    fetchHackathonStudents
-                                }
-                                disabled={
-                                    loading
-                                }
-                            >
+                                {/* STATUS */}
 
-                                <i
-                                    className="ti ti-refresh me-1"
-                                />
+                                <div className="col-md-2">
 
+                                    <label className="form-label mb-1">
+                                        Status
+                                    </label>
 
-                                {loading
-                                    ? "Loading..."
-                                    : "Refresh"}
+                                    <select
+                                        className="form-select"
+                                        value={
+                                            statusFilter
+                                        }
+                                        onChange={(event) =>
+                                            setStatusFilter(
+                                                event.target.value
+                                            )
+                                        }
+                                    >
 
-                            </button>
+                                        <option value="ALL">
+                                            All Status
+                                        </option>
+
+                                        {STATUS_OPTIONS.map(
+                                            (status) => (
+
+                                                <option
+                                                    key={
+                                                        status
+                                                    }
+                                                    value={
+                                                        status
+                                                    }
+                                                >
+                                                    {
+                                                        status
+                                                    }
+                                                </option>
+
+                                            )
+                                        )}
+
+                                    </select>
+
+                                </div>
+
+                                {/* TRACK */}
+
+                                <div className="col-md-2">
+
+                                    <label className="form-label mb-1">
+                                        Hackathon Track
+                                    </label>
+
+                                    <select
+                                        className="form-select"
+                                        value={
+                                            trackFilter
+                                        }
+                                        onChange={(event) =>
+                                            setTrackFilter(
+                                                event.target.value
+                                            )
+                                        }
+                                    >
+
+                                        <option value="ALL">
+                                            All Tracks
+                                        </option>
+
+                                        {trackOptions.map(
+                                            (track) => (
+
+                                                <option
+                                                    key={
+                                                        track
+                                                    }
+                                                    value={
+                                                        track
+                                                    }
+                                                >
+                                                    {
+                                                        track
+                                                    }
+                                                </option>
+
+                                            )
+                                        )}
+
+                                    </select>
+
+                                </div>
+
+                                {/* PRIMARY SKILL */}
+
+                                <div className="col-md-2">
+
+                                    <label className="form-label mb-1">
+                                        Primary Technical Skill
+                                    </label>
+
+                                    <select
+                                        className="form-select"
+                                        value={
+                                            skillFilter
+                                        }
+                                        onChange={(event) =>
+                                            setSkillFilter(
+                                                event.target.value
+                                            )
+                                        }
+                                    >
+
+                                        <option value="ALL">
+                                            All Skills
+                                        </option>
+
+                                        {skillOptions.map(
+                                            (skill) => (
+
+                                                <option
+                                                    key={
+                                                        skill
+                                                    }
+                                                    value={
+                                                        skill
+                                                    }
+                                                >
+                                                    {
+                                                        skill
+                                                    }
+                                                </option>
+
+                                            )
+                                        )}
+
+                                    </select>
+
+                                </div>
+
+                                {/* YEAR */}
+
+                                <div className="col-md-2">
+
+                                    <label className="form-label mb-1">
+                                        Year of Study
+                                    </label>
+
+                                    <select
+                                        className="form-select"
+                                        value={
+                                            yearFilter
+                                        }
+                                        onChange={(event) =>
+                                            setYearFilter(
+                                                event.target.value
+                                            )
+                                        }
+                                    >
+
+                                        <option value="ALL">
+                                            All Years
+                                        </option>
+
+                                        {yearOptions.map(
+                                            (year) => (
+
+                                                <option
+                                                    key={
+                                                        year
+                                                    }
+                                                    value={
+                                                        year
+                                                    }
+                                                >
+                                                    {
+                                                        year
+                                                    }
+                                                </option>
+
+                                            )
+                                        )}
+
+                                    </select>
+
+                                </div>
+
+                                {/* TEAM SIZE */}
+
+                                <div className="col-md-2">
+
+                                    <label className="form-label mb-1">
+                                        Team Size
+                                    </label>
+
+                                    <select
+                                        className="form-select"
+                                        value={
+                                            teamSizeFilter
+                                        }
+                                        onChange={(event) =>
+                                            setTeamSizeFilter(
+                                                event.target.value
+                                            )
+                                        }
+                                    >
+
+                                        <option value="ALL">
+                                            All Team Sizes
+                                        </option>
+
+                                        {teamSizeOptions.map(
+                                            (size) => (
+
+                                                <option
+                                                    key={
+                                                        size
+                                                    }
+                                                    value={
+                                                        size
+                                                    }
+                                                >
+                                                    {size}
+                                                </option>
+
+                                            )
+                                        )}
+
+                                    </select>
+
+                                </div>
+
+                                {/* PROJECT */}
+
+                                <div className="col-md-2">
+
+                                    <label className="form-label mb-1">
+                                        Project Title
+                                    </label>
+
+                                    <select
+                                        className="form-select"
+                                        value={
+                                            projectFilter
+                                        }
+                                        onChange={(event) =>
+                                            setProjectFilter(
+                                                event.target.value
+                                            )
+                                        }
+                                    >
+
+                                        <option value="ALL">
+                                            All
+                                        </option>
+
+                                        <option value="SUBMITTED">
+                                            Submitted
+                                        </option>
+
+                                        <option value="NOT_SUBMITTED">
+                                            Not Submitted
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            {/* =================================================
+                                RESET FILTER
+                            ================================================= */}
+
+                            <div className="mt-3">
+
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={
+                                        resetFilters
+                                    }
+                                >
+
+                                    <i className="ti ti-filter-off me-1" />
+
+                                    Reset Filters
+
+                                </button>
+
+                                <span className="ms-3 text-muted fs-13">
+
+                                    Showing{" "}
+
+                                    <strong>
+                                        {
+                                            filteredData.length
+                                        }
+                                    </strong>
+
+                                    {" "}of{" "}
+
+                                    <strong>
+                                        {
+                                            data.length
+                                        }
+                                    </strong>
+
+                                    {" "}students
+
+                                </span>
+
+                            </div>
 
                         </div>
 
-
-                        {/* =============================================
+                        {/* =================================================
                             CARD BODY
-                        ============================================= */}
+                        ================================================= */}
 
                         <div className="card-body">
 
-
-                            <div
-                                className="table-nowrap custom-table"
-                            >
+                            <div className="table-nowrap custom-table">
 
                                 <Datatable
                                     columns={
@@ -1076,10 +2012,7 @@ const HackathonList = () => {
 
                 </div>
 
-
-                {/* =================================================
-                    FOOTER
-                ================================================= */}
+                {/* FOOTER */}
 
                 <Footer />
 
@@ -1090,6 +2023,5 @@ const HackathonList = () => {
     );
 
 };
-
 
 export default HackathonList;
