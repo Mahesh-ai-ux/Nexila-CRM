@@ -355,7 +355,7 @@ const technicalSkillOptions: string[] = [
    COMPONENT
 ========================================================= */
 
-const NexilaHackathon: React.FC = () => {
+const NexilaHackathonNormal: React.FC = () => {
     const [showSuccessModal, setShowSuccessModal] =
         useState(false);
 
@@ -370,7 +370,7 @@ const NexilaHackathon: React.FC = () => {
 
     const [paymentLoading, setPaymentLoading] =
         useState(false);
-    
+
     const [registrationId, setRegistrationId] = useState("");
 
     const getInitialFormData = (): HackathonFormData => ({
@@ -594,327 +594,123 @@ const NexilaHackathon: React.FC = () => {
     /* =====================================================
        SUBMIT
     ===================================================== */
+//normal payment
+    const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const handleSubmit = async (
-        e: React.FormEvent
-    ) => {
-        e.preventDefault();
+    if (!studentDeclaration) {
+        alert(
+            "Please confirm that you are currently enrolled as a college student and that the information provided is correct."
+        );
+        return;
+    }
 
-        if (!studentDeclaration) {
-            alert(
-                "Please confirm that you are currently enrolled as a college student and that the information provided is correct."
-            );
-            return;
-        }
+    if (!termsAccepted) {
+        alert(
+            "Please read and accept the Hackathon Rules & Terms & Conditions."
+        );
+        return;
+    }
 
-        if (!termsAccepted) {
-            alert(
-                "Please read and accept the Hackathon Rules & Terms & Conditions."
-            );
-            return;
-        }
+    if (!formData.teamName.trim()) {
+        alert("Please enter Team Name");
+        return;
+    }
 
-        if (!formData.teamName.trim()) {
-            alert("Please enter Team Name");
-            return;
-        }
+    if (formData.teamMembers.length < 2) {
+        alert("Minimum 2 team members are required");
+        return;
+    }
 
-        if (formData.teamMembers.length < 2) {
-            alert(
-                "Minimum 2 team members are required"
-            );
-            return;
-        }
+    if (formData.teamMembers.length > 4) {
+        alert("Maximum 4 team members are allowed");
+        return;
+    }
 
-        if (formData.teamMembers.length > 4) {
-            alert(
-                "Maximum 4 team members are allowed"
-            );
-            return;
-        }
+    for (let i = 0; i < formData.teamMembers.length; i++) {
+        const member = formData.teamMembers[i];
 
-        for (
-            let i = 0;
-            i < formData.teamMembers.length;
-            i++
+        if (
+            !member.name.trim() ||
+            !member.phone.trim() ||
+            !member.collegeRollNo.trim()
         ) {
-            const member =
-                formData.teamMembers[i];
-
-            if (
-                !member.name.trim() ||
-                !member.phone.trim() ||
-                !member.collegeRollNo.trim()
-            ) {
-                alert(
-                    `Please complete Team Member ${i + 1} details`
-                );
-                return;
-            }
-
-            if (member.phone.length !== 10) {
-                alert(
-                    `Team Member ${i + 1} phone number must contain 10 digits`
-                );
-                return;
-            }
-        }
-
-        if (formData.phone.length !== 10) {
-            alert(
-                "Phone number must contain 10 digits"
-            );
+            alert(`Please complete Team Member ${i + 1} details`);
             return;
         }
 
-        try {
-            setPaymentLoading(true);
-
-            /* =================================================
-               CREATE RAZORPAY ORDER
-            ================================================= */
-
-            const orderResponse = await fetch(
-                "/api/hackathon/public/create-order",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                            "application/json",
-                    },
-                    body: JSON.stringify({
-                        teamName:
-                            formData.teamName,
-                        teamMembers:
-                            formData.teamMembers,
-                    }),
-                }
-            );
-
-            const orderResult =
-                await orderResponse.json();
-
-            if (!orderResponse.ok) {
-                throw new Error(
-                    orderResult.message ||
-                    "Unable to create payment order"
-                );
-            }
-
-            if (
-                !orderResult.keyId ||
-                !orderResult.orderId ||
-                !orderResult.amountInPaise
-            ) {
-                throw new Error(
-                    "Invalid payment order response from server"
-                );
-            }
-
-            /* =================================================
-               RAZORPAY OPTIONS
-            ================================================= */
-
-            const options = {
-                key: orderResult.keyId,
-
-                amount:
-                    orderResult.amountInPaise,
-
-                currency:
-                    orderResult.currency || "INR",
-
-                name:
-                    "Nexila Technologies",
-
-                description:
-                    `Hackathon Registration - ${formData.teamMembers.length} Members`,
-
-                order_id:
-                    orderResult.orderId,
-
-                prefill: {
-                    name:
-                        formData.fullName,
-                    email:
-                        formData.email,
-                    contact:
-                        formData.phone,
-                },
-
-                notes: {
-                    teamSize:
-                        String(
-                            formData.teamMembers.length
-                        ),
-                    teamName:
-                        formData.teamName,
-                },
-
-                theme: {
-                    color: "#0d6efd",
-                },
-
-                modal: {
-                    confirm_close: true,
-                    escape: false,
-                    backdropclose: false,
-                },
-
-                handler:
-                    async function (
-                        response: any
-                    ) {
-                        try {
-                            const finalFormData = {
-                                ...formData,
-                                termsAccepted: true,
-                            };
-
-                            console.log(
-                                "Payment Response:",
-                                response
-                            );
-
-                            console.log(
-                                "Sending Form Data:",
-                                finalFormData
-                            );
-
-                            /* =========================================
-                               VERIFY PAYMENT
-                            ========================================= */
-
-                            const verifyResponse =
-                                await fetch(
-                                    "https://crm.nexilatechnologies.com/:5000/api/hackathon/public/verify-payment",
-                                    {
-                                        method: "POST",
-
-                                        headers: {
-                                            "Content-Type":
-                                                "application/json",
-                                        },
-
-                                        body:
-                                            JSON.stringify({
-                                                formData:
-                                                    finalFormData,
-
-                                                razorpay_order_id:
-                                                    response.razorpay_order_id,
-
-                                                razorpay_payment_id:
-                                                    response.razorpay_payment_id,
-
-                                                razorpay_signature:
-                                                    response.razorpay_signature,
-                                            }),
-                                    }
-                                );
-
-                            const verifyResult =
-                                await verifyResponse.json();
-
-                            console.log(
-                                "Verify Response:",
-                                verifyResult
-                            );
-
-                            if (
-                                !verifyResponse.ok
-                            ) {
-                                throw new Error(
-                                    verifyResult.message ||
-                                    "Payment verification failed"
-                                );
-                            }
-
-                            setRegistrationId(
-    verifyResult.registrationId
-);
-
-                            setPaymentLoading(
-                                false
-                            );
-
-                            setShowSuccessModal(
-                                true
-                            );
-                        } catch (
-                        verificationError
-                        ) {
-                            console.error(
-                                "Payment Verification Error:",
-                                verificationError
-                            );
-
-                            setPaymentLoading(
-                                false
-                            );
-
-                            alert(
-                                verificationError instanceof
-                                    Error
-                                    ? verificationError.message
-                                    : "Payment verification failed"
-                            );
-                        }
-                    },
-
-                retry: {
-                    enabled: true,
-                    max_count: 3,
-                },
-            };
-
-            if (!window.Razorpay) {
-                throw new Error(
-                    "Razorpay Checkout is not loaded"
-                );
-            }
-
-            const razorpay =
-                new window.Razorpay(options);
-
-            razorpay.on(
-                "payment.failed",
-                function (
-                    response: any
-                ) {
-                    console.error(
-                        "Payment Failed:",
-                        response.error
-                    );
-
-                    setPaymentLoading(
-                        false
-                    );
-
-                    alert(
-                        response.error?.description ||
-                        "Payment failed"
-                    );
-                }
-            );
-
-            razorpay.open();
-
-        } catch (error) {
-            console.error(
-                "Registration Payment Error:",
-                error
-            );
-
-            setPaymentLoading(false);
-
+        if (member.phone.length !== 10) {
             alert(
-                error instanceof Error
-                    ? error.message
-                    : "Unable to start payment"
+                `Team Member ${i + 1} phone number must contain 10 digits`
+            );
+            return;
+        }
+    }
+
+    if (formData.phone.length !== 10) {
+        alert("Phone number must contain 10 digits");
+        return;
+    }
+
+    try {
+        setPaymentLoading(true);
+
+        // =========================================
+        // MANUAL REGISTRATION
+        // =========================================
+
+        const finalFormData = {
+            ...formData,
+            termsAccepted: true,
+        };
+
+        console.log("Sending Registration Data:", finalFormData);
+
+        const response = await fetch(
+            "/api/hackathon/public/manual-register",
+            
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(finalFormData),
+            }
+        );
+
+        const result = await response.json();
+
+        console.log("Registration Response:", result);
+
+        if (!response.ok) {
+            throw new Error(
+                result.message || "Registration failed"
             );
         }
-    };
+
+        setRegistrationId(result.registrationId);
+        // =========================================
+        // SUCCESS
+        // =========================================
+
+        setPaymentLoading(false);
+        setShowSuccessModal(true);
+
+    } catch (error) {
+        console.error(
+            "Manual Registration Error:",
+            error
+        );
+
+        setPaymentLoading(false);
+
+        alert(
+            error instanceof Error
+                ? error.message
+                : "Unable to complete registration"
+        );
+    }
+};
 
     /* =====================================================
        RETURN
@@ -1812,50 +1608,78 @@ const NexilaHackathon: React.FC = () => {
                         ========================================= */}
 
                         <div className="card mt-4">
-                            <div className="card-body text-center">
+    <div className="card-body">
 
-                                <h5 className="mb-3">
-                                    Registration Fee
-                                </h5>
+        <h5 className="mb-3 text-center">
+            Registration Fee
+        </h5>
 
-                                {/* <h2 className="mb-3">
-                                    ₹
-                                    {formData.teamMembers.length *
-                                        250}
-                                </h2> */}
-                                <h2 className="mb-3">
-                                    ₹500
-                                </h2>
+        <h2 className="mb-4 text-center">
+            ₹500
+        </h2>
 
-                                {/* <p className="text-muted">
-                                    ₹500 per team member
-                                </p> */}
+        <div className="row align-items-center">
 
-                                <button
-                                    type="submit"
-                                    className="btn btn-success btn-lg px-5"
-                                    disabled={
-                                        paymentLoading ||
-                                        !studentDeclaration ||
-                                        !termsAccepted
-                                    }
-                                >
-                                    {paymentLoading
-                                        ? "Processing..."
-                                        : "Proceed to Payment"}
-                                </button>
+            {/* LEFT SIDE - SUBMIT */}
+            <div className="col-md-6 text-center">
 
-                                {(!studentDeclaration ||
-                                    !termsAccepted) && (
-                                        <small className="d-block text-muted mt-2">
-                                            Please complete both
-                                            declarations before
-                                            proceeding to payment.
-                                        </small>
-                                    )}
+                <button
+                    type="submit"
+                    className="btn btn-success btn-lg px-5"
+                    disabled={
+                        paymentLoading ||
+                        !studentDeclaration ||
+                        !termsAccepted
+                    }
+                >
+                    {paymentLoading
+                        ? "Submitting..."
+                        : "Submit Registration"}
+                </button>
 
-                            </div>
-                        </div>
+                {(!studentDeclaration ||
+                    !termsAccepted) && (
+                    <small className="d-block text-muted mt-3">
+                        Please complete both
+                        declarations before
+                        submitting your registration.
+                    </small>
+                )}
+
+            </div>
+
+            {/* RIGHT SIDE - QR */}
+            <div className="col-md-6 text-center">
+
+                <h6 className="mb-3">
+                    Scan & Pay ₹500
+                </h6>
+
+                <img
+                    src="/hackathon500payment.jpeg"
+                    alt="Hackathon Payment QR Code"
+                    className="img-fluid"
+                    style={{
+                        maxWidth: "250px",
+                        height: "auto",
+                    }}
+                />
+
+                <p className="mt-3 mb-1">
+                    <strong>UPI ID:</strong> YOUR_UPI_ID
+                </p>
+
+                <small className="text-muted">
+                    After making the payment, click
+                    "Submit Registration".
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
 
                     </form>
                 </div>
@@ -1886,7 +1710,7 @@ const NexilaHackathon: React.FC = () => {
                                 </h5>
                             </div>
 
-<div className="modal-body">
+                            <div className="modal-body">
 
     <div className="mb-4">
         <h5 className="mb-2">
@@ -2158,7 +1982,6 @@ const NexilaHackathon: React.FC = () => {
 
 </div>
 
-
                             <div className="modal-footer">
                                 <button
                                     type="button"
@@ -2206,21 +2029,18 @@ const NexilaHackathon: React.FC = () => {
                                 </div>
 
                                 <h3 className="mb-3">
-                                    Registration Successful!
-                                </h3>
+    Registration Successful!
+</h3>
 
-                                <p className="text-muted mb-4">
-                                    Your Nexila Hackathon
-                                    registration has been
-                                    successfully completed.
+<p className="text-muted mb-4">
 
-                                    <br />
+    Your Nexila Hackathon registration has been
+    successfully completed.
 
-                                    Payment received
-                                    successfully.
+    <br />
+    <br />
 
-                                    <br />
-                                        <strong>
+    <strong>
         Registration ID:
     </strong>
 
@@ -2237,17 +2057,17 @@ const NexilaHackathon: React.FC = () => {
     and keep it safely for future reference.
 
     <br />
+    <br />
 
-                                    Registration details have
-                                    been sent to your email.
+    Your registration details have been sent to your email.
 
-                                    <br />
-                                    <br />
+    <br />
+    <br />
 
-                                    Please check your email
-                                    for the link to submit
-                                    your project details.
-                                </p>
+    Please check your email for the link to submit
+    your project details.
+
+</p>
 
                                 <button
                                     type="button"
@@ -2284,4 +2104,4 @@ const NexilaHackathon: React.FC = () => {
     );
 };
 
-export default NexilaHackathon;
+export default NexilaHackathonNormal;

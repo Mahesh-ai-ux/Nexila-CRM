@@ -171,7 +171,7 @@ const LeadsDetails = () => {
 
     const fetchLogs = async () => {
       try {
-        const res = await fetch(`/api/leads/logs/${lead._id}`, {
+        const res = await fetch(`https://crm.nexilatechnologies.com/:5000/api/leads/logs/${lead._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -1,3 +1,4 @@
+//const HACKATHON_API = "/api/hackathon";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
@@ -45,6 +46,9 @@ const EDITABLE_FIELDS = {
 
   demoLink: true,
   githubLink: true,
+
+  // PAYMENT STATUS IS NOW EDITABLE
+  paymentStatus: true,
 };
 
 // =====================================================
@@ -130,6 +134,9 @@ type HackathonForm = {
   expectedOutcome: string;
   demoLink: string;
   githubLink: string;
+
+  // PAYMENT STATUS
+  paymentStatus: string;
 };
 
 // =====================================================
@@ -165,6 +172,9 @@ const initialForm: HackathonForm = {
   expectedOutcome: "",
   demoLink: "",
   githubLink: "",
+
+  // PAYMENT STATUS
+  paymentStatus: "PENDING",
 };
 
 // =====================================================
@@ -204,16 +214,6 @@ const normalizeUrl = (value: any): string => {
     return "";
   }
 
-  /*
-    Handles values like:
-
-    [https://github.com/example](https://github.com/example)
-
-    Converts to:
-
-    https://github.com/example
-  */
-
   const markdownMatch = url.match(
     /^\[.*?\]\((.*?)\)$/
   );
@@ -230,7 +230,6 @@ const normalizeUrl = (value: any): string => {
 // =====================================================
 
 const HackathonEditForm = () => {
-
   const { id } = useParams();
 
   const navigate = useNavigate();
@@ -262,9 +261,7 @@ const HackathonEditForm = () => {
   // =================================================
 
   useEffect(() => {
-
     if (!id) {
-
       setError(
         "Hackathon student ID not found"
       );
@@ -275,9 +272,7 @@ const HackathonEditForm = () => {
     }
 
     const fetchStudent = async () => {
-
       try {
-
         setLoading(true);
         setError("");
 
@@ -295,16 +290,15 @@ const HackathonEditForm = () => {
 
               ...(token
                 ? {
-                  Authorization:
-                    `Bearer ${token}`,
-                }
+                    Authorization:
+                      `Bearer ${token}`,
+                  }
                 : {}),
             },
           }
         );
 
         if (!response.ok) {
-
           throw new Error(
             `API Error: ${response.status}`
           );
@@ -331,7 +325,6 @@ const HackathonEditForm = () => {
           !studentData ||
           !studentData._id
         ) {
-
           setError(
             "Hackathon student not found"
           );
@@ -370,125 +363,125 @@ const HackathonEditForm = () => {
         // =================================================
 
         const mappedStudent: HackathonStudent =
-        {
-          _id: normalizeId(
-            studentData._id
-          ),
-
-          registrationId:
-            studentData.registrationId ??
-            "",
-
-          fullName:
-            studentData.fullName ??
-            "",
-
-          phone:
-            studentData.phone ??
-            "",
-
-          email:
-            studentData.email ??
-            "",
-
-          collegeName:
-            studentData.collegeName ??
-            "",
-
-          degree:
-            studentData.degree ??
-            "",
-
-          department:
-            studentData.department ??
-            "",
-
-          collegeRollNo:
-            studentData.collegeRollNo ??
-            "",
-
-          yearOfStudy:
-            studentData.yearOfStudy ??
-            "",
-
-          district:
-            studentData.district ??
-            "",
-
-          teamName:
-            studentData.teamName ??
-            "",
-
-          teamMembers,
-
-          hackathonTrack:
-            studentData.hackathonTrack ??
-            "",
-
-          primaryTechnicalSkill:
-            studentData.primaryTechnicalSkill ??
-            "",
-
-          projectTitle:
-            studentData.projectTitle ??
-            "",
-
-          projectDescription:
-            studentData.projectDescription ??
-            "",
-
-          projectAbstract:
-            studentData.projectAbstract ??
-            "",
-
-          problemStatement:
-            studentData.problemStatement ??
-            "",
-
-          proposedSolution:
-            studentData.proposedSolution ??
-            "",
-
-          techStack:
-            studentData.techStack ??
-            "",
-
-          architectureDiagram:
-            studentData.architectureDiagram ??
-            "",
-
-          expectedOutcome:
-            studentData.expectedOutcome ??
-            "",
-
-          demoLink:
-            normalizeUrl(
-              studentData.demoLink
+          {
+            _id: normalizeId(
+              studentData._id
             ),
 
-          githubLink:
-            normalizeUrl(
-              studentData.githubLink
-            ),
+            registrationId:
+              studentData.registrationId ??
+              "",
 
-          paymentStatus:
-            studentData.paymentStatus ??
-            "PENDING",
+            fullName:
+              studentData.fullName ??
+              "",
 
-          amount:
-            Number(
-              studentData.amount ?? 0
-            ),
+            phone:
+              studentData.phone ??
+              "",
 
-          termsAccepted:
-            Boolean(
-              studentData.termsAccepted
-            ),
+            email:
+              studentData.email ??
+              "",
 
-          status:
-            studentData.status ??
-            "REGISTERED",
-        };
+            collegeName:
+              studentData.collegeName ??
+              "",
+
+            degree:
+              studentData.degree ??
+              "",
+
+            department:
+              studentData.department ??
+              "",
+
+            collegeRollNo:
+              studentData.collegeRollNo ??
+              "",
+
+            yearOfStudy:
+              studentData.yearOfStudy ??
+              "",
+
+            district:
+              studentData.district ??
+              "",
+
+            teamName:
+              studentData.teamName ??
+              "",
+
+            teamMembers,
+
+            hackathonTrack:
+              studentData.hackathonTrack ??
+              "",
+
+            primaryTechnicalSkill:
+              studentData.primaryTechnicalSkill ??
+              "",
+
+            projectTitle:
+              studentData.projectTitle ??
+              "",
+
+            projectDescription:
+              studentData.projectDescription ??
+              "",
+
+            projectAbstract:
+              studentData.projectAbstract ??
+              "",
+
+            problemStatement:
+              studentData.problemStatement ??
+              "",
+
+            proposedSolution:
+              studentData.proposedSolution ??
+              "",
+
+            techStack:
+              studentData.techStack ??
+              "",
+
+            architectureDiagram:
+              studentData.architectureDiagram ??
+              "",
+
+            expectedOutcome:
+              studentData.expectedOutcome ??
+              "",
+
+            demoLink:
+              normalizeUrl(
+                studentData.demoLink
+              ),
+
+            githubLink:
+              normalizeUrl(
+                studentData.githubLink
+              ),
+
+            paymentStatus:
+              studentData.paymentStatus ??
+              "PENDING",
+
+            amount:
+              Number(
+                studentData.amount ?? 0
+              ),
+
+            termsAccepted:
+              Boolean(
+                studentData.termsAccepted
+              ),
+
+            status:
+              studentData.status ??
+              "REGISTERED",
+          };
 
         setStudent(mappedStudent);
 
@@ -565,10 +558,13 @@ const HackathonEditForm = () => {
 
           githubLink:
             mappedStudent.githubLink,
+
+          // PAYMENT STATUS
+          paymentStatus:
+            mappedStudent.paymentStatus,
         });
 
       } catch (err) {
-
         console.error(
           "Hackathon edit fetch error:",
           err
@@ -577,15 +573,12 @@ const HackathonEditForm = () => {
         setError(
           "Unable to load hackathon student details"
         );
-
       } finally {
-
         setLoading(false);
       }
     };
 
     fetchStudent();
-
   }, [id]);
 
   // =====================================================
@@ -596,11 +589,10 @@ const HackathonEditForm = () => {
     e:
       React.ChangeEvent<
         HTMLInputElement |
-        HTMLTextAreaElement |
-        HTMLSelectElement
+          HTMLTextAreaElement |
+          HTMLSelectElement
       >
   ) => {
-
     const {
       name,
       value,
@@ -621,11 +613,9 @@ const HackathonEditForm = () => {
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
-
     e.preventDefault();
 
     if (!id) {
-
       setError(
         "Hackathon student ID not found"
       );
@@ -634,7 +624,6 @@ const HackathonEditForm = () => {
     }
 
     try {
-
       setSaving(true);
       setError("");
       setSuccess("");
@@ -647,15 +636,6 @@ const HackathonEditForm = () => {
       // =================================================
 
       const payload = {
-
-        /*
-          Registration ID is intentionally
-          not editable.
-
-          We still send the existing value
-          to the backend.
-        */
-
         registrationId:
           student?.registrationId ??
           form.registrationId,
@@ -725,6 +705,13 @@ const HackathonEditForm = () => {
 
         githubLink:
           form.githubLink,
+
+        // =================================================
+        // PAYMENT STATUS
+        // =================================================
+
+        paymentStatus:
+          form.paymentStatus,
       };
 
       console.log(
@@ -746,9 +733,9 @@ const HackathonEditForm = () => {
 
             ...(token
               ? {
-                Authorization:
-                  `Bearer ${token}`,
-              }
+                  Authorization:
+                    `Bearer ${token}`,
+                }
               : {}),
           },
 
@@ -768,13 +755,23 @@ const HackathonEditForm = () => {
       );
 
       if (!response.ok) {
-
         throw new Error(
           data?.message ||
-          data?.error ||
-          `Update failed: ${response.status}`
+            data?.error ||
+            `Update failed: ${response.status}`
         );
       }
+
+      // Update local student state also
+      setStudent(previous =>
+        previous
+          ? {
+              ...previous,
+              paymentStatus:
+                form.paymentStatus,
+            }
+          : previous
+      );
 
       setSuccess(
         "Hackathon student details updated successfully."
@@ -785,15 +782,12 @@ const HackathonEditForm = () => {
       // =================================================
 
       setTimeout(() => {
-
         navigate(
           `/hackathon/details/${id}`
         );
-
       }, 1000);
 
     } catch (err: any) {
-
       console.error(
         "Hackathon update error:",
         err
@@ -801,11 +795,10 @@ const HackathonEditForm = () => {
 
       setError(
         err?.message ||
-        "Unable to update hackathon student"
+          "Unable to update hackathon student"
       );
 
     } finally {
-
       setSaving(false);
     }
   };
@@ -815,22 +808,15 @@ const HackathonEditForm = () => {
   // =====================================================
 
   if (loading) {
-
     return (
       <div className="page-wrapper">
-
         <div className="content">
-
           <div className="text-center py-5">
-
             <p className="mb-0">
               Loading hackathon student...
             </p>
-
           </div>
-
         </div>
-
       </div>
     );
   }
@@ -840,10 +826,8 @@ const HackathonEditForm = () => {
   // =====================================================
 
   if (!student) {
-
     return (
       <div className="page-wrapper">
-
         <div className="content">
 
           <div className="alert alert-danger">
@@ -861,7 +845,6 @@ const HackathonEditForm = () => {
           </Link>
 
         </div>
-
       </div>
     );
   }
@@ -871,7 +854,6 @@ const HackathonEditForm = () => {
   // =====================================================
 
   return (
-
     <div className="page-wrapper">
 
       <div className="content pb-0">
@@ -907,19 +889,15 @@ const HackathonEditForm = () => {
             ================================================= */}
 
         {error && (
-
           <div className="alert alert-danger">
             {error}
           </div>
-
         )}
 
         {success && (
-
           <div className="alert alert-success">
             {success}
           </div>
-
         )}
 
         {/* =================================================
@@ -1521,11 +1499,9 @@ const HackathonEditForm = () => {
                     />
 
                     {form.architectureDiagram && (
-
                       <small className="text-muted">
                         Current architecture information is shown above.
                       </small>
-
                     )}
 
                   </div>
@@ -1560,7 +1536,7 @@ const HackathonEditForm = () => {
               </div>
 
               {/* =============================================
-                                LINKS
+                            LINKS
                   ============================================== */}
 
               <div className="card">
@@ -1596,7 +1572,6 @@ const HackathonEditForm = () => {
                     />
 
                     {form.demoLink && (
-
                       <div className="mt-2">
 
                         <a
@@ -1612,7 +1587,6 @@ const HackathonEditForm = () => {
                         </a>
 
                       </div>
-
                     )}
 
                   </div>
@@ -1642,7 +1616,6 @@ const HackathonEditForm = () => {
                     />
 
                     {form.githubLink && (
-
                       <div className="mt-2">
 
                         <a
@@ -1658,7 +1631,6 @@ const HackathonEditForm = () => {
                         </a>
 
                       </div>
-
                     )}
 
                   </div>
@@ -1668,7 +1640,7 @@ const HackathonEditForm = () => {
               </div>
 
               {/* =============================================
-                            CURRENT PAYMENT / STATUS
+                        CURRENT PAYMENT / STATUS
                   ============================================== */}
 
               <div className="card">
@@ -1681,29 +1653,47 @@ const HackathonEditForm = () => {
 
                   <div className="row">
 
+                    {/* =================================================
+                                PAYMENT STATUS - EDITABLE
+                        ================================================= */}
+
                     <div className="col-md-4 mb-3">
 
-                      <small className="text-muted d-block">
+                      <label className="form-label">
                         Payment Status
-                      </small>
+                      </label>
 
-                      <span
-                        className={
-                          student.paymentStatus ===
-                            "PAID"
-                            ? "badge bg-success"
-                            : student.paymentStatus ===
-                              "FAILED"
-                              ? "badge bg-danger"
-                              : "badge bg-warning"
+                      <select
+                        name="paymentStatus"
+                        value={
+                          form.paymentStatus
+                        }
+                        onChange={
+                          handleChange
+                        }
+                        className="form-select"
+                        disabled={
+                          !EDITABLE_FIELDS.paymentStatus
                         }
                       >
-                        {
-                          student.paymentStatus
-                        }
-                      </span>
+
+                        <option value="PENDING">
+                          PENDING
+                        </option>
+
+                        <option value="PAID">
+                          PAID
+                        </option>
+
+                        <option value="FAILED">
+                          FAILED
+                        </option>
+
+                      </select>
 
                     </div>
+
+                    {/* AMOUNT - NOT EDITABLE */}
 
                     <div className="col-md-4 mb-3">
 
@@ -1720,6 +1710,8 @@ const HackathonEditForm = () => {
 
                     </div>
 
+                    {/* CURRENT STATUS - NOT EDITABLE */}
+
                     <div className="col-md-4 mb-3">
 
                       <small className="text-muted d-block">
@@ -1729,14 +1721,14 @@ const HackathonEditForm = () => {
                       <span
                         className={
                           student.status ===
-                            "SHORTLISTED"
+                          "SHORTLISTED"
                             ? "badge bg-success"
                             : student.status ===
-                              "REJECTED" ||
+                                "REJECTED" ||
                               student.status ===
-                              "CANCELLED"
-                              ? "badge bg-danger"
-                              : "badge bg-primary"
+                                "CANCELLED"
+                            ? "badge bg-danger"
+                            : "badge bg-primary"
                         }
                       >
                         {
@@ -1752,10 +1744,9 @@ const HackathonEditForm = () => {
 
                     <i className="ti ti-info-circle me-1" />
 
-                    Payment and registration status
-                    are managed separately. Use the
-                    <strong> Change Status </strong>
-                    option from the details page.
+                    Payment status can be changed here
+                    for both manual payments and
+                    Razorpay payments.
 
                   </div>
 
@@ -1764,7 +1755,7 @@ const HackathonEditForm = () => {
               </div>
 
               {/* =============================================
-                                BUTTONS
+                            BUTTONS
                   ============================================== */}
 
               <div className="card">
@@ -1789,7 +1780,6 @@ const HackathonEditForm = () => {
                     >
 
                       {saving ? (
-
                         <>
                           <span
                             className="spinner-border spinner-border-sm me-2"
@@ -1797,15 +1787,12 @@ const HackathonEditForm = () => {
 
                           Updating...
                         </>
-
                       ) : (
-
                         <>
                           <i className="ti ti-check me-1" />
 
                           Update Student
                         </>
-
                       )}
 
                     </button>

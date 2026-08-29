@@ -370,8 +370,6 @@ const NexilaHackathon: React.FC = () => {
 
     const [paymentLoading, setPaymentLoading] =
         useState(false);
-    
-    const [registrationId, setRegistrationId] = useState("");
 
     const getInitialFormData = (): HackathonFormData => ({
         fullName: "",
@@ -675,7 +673,7 @@ const NexilaHackathon: React.FC = () => {
             ================================================= */
 
             const orderResponse = await fetch(
-                "/api/hackathon/public/create-order",
+                "http://3.16.128.134:5000/api/hackathon/public/create-order",
                 {
                     method: "POST",
                     headers: {
@@ -787,7 +785,7 @@ const NexilaHackathon: React.FC = () => {
 
                             const verifyResponse =
                                 await fetch(
-                                    "https://crm.nexilatechnologies.com/:5000/api/hackathon/public/verify-payment",
+                                    "http://3.16.128.134:5000/api/hackathon/public/verify-payment",
                                     {
                                         method: "POST",
 
@@ -829,10 +827,6 @@ const NexilaHackathon: React.FC = () => {
                                     "Payment verification failed"
                                 );
                             }
-
-                            setRegistrationId(
-    verifyResult.registrationId
-);
 
                             setPaymentLoading(
                                 false
@@ -1818,18 +1812,15 @@ const NexilaHackathon: React.FC = () => {
                                     Registration Fee
                                 </h5>
 
-                                {/* <h2 className="mb-3">
+                                <h2 className="mb-3">
                                     ₹
                                     {formData.teamMembers.length *
-                                        250}
-                                </h2> */}
-                                <h2 className="mb-3">
-                                    ₹500
+                                        125}
                                 </h2>
 
-                                {/* <p className="text-muted">
-                                    ₹500 per team member
-                                </p> */}
+                                <p className="text-muted">
+                                    ₹125 per team member
+                                </p>
 
                                 <button
                                     type="submit"
@@ -1886,278 +1877,64 @@ const NexilaHackathon: React.FC = () => {
                                 </h5>
                             </div>
 
-<div className="modal-body">
-
-    <div className="mb-4">
-        <h5 className="mb-2">
-            Terms & Conditions
-        </h5>
-
-        <p className="text-muted mb-0">
-            Please read the following Terms & Conditions carefully
-            before registering for the Nexila Hackathon.
-        </p>
-    </div>
-
-
-    {/* =================================================
-        I. REGISTRATION & PARTICIPATION
-    ================================================= */}
-
-    <div className="mb-4">
-
-        <h6 className="fw-semibold mb-3">
-            I. Registration & Participation
-        </h6>
-
-        <ol className="ps-4 mb-0">
-
-            <li className="mb-2">
-                Participants must register for the Hackathon through
-                the official Nexila Hackathon registration page.
-            </li>
-
-            <li className="mb-2">
-                The Hackathon is open to eligible college students
-                across Tamil Nadu, subject to the eligibility
-                requirements specified by Nexila.
-            </li>
-
-            <li className="mb-2">
-                Each team must consist of a minimum of
-                <strong> 2 </strong> and a maximum of
-                <strong> 4 members</strong>.
-            </li>
-
-            <li className="mb-2">
-                Each individual participant may register and
-                participate in only one team.
-            </li>
-
-            <li className="mb-2">
-                Participants must provide their team name at the
-                time of registration.
-            </li>
-
-            <li className="mb-2">
-                Each team must nominate one member as the
-                <strong> Team Leader</strong>.
-            </li>
-
-            <li className="mb-2">
-                The Team Leader will be responsible for providing
-                accurate information relating to all team members
-                and for receiving official communications from Nexila.
-            </li>
-
-            <li className="mb-2">
-                All participants must provide genuine and accurate
-                information, including their name, college,
-                department, year of study, roll/registration number,
-                contact details and other information requested
-                during registration.
-            </li>
-
-            <li className="mb-2">
-                Nexila reserves the right to verify the eligibility
-                and student status of any participant at any stage
-                of the Hackathon.
-            </li>
-
-            <li className="mb-2">
-                Participants may be required to present a valid
-                college/student identity card or other acceptable
-                proof of student status.
-            </li>
-
-            <li className="mb-2">
-                Participants must actively participate in all required
-                stages, checkpoints, mentoring sessions, submissions
-                and final presentations as communicated by Nexila.
-            </li>
-
-            <li>
-                Failure to comply with the Hackathon requirements or
-                failure to respond to official communications may
-                result in disqualification of the participant or
-                the entire team.
-            </li>
-
-        </ol>
-
-    </div>
-
-
-    {/* =================================================
-        II. REGISTRATION FEE & PAYMENT
-    ================================================= */}
-
-    <div className="mb-4">
-
-        <h6 className="fw-semibold mb-3">
-            II. Registration Fee & Payment
-        </h6>
-
-        <ol className="ps-4 mb-0">
-
-            <li className="mb-2">
-                Participation in the Hackathon requires payment of
-                the registration fee displayed on the official
-                Hackathon registration page.
-            </li>
-
-            <li className="mb-2">
-                The applicable registration fee must be paid through
-                the payment method provided by Nexila or its
-                authorized payment service provider.
-            </li>
-
-            <li className="mb-2">
-                Registration will be considered successfully completed
-                only after successful payment and confirmation by the
-                registration system/Nexila.
-            </li>
-
-            <li className="mb-2">
-                Participants are responsible for ensuring that the
-                information submitted during registration is accurate
-                before making payment.
-            </li>
-
-            <li className="mb-2">
-                Participants should retain their payment transaction
-                or reference number for future communication or
-                verification.
-            </li>
-
-            <li className="mb-2">
-                Payment of the registration fee confirms registration
-                but does not guarantee selection for the final round,
-                winning a prize, internship, placement, or any other
-                opportunity.
-            </li>
-
-            <li>
-                Any applicable payment gateway charges, taxes or
-                statutory deductions, if separately applicable, will
-                be handled in accordance with the applicable payment
-                terms and laws.
-            </li>
-
-        </ol>
-
-    </div>
-
-
-    {/* =================================================
-        III. CANCELLATION & REFUND POLICY
-    ================================================= */}
-
-    <div className="mb-4">
-
-        <h6 className="fw-semibold mb-3">
-            III. Cancellation & Refund Policy
-        </h6>
-
-        <ol className="ps-4 mb-0">
-
-            <li className="mb-2">
-                The registration fee is non-refundable once the
-                registration has been successfully completed, except
-                where a refund is required under applicable law or
-                where Nexila specifically decides otherwise.
-            </li>
-
-            <li className="mb-2">
-                Refunds will generally not be provided due to:
-
-                <ul className="mt-2 ps-4">
-
-                    <li className="mb-1">
-                        Change of mind
-                    </li>
-
-                    <li className="mb-1">
-                        Failure to attend the Hackathon
-                    </li>
-
-                    <li className="mb-1">
-                        Failure to form or maintain a complete team
-                    </li>
-
-                    <li className="mb-1">
-                        Failure to qualify for the next stage
-                    </li>
-
-                    <li className="mb-1">
-                        Failure to submit the required project or idea
-                    </li>
-
-                    <li className="mb-1">
-                        Disqualification due to violation of the
-                        Hackathon rules
-                    </li>
-
-                    <li className="mb-1">
-                        Personal, academic or other commitments
-                    </li>
-
-                    <li>
-                        Failure to respond to official communications
-                    </li>
-
-                </ul>
-
-            </li>
-
-            <li className="mb-2">
-                If Nexila cancels the Hackathon entirely, Nexila will
-                communicate the applicable refund or alternative
-                arrangement to registered participants.
-            </li>
-
-            <li className="mb-2">
-                If the Hackathon is postponed, Nexila may, at its
-                discretion, carry forward the participant's
-                registration to the rescheduled event.
-            </li>
-
-            <li>
-                Where a refund is approved, it will generally be
-                processed to the original payment method, subject to
-                applicable payment gateway and banking processing
-                timelines.
-            </li>
-
-        </ol>
-
-    </div>
-
-
-    {/* =================================================
-        ACKNOWLEDGEMENT
-    ================================================= */}
-
-    <div className="alert alert-light border mb-0">
-
-        <div className="d-flex align-items-start">
-
-            <i className="ti ti-info-circle me-2 mt-1" />
-
-            <p className="mb-0">
-                By clicking <strong>OK</strong>, you confirm that
-                you have read, understood and agreed to the above
-                Terms & Conditions, including the Registration,
-                Payment, Cancellation and Refund Policies of the
-                Nexila Hackathon.
-            </p>
-
-        </div>
-
-    </div>
-
-</div>
-
+                            <div className="modal-body">
+
+                                <h6>
+                                    Terms & Conditions
+                                </h6>
+
+                                <p>
+                                    By participating in the
+                                    Nexila Hackathon, I confirm
+                                    that the information provided
+                                    during registration is true
+                                    and accurate.
+                                </p>
+
+                                <p>
+                                    I understand that I am
+                                    responsible for the project
+                                    submitted by my team and
+                                    agree to participate according
+                                    to the rules and instructions
+                                    provided by the hackathon
+                                    organizers.
+                                </p>
+
+                                <p>
+                                    I agree that the project
+                                    submitted should be created
+                                    by the registered team and
+                                    should not violate any
+                                    applicable laws, copyrights,
+                                    trademarks, or third-party
+                                    rights.
+                                </p>
+
+                                <p>
+                                    The hackathon organizers
+                                    reserve the right to verify
+                                    registration information and
+                                    take appropriate action if
+                                    incorrect or misleading
+                                    information is provided.
+                                </p>
+
+                                <p>
+                                    Registration fees, once paid,
+                                    are subject to the applicable
+                                    registration and refund policy
+                                    of the hackathon.
+                                </p>
+
+                                <p className="mb-0">
+                                    By clicking{" "}
+                                    <strong>OK</strong>, you confirm
+                                    that you have read and understood
+                                    these Terms & Conditions.
+                                </p>
+
+                            </div>
 
                             <div className="modal-footer">
                                 <button
@@ -2220,23 +1997,6 @@ const NexilaHackathon: React.FC = () => {
                                     successfully.
 
                                     <br />
-                                        <strong>
-        Registration ID:
-    </strong>
-
-    <br />
-
-    <span className="fs-4 text-dark fw-bold">
-        {registrationId}
-    </span>
-
-    <br />
-    <br />
-
-    Please take a screenshot of this Registration ID
-    and keep it safely for future reference.
-
-    <br />
 
                                     Registration details have
                                     been sent to your email.

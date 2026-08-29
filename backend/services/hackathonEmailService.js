@@ -29,6 +29,182 @@ const verifyMailTransporter = async () => {
     }
 };
 
+const path = require("path");
+
+// QR image location
+const paymentQrPath = path.join(
+    __dirname,
+    "../public/hackathon500payment.jpeg"
+);
+
+const sendManualRegistrationSuccess = async (student) => {
+
+    const mail = {
+        from: `"Nexila Hackathon" <${process.env.MAIL_USER}>`,
+        to: student.email,
+
+        subject:
+            "Nexila Hackathon - Registration Successful",
+
+        text: `
+Hello ${student.fullName},
+
+Your Nexila Hackathon registration has been successfully completed.
+
+========================================
+REGISTRATION DETAILS
+========================================
+
+Registration ID : ${student.registrationId}
+Team Name       : ${student.teamName}
+Payment Status  : ${student.paymentStatus}
+
+========================================
+PAYMENT DETAILS
+========================================
+
+Registration Fee : ₹500
+UPI ID           : YOUR_UPI_ID@paytm
+
+Please complete the payment using the QR code
+provided in this email.
+
+The QR code is also attached as:
+hackathon500payment.jpeg
+
+After completing the payment, please send the
+payment screenshot to the Nexila Hackathon Team
+for verification.
+
+Your payment status will be updated after
+manual verification.
+
+Please keep your Registration ID safely for
+future communication.
+
+Regards,
+Nexila Hackathon Team
+`,
+
+        html: `
+<div style="
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+">
+
+    <p>
+        Hello <strong>${student.fullName}</strong>,
+    </p>
+
+    <p>
+        Your Nexila Hackathon registration has been
+        <strong>successfully completed.</strong>
+    </p>
+
+    <hr>
+
+    <h3>REGISTRATION DETAILS</h3>
+
+    <p>
+        <strong>Registration ID:</strong>
+        ${student.registrationId}
+    </p>
+
+    <p>
+        <strong>Team Name:</strong>
+        ${student.teamName}
+    </p>
+
+    <p>
+        <strong>Payment Status:</strong>
+        ${student.paymentStatus}
+    </p>
+
+    <hr>
+
+    <h3>PAYMENT DETAILS</h3>
+
+    <p>
+        <strong>Registration Fee:</strong> ₹500
+    </p>
+
+    <p>
+        <strong>UPI ID:</strong>
+        YOUR_UPI_ID@paytm
+    </p>
+
+    <p>
+        Please complete the payment using the QR code
+        below.
+    </p>
+
+    <div style="text-align: center; margin: 20px 0;">
+
+        <img
+            src="cid:hackathon-payment-qr"
+            alt="Hackathon Payment QR Code"
+            style="
+                width: 250px;
+                max-width: 100%;
+                height: auto;
+            "
+        />
+
+    </div>
+
+    <p>
+        <strong>Important:</strong>
+        If the QR code is not visible in the email,
+        please use the attached
+        <strong>hackathon500payment.jpeg</strong>
+        file.
+    </p>
+
+    <p>
+        After completing the payment, please send your
+        <strong>payment screenshot</strong> to the
+        Nexila Hackathon Team for verification.
+    </p>
+
+    <p>
+        Your payment status will be updated after
+        manual verification.
+    </p>
+
+    <hr>
+
+    <p>
+        <strong>Please keep your Registration ID safely
+        for future communication.</strong>
+    </p>
+
+    <p>
+        Regards,<br>
+        <strong>Nexila Hackathon Team</strong>
+    </p>
+
+</div>
+`,
+
+        attachments: [
+            {
+                filename: "hackathon500payment.jpeg",
+                path: paymentQrPath,
+                cid: "hackathon-payment-qr"
+            }
+        ]
+    };
+
+    const info = await transporter.sendMail(mail);
+
+    console.log(
+        "Manual registration email sent:",
+        info.messageId
+    );
+
+    return info;
+};
 // =====================================================
 // EMAIL 1
 // REGISTRATION SUCCESS
@@ -270,6 +446,7 @@ Nexila Hackathon Team
 module.exports = {
     transporter,
     verifyMailTransporter,
+    sendManualRegistrationSuccess,
     sendRegistrationSuccess,
     sendTeamDetailsEmail,
     sendProjectOtpEmail,

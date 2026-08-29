@@ -10,6 +10,10 @@ const {
     createHackathonPaymentOrder,
     verifyHackathonPayment,
 
+    createHackathonManualRegistration,
+
+
+
     getAllHackathonStudents,
     getHackathonStudent,
     createHackathonStudent,
@@ -38,6 +42,10 @@ const projectAccessMiddleware = require("../middleware/projectAccess");
 // =====================================================
 // PUBLIC HACKATHON PAYMENT
 // =====================================================
+router.post(
+    "/public/manual-register",
+    createHackathonManualRegistration
+);
 
 // Create Razorpay order
 router.post(

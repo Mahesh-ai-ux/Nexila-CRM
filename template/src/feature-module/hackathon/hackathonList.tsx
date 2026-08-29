@@ -206,7 +206,7 @@ const HackathonList = () => {
                         student.teamMembersCount ??
                         (
                             teamMembers.length > 0
-                                ? teamMembers.length + 1
+                                ? teamMembers.length
                                 : ""
                         );
 
