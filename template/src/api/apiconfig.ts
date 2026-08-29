@@ -1,4 +1,4 @@
 // ✅ src/apiConfig.js
-const API_URL = "https://crm.nexilatechnologies.com:5000/api";
+const API_URL = "/api";
 
 export default API_URL;
