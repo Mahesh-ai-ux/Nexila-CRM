@@ -215,6 +215,8 @@ import PendingFeeStudents from "../feature-module/Pages/crm-module/projects/Pend
 
 // Nexila Hackathon
 import NexilaHackathon from "../feature-module/Pages/public/nexilaHackathon";
+
+import NexilaHackathonNormal from "../feature-module/Pages/public/nexilaHackathonNormal";
 import HackathonList from "../feature-module/hackathon/hackathonList";
 import HackathonDetails from "../feature-module/hackathon/hackathonDetails";
 import HackathonEditForm from "../feature-module/hackathon/hackathonEditForm";
@@ -1766,10 +1768,18 @@ export const authRoutes = [
     meta_title: "Nexila Hackathon",
   },
   {
+    id: "hackathon-public-normal",
+    path: route.hackathonPublicNormal,
+    element: <NexilaHackathonNormal />,
+    route: Route,
+    meta_title: "Nexila Hackathon Normal",
+  },
+  {
     id: "hackathon-projectdetails-public",
     path: route.hackathonProjectDetails,
     element: <HackathonProjectDetails />,
     route: Route,
     meta_title: "Hackathon Project Details",
   },
+  
 ];
