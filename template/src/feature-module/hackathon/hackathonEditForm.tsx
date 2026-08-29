@@ -9,7 +9,7 @@ import { all_routes } from "../../routes/all_routes";
 // =====================================================
 
 const HACKATHON_API =
-  "https://crm.nexilatechnologies.com:5000/api/hackathon";
+  "/api/hackathon";
 
 // =====================================================
 // EDITABLE FIELDS

@@ -673,7 +673,7 @@ const NexilaHackathon: React.FC = () => {
             ================================================= */
 
             const orderResponse = await fetch(
-                "https://crm.nexilatechnologies.com:5000/api/hackathon/public/create-order",
+                "/api/hackathon/public/create-order",
                 {
                     method: "POST",
                     headers: {
@@ -785,7 +785,7 @@ const NexilaHackathon: React.FC = () => {
 
                             const verifyResponse =
                                 await fetch(
-                                    "https://crm.nexilatechnologies.com:5000/api/hackathon/public/verify-payment",
+                                    "/api/hackathon/public/verify-payment",
                                     {
                                         method: "POST",
 

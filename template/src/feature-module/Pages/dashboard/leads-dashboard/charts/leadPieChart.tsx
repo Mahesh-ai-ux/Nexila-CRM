@@ -3,7 +3,7 @@ import Chart from "react-apexcharts";
 import axios from "axios";
 import type { ApexOptions } from "apexcharts";
 
-const API_URL="https://crm.nexilatechnologies.com:5000";
+const API_URL="";
 interface Lead {
   leadstatus: string;
   createdAt: string;

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://crm.nexilatechnologies.com:5000/api/hackathon";
+const API_URL = "/api/hackathon";
 
 // =====================================================
 // GET PROJECT DETAILS

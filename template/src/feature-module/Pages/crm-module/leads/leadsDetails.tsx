@@ -93,7 +93,7 @@ const LeadsDetails = () => {
 
     const token = localStorage.getItem("token");
 
-    fetch(`https://crm.nexilatechnologies.com:5000/api/leads/${id}`, {
+    fetch(`/api/leads/${id}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -171,7 +171,7 @@ const LeadsDetails = () => {
 
     const fetchLogs = async () => {
       try {
-        const res = await fetch(`https://crm.nexilatechnologies.com:5000/api/leads/logs/${lead._id}`, {
+        const res = await fetch(`/api/leads/logs/${lead._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
