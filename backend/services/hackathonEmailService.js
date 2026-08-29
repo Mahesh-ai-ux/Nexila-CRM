@@ -64,7 +64,6 @@ PAYMENT DETAILS
 ========================================
 
 Registration Fee : ₹500
-UPI ID           : YOUR_UPI_ID@paytm
 
 Please complete the payment using the QR code
 provided in this email.
