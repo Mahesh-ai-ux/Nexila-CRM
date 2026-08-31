@@ -84,6 +84,7 @@ type HackathonStudent = {
     expectedOutcome: string | null;
     demoLink: string | null;
     githubLink: string | null;
+    driveLink: string | null;
 
     // =================================================
     // PAYMENT
@@ -605,6 +606,11 @@ const HackathonDetails = () => {
                     githubLink:
                         normalizeUrl(
                             studentData.githubLink
+                        ),
+
+                    driveLink:
+                        normalizeUrl(
+                            studentData.driveLink
                         ),
 
                     // =========================================
@@ -1798,6 +1804,37 @@ const HackathonDetails = () => {
                                             ) : (
                                                 <span className="text-muted">
                                                     No GitHub
+                                                    link
+                                                </span>
+                                            )}
+
+                                        </div>
+                                    </div>
+                                    
+                                    {/* DRIVE */}
+
+                                    <div className="col-md-6 mt-3">
+                                        <small className="text-muted">
+                                            Drive Link
+                                        </small>
+
+                                        <div className="mt-2">
+
+                                            {student.driveLink ? (
+                                                <a
+                                                    href={
+                                                        student.driveLink
+                                                    }
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="btn btn-sm btn-outline-primary"
+                                                >
+                                                    <i className="ti ti-brand-google-drive me-1" />
+                                                    Open Drive
+                                                </a>
+                                            ) : (
+                                                <span className="text-muted">
+                                                    No Drive
                                                     link
                                                 </span>
                                             )}

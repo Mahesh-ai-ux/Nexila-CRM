@@ -2000,6 +2000,7 @@ const updateHackathonStudent = async (
             "expectedOutcome",
             "demoLink",
             "githubLink",
+            "driveLink", //drive link
 
             "termsAccepted",
             "status",

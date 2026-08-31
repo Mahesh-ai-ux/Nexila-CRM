@@ -26,6 +26,7 @@ interface ProjectData {
     expectedOutcome: string;
     demoLink: string;
     githubLink: string;
+    driveLink: string; //drive link
 }
 
 
@@ -44,6 +45,7 @@ const initialProject: ProjectData = {
     expectedOutcome: "",
     demoLink: "",
     githubLink: "",
+    driveLink: "", //drive link
 };
 
 
@@ -210,6 +212,9 @@ const HackathonProjectDetails = () => {
 
                 githubLink:
                     student.githubLink || "",
+
+                driveLink:
+                    student.driveLink || "", //drive link
 
             });
 
@@ -429,6 +434,14 @@ const HackathonProjectDetails = () => {
 
             return;
         }
+        if (!project.driveLink.trim()) {
+            setError("Drive Link is required.");
+            return;
+        }
+        if (!project.projectTitle.trim()) {
+            setError("Project Title is required.");
+            return;
+        }
 
 
         if (!accessToken) {
@@ -503,6 +516,9 @@ const HackathonProjectDetails = () => {
 
                 githubLink:
                     updatedProject.githubLink || "",
+
+                driveLink:
+                    updatedProject.driveLink || "",
 
             });
 
@@ -634,7 +650,8 @@ const HackathonProjectDetails = () => {
                         Hackathon Project Details
                     </h3>
 
-                    <small>
+
+                    <small className="mt-5">
 
                         Registration ID:{" "}
 
@@ -643,6 +660,27 @@ const HackathonProjectDetails = () => {
                                 registrationId}
                         </strong>
 
+                    </small>
+                    <small className="d-block text-danger mt-2">
+                        <strong>Important:</strong> Before submitting your project details,
+                        kindly read the Project Submission Instructions email carefully and
+                        follow all the instructions provided. Click the OTP verification
+                        option and check the Team Lead's registered email address for the OTP
+                        to access and edit the project details. Please note that this project
+                        details submission/editing page is valid only until
+                        <strong> October 3, 2026.</strong> Kindly ensure that all required
+                        project details and supporting documents are submitted before the
+                        deadline.
+                    </small>
+                    <small className="d-block text-danger mt-3">
+                        <strong>Important:</strong> OTP access will be available only after
+                        your payment has been successfully verified by the Nexila Hackathon Team.
+                        Once you have completed the payment, please send a clear screenshot of
+                        the successful payment to our WhatsApp number:
+                        <strong> +91 9803061234</strong>.
+                        After your payment has been verified and you receive confirmation from
+                        our team, you will be able to request the OTP and access the project
+                        details page to update your submission.
                     </small>
 
                 </div>
@@ -898,12 +936,13 @@ const HackathonProjectDetails = () => {
                         <div className="mb-3">
 
                             <label className="form-label">
-                                Project Title
+                                Project Title *
                             </label>
 
                             <input
                                 type="text"
                                 className="form-control"
+                                required={editing}
                                 value={
                                     project.projectTitle
                                 }
@@ -919,7 +958,34 @@ const HackathonProjectDetails = () => {
 
                         </div>
 
+                        {/* DRIVE LINK */}
 
+                        <div className="mb-3">
+
+                            <label className="form-label">
+                                DRIVE Link *
+                            </label>
+
+                            <input
+                                type="url"
+                                className="form-control"
+                                value={
+                                    project.driveLink
+                                }
+                                disabled={!editing}
+                                onChange={
+                                    e =>
+                                        handleChange(
+                                            "driveLink",
+                                            e.target.value
+                                        )
+                                }
+                                placeholder="https://drive.google.com/drive/folders/.................?usp=sharing"
+
+                                required={editing}
+                            />
+
+                        </div>
                         {/* PROJECT DESCRIPTION */}
 
                         <ProjectTextarea
@@ -1100,6 +1166,8 @@ const HackathonProjectDetails = () => {
                             />
 
                         </div>
+
+
 
 
                         {/* SAVE */}

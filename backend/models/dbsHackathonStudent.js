@@ -227,6 +227,11 @@ githubLink: {
     default: null,
     trim: true,
 },
+driveLink: {
+    type: String,
+    default: null,
+    trim: true,
+},
 
         // =================================================
         // PAYMENT

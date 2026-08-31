@@ -12,7 +12,7 @@ const {
 // =====================================================
 
 const PROJECT_DEADLINE =
-    new Date("2026-09-20T23:59:59+05:30");
+    new Date("2026-10-03T23:59:59+05:30");
 
 // =====================================================
 // CHECK DEADLINE
@@ -546,6 +546,11 @@ const getStudentProject = async (
 
                 githubLink:
                     student.githubLink,
+//drive link
+                driveLink:
+                    student.driveLink,
+
+                
 
             },
 
@@ -646,6 +651,8 @@ const updateStudentProject =
 
                 "githubLink",
 
+                "driveLink" //drive link
+
             ];
 
             for (
@@ -708,6 +715,9 @@ const updateStudentProject =
 
                     githubLink:
                         student.githubLink,
+
+                    driveLink:
+                    student.driveLink, //drive link
 
                 },
 

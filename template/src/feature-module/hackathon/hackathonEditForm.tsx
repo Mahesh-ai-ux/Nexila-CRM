@@ -1,4 +1,3 @@
-//const HACKATHON_API = "/api/hackathon";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
@@ -46,6 +45,7 @@ const EDITABLE_FIELDS = {
 
   demoLink: true,
   githubLink: true,
+  driveLink: true,
 
   // PAYMENT STATUS IS NOW EDITABLE
   paymentStatus: true,
@@ -92,6 +92,7 @@ type HackathonStudent = {
   expectedOutcome: string;
   demoLink: string;
   githubLink: string;
+  driveLink: string;
 
   paymentStatus: string;
   amount: number;
@@ -134,6 +135,7 @@ type HackathonForm = {
   expectedOutcome: string;
   demoLink: string;
   githubLink: string;
+  driveLink: string;
 
   // PAYMENT STATUS
   paymentStatus: string;
@@ -172,6 +174,7 @@ const initialForm: HackathonForm = {
   expectedOutcome: "",
   demoLink: "",
   githubLink: "",
+  driveLink: "",
 
   // PAYMENT STATUS
   paymentStatus: "PENDING",
@@ -290,9 +293,9 @@ const HackathonEditForm = () => {
 
               ...(token
                 ? {
-                    Authorization:
-                      `Bearer ${token}`,
-                  }
+                  Authorization:
+                    `Bearer ${token}`,
+                }
                 : {}),
             },
           }
@@ -363,125 +366,130 @@ const HackathonEditForm = () => {
         // =================================================
 
         const mappedStudent: HackathonStudent =
-          {
-            _id: normalizeId(
-              studentData._id
+        {
+          _id: normalizeId(
+            studentData._id
+          ),
+
+          registrationId:
+            studentData.registrationId ??
+            "",
+
+          fullName:
+            studentData.fullName ??
+            "",
+
+          phone:
+            studentData.phone ??
+            "",
+
+          email:
+            studentData.email ??
+            "",
+
+          collegeName:
+            studentData.collegeName ??
+            "",
+
+          degree:
+            studentData.degree ??
+            "",
+
+          department:
+            studentData.department ??
+            "",
+
+          collegeRollNo:
+            studentData.collegeRollNo ??
+            "",
+
+          yearOfStudy:
+            studentData.yearOfStudy ??
+            "",
+
+          district:
+            studentData.district ??
+            "",
+
+          teamName:
+            studentData.teamName ??
+            "",
+
+          teamMembers,
+
+          hackathonTrack:
+            studentData.hackathonTrack ??
+            "",
+
+          primaryTechnicalSkill:
+            studentData.primaryTechnicalSkill ??
+            "",
+
+          projectTitle:
+            studentData.projectTitle ??
+            "",
+
+          projectDescription:
+            studentData.projectDescription ??
+            "",
+
+          projectAbstract:
+            studentData.projectAbstract ??
+            "",
+
+          problemStatement:
+            studentData.problemStatement ??
+            "",
+
+          proposedSolution:
+            studentData.proposedSolution ??
+            "",
+
+          techStack:
+            studentData.techStack ??
+            "",
+
+          architectureDiagram:
+            studentData.architectureDiagram ??
+            "",
+
+          expectedOutcome:
+            studentData.expectedOutcome ??
+            "",
+
+          demoLink:
+            normalizeUrl(
+              studentData.demoLink
             ),
 
-            registrationId:
-              studentData.registrationId ??
-              "",
+          githubLink:
+            normalizeUrl(
+              studentData.githubLink
+            ),
 
-            fullName:
-              studentData.fullName ??
-              "",
+          driveLink:
+            normalizeUrl(
+              studentData.driveLink
+            ),
 
-            phone:
-              studentData.phone ??
-              "",
+          paymentStatus:
+            studentData.paymentStatus ??
+            "PENDING",
 
-            email:
-              studentData.email ??
-              "",
+          amount:
+            Number(
+              studentData.amount ?? 0
+            ),
 
-            collegeName:
-              studentData.collegeName ??
-              "",
+          termsAccepted:
+            Boolean(
+              studentData.termsAccepted
+            ),
 
-            degree:
-              studentData.degree ??
-              "",
-
-            department:
-              studentData.department ??
-              "",
-
-            collegeRollNo:
-              studentData.collegeRollNo ??
-              "",
-
-            yearOfStudy:
-              studentData.yearOfStudy ??
-              "",
-
-            district:
-              studentData.district ??
-              "",
-
-            teamName:
-              studentData.teamName ??
-              "",
-
-            teamMembers,
-
-            hackathonTrack:
-              studentData.hackathonTrack ??
-              "",
-
-            primaryTechnicalSkill:
-              studentData.primaryTechnicalSkill ??
-              "",
-
-            projectTitle:
-              studentData.projectTitle ??
-              "",
-
-            projectDescription:
-              studentData.projectDescription ??
-              "",
-
-            projectAbstract:
-              studentData.projectAbstract ??
-              "",
-
-            problemStatement:
-              studentData.problemStatement ??
-              "",
-
-            proposedSolution:
-              studentData.proposedSolution ??
-              "",
-
-            techStack:
-              studentData.techStack ??
-              "",
-
-            architectureDiagram:
-              studentData.architectureDiagram ??
-              "",
-
-            expectedOutcome:
-              studentData.expectedOutcome ??
-              "",
-
-            demoLink:
-              normalizeUrl(
-                studentData.demoLink
-              ),
-
-            githubLink:
-              normalizeUrl(
-                studentData.githubLink
-              ),
-
-            paymentStatus:
-              studentData.paymentStatus ??
-              "PENDING",
-
-            amount:
-              Number(
-                studentData.amount ?? 0
-              ),
-
-            termsAccepted:
-              Boolean(
-                studentData.termsAccepted
-              ),
-
-            status:
-              studentData.status ??
-              "REGISTERED",
-          };
+          status:
+            studentData.status ??
+            "REGISTERED",
+        };
 
         setStudent(mappedStudent);
 
@@ -559,6 +567,9 @@ const HackathonEditForm = () => {
           githubLink:
             mappedStudent.githubLink,
 
+          driveLink:
+            mappedStudent.driveLink,
+
           // PAYMENT STATUS
           paymentStatus:
             mappedStudent.paymentStatus,
@@ -589,8 +600,8 @@ const HackathonEditForm = () => {
     e:
       React.ChangeEvent<
         HTMLInputElement |
-          HTMLTextAreaElement |
-          HTMLSelectElement
+        HTMLTextAreaElement |
+        HTMLSelectElement
       >
   ) => {
     const {
@@ -706,6 +717,9 @@ const HackathonEditForm = () => {
         githubLink:
           form.githubLink,
 
+        driveLink:
+          form.driveLink,
+
         // =================================================
         // PAYMENT STATUS
         // =================================================
@@ -733,9 +747,9 @@ const HackathonEditForm = () => {
 
             ...(token
               ? {
-                  Authorization:
-                    `Bearer ${token}`,
-                }
+                Authorization:
+                  `Bearer ${token}`,
+              }
               : {}),
           },
 
@@ -757,8 +771,8 @@ const HackathonEditForm = () => {
       if (!response.ok) {
         throw new Error(
           data?.message ||
-            data?.error ||
-            `Update failed: ${response.status}`
+          data?.error ||
+          `Update failed: ${response.status}`
         );
       }
 
@@ -766,10 +780,10 @@ const HackathonEditForm = () => {
       setStudent(previous =>
         previous
           ? {
-              ...previous,
-              paymentStatus:
-                form.paymentStatus,
-            }
+            ...previous,
+            paymentStatus:
+              form.paymentStatus,
+          }
           : previous
       );
 
@@ -795,7 +809,7 @@ const HackathonEditForm = () => {
 
       setError(
         err?.message ||
-          "Unable to update hackathon student"
+        "Unable to update hackathon student"
       );
 
     } finally {
@@ -1635,6 +1649,51 @@ const HackathonEditForm = () => {
 
                   </div>
 
+                  {/* DRIVE LINK */}
+
+                  <div className="mb-0">
+
+                    <label className="form-label">
+                      Drive Link
+                    </label>
+
+                    <input
+                      type="url"
+                      name="driveLink"
+                      value={
+                        form.driveLink
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      className="form-control"
+
+                      placeholder="https://drive.google.com/drive/folders/.................?usp=sharing"
+                      disabled={
+                        !EDITABLE_FIELDS.driveLink
+                      }
+                    />
+
+                    {form.driveLink && (
+                      <div className="mt-2">
+
+                        <a
+                          href={
+                            form.driveLink
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-sm btn-outline-dark"
+                        >
+                          <i className="ti ti-brand-google-drive me-1" />
+                          Open Drive
+                        </a>
+
+                      </div>
+                    )}
+
+                  </div>
+
                 </div>
 
               </div>
@@ -1721,14 +1780,14 @@ const HackathonEditForm = () => {
                       <span
                         className={
                           student.status ===
-                          "SHORTLISTED"
+                            "SHORTLISTED"
                             ? "badge bg-success"
                             : student.status ===
-                                "REJECTED" ||
+                              "REJECTED" ||
                               student.status ===
-                                "CANCELLED"
-                            ? "badge bg-danger"
-                            : "badge bg-primary"
+                              "CANCELLED"
+                              ? "badge bg-danger"
+                              : "badge bg-primary"
                         }
                       >
                         {
