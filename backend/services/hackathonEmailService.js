@@ -657,38 +657,393 @@ const sendRegistrationSuccess = async (student) => {
         subject:
             "Nexila Hackathon - Registration Successful",
 
-        text: `
-Hello ${student.fullName},
+        html: `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-Your Nexila Hackathon registration has been successfully completed.
-
-========================================
-REGISTRATION DETAILS
-========================================
-
-Registration ID : ${student.registrationId}
-
-Team Name       : ${student.teamName}
-
-Payment Status  : ${student.paymentStatus}
-
-Amount Paid     : ₹${student.amount}
-
-Payment Date    : ${
-            student.paidAt
-                ? new Date(student.paidAt).toLocaleString("en-IN")
-                : "-"
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6fb;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #333333;
         }
 
-========================================
+        .email-wrapper {
+            width: 100%;
+            padding: 35px 15px;
+            box-sizing: border-box;
+        }
 
-Your registration and payment have been successfully received.
+        .email-container {
+            max-width: 650px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
 
-Please keep your Registration ID safely for future communication.
+        .header {
+            background-color: #ffffff;
+            text-align: center;
+            padding: 30px 25px 20px;
+            border-bottom: 1px solid #eeeeee;
+        }
 
-Regards,
-Nexila Hackathon Team
-        `,
+        .header img {
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #172554;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .greeting {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .intro {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #555555;
+        }
+
+        .success-box {
+            margin: 25px 0;
+            padding: 18px 20px;
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+        }
+
+        .success-title {
+            margin: 0 0 6px;
+            color: #047857;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .success-text {
+            margin: 0;
+            color: #065f46;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #172554;
+            margin: 28px 0 15px;
+        }
+
+        
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .details-table td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        .details-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .details-table td:first-child {
+            width: 40%;
+            font-weight: 600;
+            color: #4b5563;
+            background-color: #f9fafb;
+        }
+
+        .details-table td:last-child {
+            color: #111827;
+        }
+
+        .registration-id {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .project-box {
+            margin-top: 28px;
+            padding: 20px;
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+        }
+
+        .project-box h3 {
+            margin: 0 0 8px;
+            color: #1d4ed8;
+            font-size: 16px;
+        }
+
+        .project-box p {
+            margin: 0;
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .important {
+            margin-top: 25px;
+            padding: 15px 18px;
+            background-color: #fff7ed;
+            border-left: 4px solid #f97316;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #7c2d12;
+        }
+
+        .footer {
+            padding: 22px 30px;
+            background-color: #f9fafb;
+            text-align: center;
+            border-top: 1px solid #eeeeee;
+        }
+
+        .footer p {
+            margin: 4px 0;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .regards {
+            margin-top: 25px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #444444;
+        }
+
+        @media only screen and (max-width: 600px) {
+
+            .email-wrapper {
+                padding: 15px 8px;
+            }
+
+            .content {
+                padding: 22px 18px;
+            }
+
+            .header {
+                padding: 25px 15px 18px;
+            }
+
+            .header h1 {
+                font-size: 21px;
+            }
+
+            .details-table td {
+                padding: 11px 10px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="email-wrapper">
+
+    <div class="email-container">
+
+        <!-- HEADER -->
+        <div class="header">
+
+
+            <h1>Nexila Hackathon</h1>
+
+            <p>Registration Confirmation</p>
+
+        </div>
+
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <p class="greeting">
+                Hello <strong>${student.fullName}</strong>,
+            </p>
+
+            <p class="intro">
+                Thank you for registering for the
+                <strong>Nexila Hackathon</strong>.
+                We are pleased to confirm that your registration
+                and payment have been successfully received.
+            </p>
+
+
+            <!-- SUCCESS MESSAGE -->
+            <div class="success-box">
+
+                <p class="success-title">
+                    ✓ Registration Successfully Completed
+                </p>
+
+                <p class="success-text">
+                    Your participation has been successfully registered
+                    with Nexila Hackathon.
+                </p>
+
+            </div>
+
+
+            <!-- REGISTRATION DETAILS -->
+            <div class="section-title">
+                Registration Details
+            </div>
+
+            <table class="details-table">
+
+                <tr>
+                    <td>Registration ID</td>
+                    <td>
+                        <span class="registration-id">
+                            ${student.registrationId}
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Team Name</td>
+                    <td>
+                        ${student.teamName}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Payment Status</td>
+                    <td>
+                        ${student.paymentStatus}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Amount Paid</td>
+                    <td>
+                        ₹${student.amount}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Payment Date</td>
+                    <td>
+                        ${
+                            student.paidAt
+                                ? new Date(
+                                      student.paidAt
+                                  ).toLocaleString("en-IN")
+                                : "-"
+                        }
+                    </td>
+                </tr>
+
+            </table>
+
+
+            <!-- PROJECT SUBMISSION -->
+            <div class="project-box">
+
+                <h3>
+                    Project Submission
+                </h3>
+
+                <p>
+                    A separate email containing the
+                    <strong>Project Submission details and submission link</strong>
+                    has been sent to your registered email address.
+                </p>
+
+                <p style="margin-top: 8px;">
+                    Please check your inbox and spam/junk folder and
+                    complete your project submission within the specified
+                    deadline.
+                </p>
+
+            </div>
+
+
+            <!-- IMPORTANT -->
+            <div class="important">
+
+                <strong>Important:</strong>
+                Please keep your
+                <strong>Registration ID</strong>
+                safely for all future communication and
+                Hackathon-related verification.
+
+            </div>
+
+
+            <p class="intro" style="margin-top: 25px;">
+
+                Your registration details have been recorded successfully.
+                Please use your Registration ID whenever you communicate
+                with the Nexila Hackathon Team regarding your registration.
+
+            </p>
+
+
+            <div class="regards">
+
+                Regards,<br>
+
+                <strong>Nexila Hackathon Team</strong><br>
+
+                Nexila Technologies
+
+            </div>
+
+        </div>
+
+
+        <!-- FOOTER -->
+        <div class="footer">
+
+            <p>
+                © ${new Date().getFullYear()} Nexila Technologies.
+                All rights reserved.
+            </p>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+`
     };
 
     const info = await transporter.sendMail(mail);

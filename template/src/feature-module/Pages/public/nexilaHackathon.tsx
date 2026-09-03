@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./nexilaHackathon.css";
 
 declare global {
     interface Window {
@@ -370,7 +371,7 @@ const NexilaHackathon: React.FC = () => {
 
     const [paymentLoading, setPaymentLoading] =
         useState(false);
-    
+
     const [registrationId, setRegistrationId] = useState("");
 
     const getInitialFormData = (): HackathonFormData => ({
@@ -675,7 +676,7 @@ const NexilaHackathon: React.FC = () => {
             ================================================= */
 
             const orderResponse = await fetch(
-                "/api/hackathon/public/create-order",
+                "https://crm.nexilatechnologies.com:5000/api/hackathon/public/create-order",
                 {
                     method: "POST",
                     headers: {
@@ -787,7 +788,7 @@ const NexilaHackathon: React.FC = () => {
 
                             const verifyResponse =
                                 await fetch(
-                                    "https://crm.nexilatechnologies.com/:5000/api/hackathon/public/verify-payment",
+                                    "https://crm.nexilatechnologies.com:5000/api/hackathon/public/verify-payment",
                                     {
                                         method: "POST",
 
@@ -831,8 +832,8 @@ const NexilaHackathon: React.FC = () => {
                             }
 
                             setRegistrationId(
-    verifyResult.registrationId
-);
+                                verifyResult.registrationId
+                            );
 
                             setPaymentLoading(
                                 false
@@ -921,231 +922,220 @@ const NexilaHackathon: React.FC = () => {
     ===================================================== */
 
     return (
-        <div className="page-wrapper">
-            <div className="content">
-                <div className="container-fluid">
+        <div className="hackathon-page">
 
-                    <div className="text-center mb-4">
-                        <div className="text-center mb-3">
-                            <img
-                                src="/nexilalogo1.jpeg"
-                                alt="Nexila Logo"
-                                className="enquiry-logo"
-                                width={200}
-                            />
-                        </div>
-                        <h1>
-                            Nexila Hackathon
-                        </h1>
+            <div className="hackathon-container">
 
-                        <p className="text-muted">
-                            Student Project Registration
-                        </p>
-                    </div>
+                {/* =========================================
+                PAGE HEADER
+            ========================================= */}
 
-                    <form
-                        onSubmit={handleSubmit}
-                    >
+                <div className="hackathon-header">
 
-                        {/* =========================================
-                            STUDENT DETAILS
-                        ========================================= */}
+                    <img
+                        src="/nexilalogo1.jpeg"
+                        alt="Nexila Technologies"
+                        className="hackathon-logo"
+                    />
 
-                        <div className="card">
-                            <div className="card-header">
-                                <h4 className="card-title">
-                                    Student Details
-                                </h4>
+                    <h1>
+                        Nexila Hackathon 2026
+                    </h1>
+
+                    <p>
+                        Student Project Registration
+                    </p>
+
+                </div>
+
+
+                <form onSubmit={handleSubmit}>
+
+
+                    {/* =========================================
+                    STUDENT DETAILS
+                ========================================= */}
+
+                    <div className="hackathon-card">
+
+                        <div className="section-header">
+
+                            <div className="section-icon student-icon">
+                                <i className="ti ti-user" />
                             </div>
 
-                            <div className="card-body">
-                                <div className="row">
+                            <div>
+                                <h3>
+                                    Student Details
+                                </h3>
 
-                                    {/* FULL NAME */}
+                                <p>
+                                    Please provide the basic details of the team and college.
+                                </p>
+                            </div>
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Full Name
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
+                        </div>
 
-                                        <input
-                                            type="text"
-                                            name="fullName"
-                                            className="form-control"
-                                            value={
-                                                formData.fullName
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
-                                            required
-                                        />
-                                    </div>
 
-                                    {/* PHONE */}
+                        <div className="section-body">
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Phone Number
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
+                            <div className="row">
 
-                                        <input
-                                            type="tel"
-                                            name="phone"
-                                            className="form-control"
-                                            value={
-                                                formData.phone
-                                            }
-                                            maxLength={10}
-                                            inputMode="numeric"
-                                            onChange={(e) => {
-                                                const value =
-                                                    e.target.value
-                                                        .replace(
-                                                            /\D/g,
-                                                            ""
-                                                        )
-                                                        .slice(
-                                                            0,
-                                                            10
-                                                        );
 
-                                                setFormData(
-                                                    (prev) => ({
-                                                        ...prev,
+                                {/* FULL NAME */}
 
-                                                        phone:
-                                                            value,
+                                <div className="col-md-6 form-field">
 
-                                                        teamMembers:
-                                                            [
-                                                                {
-                                                                    ...prev
-                                                                        .teamMembers[0],
+                                    <label>
+                                        Full Name
+                                        <span>*</span>
+                                    </label>
 
-                                                                    phone:
-                                                                        value,
-                                                                },
+                                    <input
+                                        type="text"
+                                        name="fullName"
+                                        className="hackathon-input"
+                                        value={formData.fullName}
+                                        onChange={handleChange}
+                                        placeholder="Enter full name"
+                                        required
+                                    />
 
-                                                                ...prev.teamMembers.slice(
-                                                                    1
-                                                                ),
-                                                            ],
-                                                    })
-                                                );
-                                            }}
-                                            required
-                                        />
-                                    </div>
+                                </div>
 
-                                    {/* EMAIL */}
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Email
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
+                                {/* PHONE */}
 
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            className="form-control"
-                                            value={
-                                                formData.email
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
-                                            required
-                                        />
-                                    </div>
+                                <div className="col-md-6 form-field">
 
-                                    {/* COLLEGE */}
+                                    <label>
+                                        Phone Number
+                                        <span>*</span>
+                                    </label>
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            College Name
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        className="hackathon-input"
+                                        value={formData.phone}
+                                        maxLength={10}
+                                        inputMode="numeric"
+                                        placeholder="Enter phone number"
+                                        onChange={(e) => {
 
-                                        <input
-                                            type="text"
-                                            name="collegeName"
-                                            className="form-control"
-                                            list="college-list"
-                                            value={
-                                                formData.collegeName
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
-                                            placeholder="Type college name..."
-                                            required
-                                        />
+                                            const value =
+                                                e.target.value
+                                                    .replace(/\D/g, "")
+                                                    .slice(0, 10);
 
-                                        <datalist
-                                            id="college-list"
-                                        >
-                                            {[
-                                                ...colleges,
-                                            ]
-                                                .sort(
-                                                    (
-                                                        a,
-                                                        b
-                                                    ) =>
-                                                        a.localeCompare(
-                                                            b
-                                                        )
-                                                )
-                                                .map(
-                                                    (
-                                                        college
-                                                    ) => (
-                                                        <option
-                                                            key={
-                                                                college
-                                                            }
-                                                            value={
-                                                                college
-                                                            }
-                                                        />
-                                                    )
-                                                )}
-                                        </datalist>
-                                    </div>
+                                            setFormData((prev) => ({
+                                                ...prev,
 
-                                    {/* DEGREE */}
+                                                phone: value,
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Degree
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
+                                                teamMembers: [
+                                                    {
+                                                        ...prev.teamMembers[0],
+                                                        phone: value,
+                                                    },
+
+                                                    ...prev.teamMembers.slice(1),
+                                                ],
+                                            }));
+
+                                        }}
+                                        required
+                                    />
+
+                                </div>
+
+
+                                {/* EMAIL */}
+
+                                <div className="col-md-6 form-field">
+
+                                    <label>
+                                        Email
+                                        <span>*</span>
+                                    </label>
+
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        className="hackathon-input"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        placeholder="Enter email address"
+                                        required
+                                    />
+
+                                </div>
+
+
+                                {/* COLLEGE */}
+
+                                <div className="col-md-6 form-field">
+
+                                    <label>
+                                        College Name
+                                        <span>* </span><small className="field-helper">
+                                            If your college is not available in the list,
+                                            you can type the college name manually.
+                                        </small>
+
+                                    </label>
+
+
+                                    <input
+                                        type="text"
+                                        name="collegeName"
+                                        className="hackathon-input"
+                                        list="college-list"
+                                        value={formData.collegeName}
+                                        onChange={handleChange}
+                                        placeholder="Type college name..."
+                                        required
+                                    />
+
+                                    <datalist id="college-list">
+
+                                        {[
+                                            ...colleges,
+                                        ]
+                                            .sort((a, b) =>
+                                                a.localeCompare(b)
+                                            )
+                                            .map((college) => (
+                                                <option
+                                                    key={college}
+                                                    value={college}
+                                                />
+                                            ))}
+
+                                    </datalist>
+
+                                </div>
+
+
+                                {/* DEGREE */}
+
+                                <div className="col-md-6 form-field">
+
+                                    <label>
+                                        Degree
+                                        <span>*</span>
+                                    </label>
+
+                                    <div className="select-wrapper">
 
                                         <select
                                             name="degree"
-                                            className="form-select"
-                                            value={
-                                                formData.degree
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
+                                            className="hackathon-input"
+                                            value={formData.degree}
+                                            onChange={handleChange}
                                             required
                                         >
+
                                             <option value="">
                                                 Select Degree
                                             </option>
@@ -1153,58 +1143,46 @@ const NexilaHackathon: React.FC = () => {
                                             {[
                                                 ...degreeOptions,
                                             ]
-                                                .sort(
-                                                    (
-                                                        a,
-                                                        b
-                                                    ) =>
-                                                        a.localeCompare(
-                                                            b
-                                                        )
+                                                .sort((a, b) =>
+                                                    a.localeCompare(b)
                                                 )
-                                                .map(
-                                                    (
-                                                        degree
-                                                    ) => (
-                                                        <option
-                                                            key={
-                                                                degree
-                                                            }
-                                                            value={
-                                                                degree
-                                                            }
-                                                        >
-                                                            {
-                                                                degree
-                                                            }
-                                                        </option>
-                                                    )
-                                                )}
+                                                .map((degree) => (
+                                                    <option
+                                                        key={degree}
+                                                        value={degree}
+                                                    >
+                                                        {degree}
+                                                    </option>
+                                                ))}
+
                                         </select>
+
+                                        <i className="ti ti-chevron-down" />
+
                                     </div>
 
-                                    {/* DEPARTMENT */}
+                                </div>
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Department /
-                                            Specialization
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
+
+                                {/* DEPARTMENT */}
+
+                                <div className="col-md-6 form-field">
+
+                                    <label>
+                                        Department / Specialization
+                                        <span>*</span>
+                                    </label>
+
+                                    <div className="select-wrapper">
 
                                         <select
                                             name="department"
-                                            className="form-select"
-                                            value={
-                                                formData.department
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
+                                            className="hackathon-input"
+                                            value={formData.department}
+                                            onChange={handleChange}
                                             required
                                         >
+
                                             <option value="">
                                                 Select Department
                                             </option>
@@ -1212,1075 +1190,1114 @@ const NexilaHackathon: React.FC = () => {
                                             {[
                                                 ...departmentOptions,
                                             ]
-                                                .sort(
-                                                    (
-                                                        a,
-                                                        b
-                                                    ) =>
-                                                        a.localeCompare(
-                                                            b
-                                                        )
+                                                .sort((a, b) =>
+                                                    a.localeCompare(b)
                                                 )
-                                                .map(
-                                                    (
-                                                        department
-                                                    ) => (
-                                                        <option
-                                                            key={
-                                                                department
-                                                            }
-                                                            value={
-                                                                department
-                                                            }
-                                                        >
-                                                            {
-                                                                department
-                                                            }
-                                                        </option>
-                                                    )
-                                                )}
+                                                .map((department) => (
+                                                    <option
+                                                        key={department}
+                                                        value={department}
+                                                    >
+                                                        {department}
+                                                    </option>
+                                                ))}
+
                                         </select>
+
+                                        <i className="ti ti-chevron-down" />
+
                                     </div>
 
-                                    {/* ROLL NUMBER */}
+                                </div>
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            College Roll No
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
 
-                                        <input
-                                            type="text"
-                                            name="collegeRollNo"
-                                            className="form-control"
-                                            value={
-                                                formData.collegeRollNo
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
-                                            required
-                                        />
-                                    </div>
+                                {/* ROLL NUMBER */}
 
-                                    {/* YEAR */}
+                                <div className="col-md-6 form-field">
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Year of Study
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
+                                    <label>
+                                        College Roll No
+                                        <span>*</span>
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="collegeRollNo"
+                                        className="hackathon-input"
+                                        value={formData.collegeRollNo}
+                                        onChange={handleChange}
+                                        placeholder="Enter college roll number"
+                                        required
+                                    />
+
+                                </div>
+
+
+                                {/* YEAR */}
+
+                                <div className="col-md-6 form-field">
+
+                                    <label>
+                                        Year of Study
+                                        <span>*</span>
+                                    </label>
+
+                                    <div className="select-wrapper">
 
                                         <select
                                             name="yearOfStudy"
-                                            className="form-select"
-                                            value={
-                                                formData.yearOfStudy
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
+                                            className="hackathon-input"
+                                            value={formData.yearOfStudy}
+                                            onChange={handleChange}
                                             required
                                         >
+
                                             <option value="">
                                                 Select Year
                                             </option>
 
                                             {yearOfStudyOptions.map(
-                                                (
-                                                    year
-                                                ) => (
+                                                (year) => (
                                                     <option
-                                                        key={
-                                                            year
-                                                        }
-                                                        value={
-                                                            year
-                                                        }
+                                                        key={year}
+                                                        value={year}
                                                     >
-                                                        {
-                                                            year
-                                                        }
+                                                        {year}
                                                     </option>
                                                 )
                                             )}
+
                                         </select>
-                                    </div>
 
-                                    {/* PASSING OUT YEAR */}
+                                        <i className="ti ti-chevron-down" />
 
-                                    {/* <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Passing Out Year
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            // name="passingOutYear"
-                                            className="form-control"
-                                            value={
-                                                // formData.passingOutYear
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
-                                            maxLength={4}
-                                            inputMode="numeric"
-                                            required
-                                        />
-                                    </div> */}
-
-                                    {/* DISTRICT */}
-
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            District
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="district"
-                                            className="form-control"
-                                            list="district-list"
-                                            value={
-                                                formData.district
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
-                                            placeholder="Type district..."
-                                            required
-                                        />
-
-                                        <datalist
-                                            id="district-list"
-                                        >
-                                            {[
-                                                ...tamilNaduDistricts,
-                                            ]
-                                                .sort(
-                                                    (
-                                                        a,
-                                                        b
-                                                    ) =>
-                                                        a.localeCompare(
-                                                            b
-                                                        )
-                                                )
-                                                .map(
-                                                    (
-                                                        district
-                                                    ) => (
-                                                        <option
-                                                            key={
-                                                                district
-                                                            }
-                                                            value={
-                                                                district
-                                                            }
-                                                        />
-                                                    )
-                                                )}
-                                        </datalist>
-                                    </div>
-
-                                    {/* TEAM NAME */}
-
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Team Name
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="teamName"
-                                            className="form-control"
-                                            value={
-                                                formData.teamName
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
-                                            placeholder="Enter unique team name"
-                                            required
-                                        />
                                     </div>
 
                                 </div>
+
+
+                                {/* DISTRICT */}
+
+                                <div className="col-md-6 form-field">
+
+                                    <label>
+                                        District
+                                        <span>*</span>
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="district"
+                                        className="hackathon-input"
+                                        list="district-list"
+                                        value={formData.district}
+                                        onChange={handleChange}
+                                        placeholder="Type district..."
+                                        required
+                                    />
+
+                                    <datalist id="district-list">
+
+                                        {[
+                                            ...tamilNaduDistricts,
+                                        ]
+                                            .sort((a, b) =>
+                                                a.localeCompare(b)
+                                            )
+                                            .map((district) => (
+                                                <option
+                                                    key={district}
+                                                    value={district}
+                                                />
+                                            ))}
+
+                                    </datalist>
+
+                                </div>
+
+
+                                {/* TEAM NAME */}
+
+                                <div className="col-md-6 form-field">
+
+                                    <label>
+                                        Team Name
+                                        <span>*</span>
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="teamName"
+                                        className="hackathon-input"
+                                        value={formData.teamName}
+                                        onChange={handleChange}
+                                        placeholder="Enter unique team name"
+                                        required
+                                    />
+
+                                </div>
+
                             </div>
+
                         </div>
 
-                        {/* =========================================
-                            HACKATHON DETAILS
-                        ========================================= */}
+                    </div>
 
-                        <div className="card mt-4">
-                            <div className="card-header">
-                                <h4 className="card-title">
-                                    Hackathon Details
-                                </h4>
+
+                    {/* =========================================
+                    HACKATHON DETAILS
+                ========================================= */}
+
+                    <div className="hackathon-card">
+
+                        <div className="section-header">
+
+                            <div className="section-icon hackathon-icon">
+                                <i className="ti ti-trophy" />
                             </div>
 
-                            <div className="card-body">
-                                <div className="row">
+                            <div>
+                                <h3>
+                                    Hackathon Details
+                                </h3>
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Hackathon Track
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
+                                <p>
+                                    Tell us about your hackathon preferences and technical skills.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div className="section-body">
+
+                            <div className="row">
+
+                                {/* TRACK */}
+
+                                <div className="col-md-6 form-field">
+
+                                    <label>
+                                        Hackathon Track
+                                        <span>*</span>
+                                    </label>
+
+                                    <div className="select-wrapper">
 
                                         <select
                                             name="hackathonTrack"
-                                            className="form-select"
-                                            value={
-                                                formData.hackathonTrack
-                                            }
-                                            onChange={
-                                                handleChange
-                                            }
+                                            className="hackathon-input"
+                                            value={formData.hackathonTrack}
+                                            onChange={handleChange}
                                             required
                                         >
+
                                             <option value="">
                                                 Select Hackathon Track
                                             </option>
 
                                             {hackathonTrackOptions.map(
-                                                (
-                                                    track
-                                                ) => (
+                                                (track) => (
                                                     <option
-                                                        key={
-                                                            track
-                                                        }
-                                                        value={
-                                                            track
-                                                        }
+                                                        key={track}
+                                                        value={track}
                                                     >
-                                                        {
-                                                            track
-                                                        }
+                                                        {track}
                                                     </option>
                                                 )
                                             )}
+
                                         </select>
+
+                                        <i className="ti ti-chevron-down" />
+
                                     </div>
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">
-                                            Primary Technical Skill
-                                            <span className="text-danger">
-                                                {" "}*
-                                            </span>
-                                        </label>
+                                </div>
+
+
+                                {/* TECHNICAL SKILL */}
+
+                                <div className="col-md-6 form-field">
+
+                                    <label>
+                                        Primary Technical Skill
+                                        <span>*</span>
+                                    </label>
+
+                                    <div className="select-wrapper">
 
                                         <select
                                             name="primaryTechnicalSkill"
-                                            className="form-select"
+                                            className="hackathon-input"
                                             value={
                                                 formData.primaryTechnicalSkill
                                             }
-                                            onChange={
-                                                handleChange
-                                            }
+                                            onChange={handleChange}
                                             required
                                         >
+
                                             <option value="">
                                                 Select Primary Technical Skill
                                             </option>
 
                                             {technicalSkillOptions.map(
-                                                (
-                                                    skill
-                                                ) => (
+                                                (skill) => (
                                                     <option
-                                                        key={
-                                                            skill
-                                                        }
-                                                        value={
-                                                            skill
-                                                        }
+                                                        key={skill}
+                                                        value={skill}
                                                     >
-                                                        {
-                                                            skill
-                                                        }
+                                                        {skill}
                                                     </option>
                                                 )
                                             )}
+
                                         </select>
+
+                                        <i className="ti ti-chevron-down" />
+
                                     </div>
 
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* =========================================
-                            TEAM MEMBERS
-                        ========================================= */}
-
-                        <div className="card mt-4">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <h4 className="card-title mb-0">
-                                    Team Members
-                                </h4>
-
-                                <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    onClick={
-                                        addTeamMember
-                                    }
-                                    disabled={
-                                        formData.teamMembers.length >=
-                                        4
-                                    }
-                                >
-                                    + Add Member
-                                </button>
-                            </div>
-
-                            <div className="card-body">
-
-                                <p className="text-muted">
-                                    Minimum 2 members and maximum
-                                    4 members are allowed.
-                                </p>
-
-                                {formData.teamMembers.map(
-                                    (
-                                        member,
-                                        index
-                                    ) => (
-                                        <div
-                                            className="border rounded p-3 mb-3"
-                                            key={index}
-                                        >
-
-                                            <div className="d-flex justify-content-between mb-3">
-                                                <h5>
-                                                    Team Member{" "}
-                                                    {index + 1}
-
-                                                    {index ===
-                                                        0 && (
-                                                            <span className="text-muted">
-                                                                {" "}
-                                                                (Team Lead)
-                                                            </span>
-                                                        )}
-                                                </h5>
-
-                                                {index >=
-                                                    2 && (
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-sm btn-danger"
-                                                            onClick={() =>
-                                                                removeTeamMember(
-                                                                    index
-                                                                )
-                                                            }
-                                                        >
-                                                            Remove
-                                                        </button>
-                                                    )}
-                                            </div>
-
-                                            <div className="row">
-
-                                                <div className="col-md-4 mb-3">
-                                                    <label className="form-label">
-                                                        Name
-                                                        <span className="text-danger">
-                                                            {" "}*
-                                                        </span>
-                                                    </label>
-
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        value={
-                                                            member.name
-                                                        }
-                                                        readOnly={
-                                                            index ===
-                                                            0
-                                                        }
-                                                        onChange={(
-                                                            e
-                                                        ) =>
-                                                            handleTeamMemberChange(
-                                                                index,
-                                                                "name",
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                        required
-                                                    />
-                                                </div>
-
-                                                <div className="col-md-4 mb-3">
-                                                    <label className="form-label">
-                                                        Phone Number
-                                                        <span className="text-danger">
-                                                            {" "}*
-                                                        </span>
-                                                    </label>
-
-                                                    <input
-                                                        type="tel"
-                                                        className="form-control"
-                                                        value={
-                                                            member.phone
-                                                        }
-                                                        maxLength={
-                                                            10
-                                                        }
-                                                        inputMode="numeric"
-                                                        readOnly={
-                                                            index ===
-                                                            0
-                                                        }
-                                                        onChange={(
-                                                            e
-                                                        ) => {
-                                                            const value =
-                                                                e.target.value
-                                                                    .replace(
-                                                                        /\D/g,
-                                                                        ""
-                                                                    )
-                                                                    .slice(
-                                                                        0,
-                                                                        10
-                                                                    );
-
-                                                            handleTeamMemberChange(
-                                                                index,
-                                                                "phone",
-                                                                value
-                                                            );
-                                                        }}
-                                                        required
-                                                    />
-                                                </div>
-
-                                                <div className="col-md-4 mb-3">
-                                                    <label className="form-label">
-                                                        College Roll No
-                                                        <span className="text-danger">
-                                                            {" "}*
-                                                        </span>
-                                                    </label>
-
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        value={
-                                                            member.collegeRollNo
-                                                        }
-                                                        readOnly={
-                                                            index ===
-                                                            0
-                                                        }
-                                                        onChange={(
-                                                            e
-                                                        ) =>
-                                                            handleTeamMemberChange(
-                                                                index,
-                                                                "collegeRollNo",
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                        required
-                                                    />
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    )
-                                )}
-
-                            </div>
-                        </div>
-
-                        {/* =========================================
-                            DECLARATIONS
-                        ========================================= */}
-
-                        <div className="card mt-4">
-                            <div className="card-header">
-                                <h4 className="card-title">
-                                    Declaration & Agreement
-                                </h4>
-                            </div>
-
-                            <div className="card-body">
-
-                                <div className="form-check mb-3">
-                                    <input
-                                        type="checkbox"
-                                        id="studentDeclaration"
-                                        className="form-check-input"
-                                        checked={
-                                            studentDeclaration
-                                        }
-                                        onChange={
-                                            handleStudentDeclarationChange
-                                        }
-                                    />
-
-                                    <label
-                                        htmlFor="studentDeclaration"
-                                        className="form-check-label"
-                                    >
-                                        I confirm that I am
-                                        currently enrolled as
-                                        a college student and
-                                        that the information
-                                        provided is correct.
-
-                                        <span className="text-danger">
-                                            {" "}*
-                                        </span>
-                                    </label>
-                                </div>
-
-                                <div className="form-check">
-                                    <input
-                                        type="checkbox"
-                                        id="termsAgreement"
-                                        className="form-check-input"
-                                        checked={
-                                            termsAccepted
-                                        }
-                                        disabled={
-                                            !studentDeclaration
-                                        }
-                                        onChange={
-                                            handleTermsCheckboxClick
-                                        }
-                                    />
-
-                                    <label
-                                        htmlFor="termsAgreement"
-                                        className={`form-check-label ${!studentDeclaration
-                                            ? "text-muted"
-                                            : ""
-                                            }`}
-                                    >
-                                        I agree to the
-                                        Hackathon Rules &
-                                        Terms & Conditions.
-
-                                        <span className="text-danger">
-                                            {" "}*
-                                        </span>
-                                    </label>
-
-                                    {!studentDeclaration && (
-                                        <small className="d-block text-muted mt-1">
-                                            Please accept the
-                                            first declaration
-                                            before viewing the
-                                            Terms & Conditions.
-                                        </small>
-                                    )}
-                                </div>
-
-                            </div>
-                        </div>
-
-                        {/* =========================================
-                            PAYMENT
-                        ========================================= */}
-
-                        <div className="card mt-4">
-                            <div className="card-body text-center">
-
-                                <h5 className="mb-3">
-                                    Registration Fee
-                                </h5>
-
-                                {/* <h2 className="mb-3">
-                                    ₹
-                                    {formData.teamMembers.length *
-                                        250}
-                                </h2> */}
-                                <h2 className="mb-3">
-                                    ₹500
-                                </h2>
-
-                                {/* <p className="text-muted">
-                                    ₹500 per team member
-                                </p> */}
-
-                                <button
-                                    type="submit"
-                                    className="btn btn-success btn-lg px-5"
-                                    disabled={
-                                        paymentLoading ||
-                                        !studentDeclaration ||
-                                        !termsAccepted
-                                    }
-                                >
-                                    {paymentLoading
-                                        ? "Processing..."
-                                        : "Proceed to Payment"}
-                                </button>
-
-                                {(!studentDeclaration ||
-                                    !termsAccepted) && (
-                                        <small className="d-block text-muted mt-2">
-                                            Please complete both
-                                            declarations before
-                                            proceeding to payment.
-                                        </small>
-                                    )}
-
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-
-            {/* =========================================
-                TERMS MODAL
-            ========================================= */}
-
-            {showTermsModal && (
-                <div
-                    className="modal fade show"
-                    style={{
-                        display: "block",
-                        backgroundColor:
-                            "rgba(0,0,0,0.5)",
-                    }}
-                    role="dialog"
-                    aria-modal="true"
-                >
-                    <div className="modal-dialog modal-dialog-centered modal-lg">
-                        <div className="modal-content">
-
-                            <div className="modal-header">
-                                <h5 className="modal-title">
-                                    Hackathon Rules & Terms &
-                                    Conditions
-                                </h5>
-                            </div>
-
-<div className="modal-body">
-
-    <div className="mb-4">
-        <h5 className="mb-2">
-            Terms & Conditions
-        </h5>
-
-        <p className="text-muted mb-0">
-            Please read the following Terms & Conditions carefully
-            before registering for the Nexila Hackathon.
-        </p>
-    </div>
-
-
-    {/* =================================================
-        I. REGISTRATION & PARTICIPATION
-    ================================================= */}
-
-    <div className="mb-4">
-
-        <h6 className="fw-semibold mb-3">
-            I. Registration & Participation
-        </h6>
-
-        <ol className="ps-4 mb-0">
-
-            <li className="mb-2">
-                Participants must register for the Hackathon through
-                the official Nexila Hackathon registration page.
-            </li>
-
-            <li className="mb-2">
-                The Hackathon is open to eligible college students
-                across Tamil Nadu, subject to the eligibility
-                requirements specified by Nexila.
-            </li>
-
-            <li className="mb-2">
-                Each team must consist of a minimum of
-                <strong> 2 </strong> and a maximum of
-                <strong> 4 members</strong>.
-            </li>
-
-            <li className="mb-2">
-                Each individual participant may register and
-                participate in only one team.
-            </li>
-
-            <li className="mb-2">
-                Participants must provide their team name at the
-                time of registration.
-            </li>
-
-            <li className="mb-2">
-                Each team must nominate one member as the
-                <strong> Team Leader</strong>.
-            </li>
-
-            <li className="mb-2">
-                The Team Leader will be responsible for providing
-                accurate information relating to all team members
-                and for receiving official communications from Nexila.
-            </li>
-
-            <li className="mb-2">
-                All participants must provide genuine and accurate
-                information, including their name, college,
-                department, year of study, roll/registration number,
-                contact details and other information requested
-                during registration.
-            </li>
-
-            <li className="mb-2">
-                Nexila reserves the right to verify the eligibility
-                and student status of any participant at any stage
-                of the Hackathon.
-            </li>
-
-            <li className="mb-2">
-                Participants may be required to present a valid
-                college/student identity card or other acceptable
-                proof of student status.
-            </li>
-
-            <li className="mb-2">
-                Participants must actively participate in all required
-                stages, checkpoints, mentoring sessions, submissions
-                and final presentations as communicated by Nexila.
-            </li>
-
-            <li>
-                Failure to comply with the Hackathon requirements or
-                failure to respond to official communications may
-                result in disqualification of the participant or
-                the entire team.
-            </li>
-
-        </ol>
-
-    </div>
-
-
-    {/* =================================================
-        II. REGISTRATION FEE & PAYMENT
-    ================================================= */}
-
-    <div className="mb-4">
-
-        <h6 className="fw-semibold mb-3">
-            II. Registration Fee & Payment
-        </h6>
-
-        <ol className="ps-4 mb-0">
-
-            <li className="mb-2">
-                Participation in the Hackathon requires payment of
-                the registration fee displayed on the official
-                Hackathon registration page.
-            </li>
-
-            <li className="mb-2">
-                The applicable registration fee must be paid through
-                the payment method provided by Nexila or its
-                authorized payment service provider.
-            </li>
-
-            <li className="mb-2">
-                Registration will be considered successfully completed
-                only after successful payment and confirmation by the
-                registration system/Nexila.
-            </li>
-
-            <li className="mb-2">
-                Participants are responsible for ensuring that the
-                information submitted during registration is accurate
-                before making payment.
-            </li>
-
-            <li className="mb-2">
-                Participants should retain their payment transaction
-                or reference number for future communication or
-                verification.
-            </li>
-
-            <li className="mb-2">
-                Payment of the registration fee confirms registration
-                but does not guarantee selection for the final round,
-                winning a prize, internship, placement, or any other
-                opportunity.
-            </li>
-
-            <li>
-                Any applicable payment gateway charges, taxes or
-                statutory deductions, if separately applicable, will
-                be handled in accordance with the applicable payment
-                terms and laws.
-            </li>
-
-        </ol>
-
-    </div>
-
-
-    {/* =================================================
-        III. CANCELLATION & REFUND POLICY
-    ================================================= */}
-
-    <div className="mb-4">
-
-        <h6 className="fw-semibold mb-3">
-            III. Cancellation & Refund Policy
-        </h6>
-
-        <ol className="ps-4 mb-0">
-
-            <li className="mb-2">
-                The registration fee is non-refundable once the
-                registration has been successfully completed, except
-                where a refund is required under applicable law or
-                where Nexila specifically decides otherwise.
-            </li>
-
-            <li className="mb-2">
-                Refunds will generally not be provided due to:
-
-                <ul className="mt-2 ps-4">
-
-                    <li className="mb-1">
-                        Change of mind
-                    </li>
-
-                    <li className="mb-1">
-                        Failure to attend the Hackathon
-                    </li>
-
-                    <li className="mb-1">
-                        Failure to form or maintain a complete team
-                    </li>
-
-                    <li className="mb-1">
-                        Failure to qualify for the next stage
-                    </li>
-
-                    <li className="mb-1">
-                        Failure to submit the required project or idea
-                    </li>
-
-                    <li className="mb-1">
-                        Disqualification due to violation of the
-                        Hackathon rules
-                    </li>
-
-                    <li className="mb-1">
-                        Personal, academic or other commitments
-                    </li>
-
-                    <li>
-                        Failure to respond to official communications
-                    </li>
-
-                </ul>
-
-            </li>
-
-            <li className="mb-2">
-                If Nexila cancels the Hackathon entirely, Nexila will
-                communicate the applicable refund or alternative
-                arrangement to registered participants.
-            </li>
-
-            <li className="mb-2">
-                If the Hackathon is postponed, Nexila may, at its
-                discretion, carry forward the participant's
-                registration to the rescheduled event.
-            </li>
-
-            <li>
-                Where a refund is approved, it will generally be
-                processed to the original payment method, subject to
-                applicable payment gateway and banking processing
-                timelines.
-            </li>
-
-        </ol>
-
-    </div>
-
-
-    {/* =================================================
-        ACKNOWLEDGEMENT
-    ================================================= */}
-
-    <div className="alert alert-light border mb-0">
-
-        <div className="d-flex align-items-start">
-
-            <i className="ti ti-info-circle me-2 mt-1" />
-
-            <p className="mb-0">
-                By clicking <strong>OK</strong>, you confirm that
-                you have read, understood and agreed to the above
-                Terms & Conditions, including the Registration,
-                Payment, Cancellation and Refund Policies of the
-                Nexila Hackathon.
-            </p>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn btn-primary px-4"
-                                    onClick={
-                                        handleTermsOk
-                                    }
-                                >
-                                    OK
-                                </button>
                             </div>
 
                         </div>
+
                     </div>
-                </div>
-            )}
 
-            {/* =========================================
-                SUCCESS MODAL
-            ========================================= */}
 
-            {showSuccessModal && (
-                <div
-                    className="modal fade show"
-                    style={{
-                        display: "block",
-                        backgroundColor:
-                            "rgba(0,0,0,0.5)",
-                    }}
-                    role="dialog"
-                    aria-modal="true"
-                >
-                    <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content">
+                    {/* =========================================
+                    TEAM MEMBERS
+                ========================================= */}
 
-                            <div className="modal-body text-center p-5">
+                    <div className="hackathon-card">
 
-                                <div
-                                    className="mb-4"
-                                    style={{
-                                        fontSize: "60px",
-                                    }}
-                                >
-                                    ✓
+                        <div className="section-header team-header">
+
+                            <div className="section-title-wrapper">
+
+                                <div className="section-icon team-icon">
+                                    <i className="ti ti-users" />
                                 </div>
 
-                                <h3 className="mb-3">
-                                    Registration Successful!
+                                <div>
+
+                                    <h3>
+                                        Team Members
+                                    </h3>
+
+                                    <p>
+                                        Minimum 2 members and maximum 4 members are allowed.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                className="add-member-btn"
+                                onClick={addTeamMember}
+                                disabled={
+                                    formData.teamMembers.length >= 4
+                                }
+                            >
+
+                                <i className="ti ti-plus" />
+
+                                Add Member
+
+                            </button>
+
+                        </div>
+
+
+                        <div className="section-body">
+
+                            {formData.teamMembers.map(
+                                (member, index) => (
+
+                                    <div
+                                        className="team-member-card"
+                                        key={index}
+                                    >
+
+                                        <div className="team-member-title">
+
+                                            <span>
+
+                                                Team Member {index + 1}
+
+                                                {index === 0 && (
+                                                    <span className="team-lead-label">
+                                                        {" "}
+                                                        (Team Lead)
+                                                    </span>
+                                                )}
+
+                                            </span>
+
+
+                                            {index >= 2 && (
+
+                                                <button
+                                                    type="button"
+                                                    className="remove-member-btn"
+                                                    onClick={() =>
+                                                        removeTeamMember(
+                                                            index
+                                                        )
+                                                    }
+                                                >
+
+                                                    <i className="ti ti-trash" />
+
+                                                    Remove
+
+                                                </button>
+
+                                            )}
+
+                                        </div>
+
+
+                                        <div className="row">
+
+
+                                            {/* NAME */}
+
+                                            <div className="col-md-4 form-field">
+
+                                                <label>
+                                                    Name
+                                                    <span>*</span>
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    className="hackathon-input"
+                                                    value={member.name}
+                                                    readOnly={
+                                                        index === 0
+                                                    }
+                                                    placeholder="Enter name"
+                                                    onChange={(e) =>
+                                                        handleTeamMemberChange(
+                                                            index,
+                                                            "name",
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    required
+                                                />
+
+                                            </div>
+
+
+                                            {/* PHONE */}
+
+                                            <div className="col-md-4 form-field">
+
+                                                <label>
+                                                    Phone Number
+                                                    <span>*</span>
+                                                </label>
+
+                                                <input
+                                                    type="tel"
+                                                    className="hackathon-input"
+                                                    value={member.phone}
+                                                    maxLength={10}
+                                                    inputMode="numeric"
+                                                    readOnly={
+                                                        index === 0
+                                                    }
+                                                    placeholder="Enter phone number"
+                                                    onChange={(e) => {
+
+                                                        const value =
+                                                            e.target.value
+                                                                .replace(
+                                                                    /\D/g,
+                                                                    ""
+                                                                )
+                                                                .slice(
+                                                                    0,
+                                                                    10
+                                                                );
+
+                                                        handleTeamMemberChange(
+                                                            index,
+                                                            "phone",
+                                                            value
+                                                        );
+
+                                                    }}
+                                                    required
+                                                />
+
+                                            </div>
+
+
+                                            {/* ROLL NUMBER */}
+
+                                            <div className="col-md-4 form-field">
+
+                                                <label>
+                                                    College Roll No
+                                                    <span>*</span>
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    className="hackathon-input"
+                                                    value={
+                                                        member.collegeRollNo
+                                                    }
+                                                    readOnly={
+                                                        index === 0
+                                                    }
+                                                    placeholder="Enter college roll number"
+                                                    onChange={(e) =>
+                                                        handleTeamMemberChange(
+                                                            index,
+                                                            "collegeRollNo",
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    required
+                                                />
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                )
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    {/* =========================================
+                    DECLARATION
+                ========================================= */}
+
+                    <div className="hackathon-card">
+
+                        <div className="section-header">
+
+                            <div className="section-icon declaration-icon">
+                                <i className="ti ti-shield-check" />
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Declaration & Agreement
                                 </h3>
 
-                                <p className="text-muted mb-4">
-                                    Your Nexila Hackathon
-                                    registration has been
-                                    successfully completed.
-
-                                    <br />
-
-                                    Payment received
-                                    successfully.
-
-                                    <br />
-                                        <strong>
-        Registration ID:
-    </strong>
-
-    <br />
-
-    <span className="fs-4 text-dark fw-bold">
-        {registrationId}
-    </span>
-
-    <br />
-    <br />
-
-    Please take a screenshot of this Registration ID
-    and keep it safely for future reference.
-
-    <br />
-
-                                    Registration details have
-                                    been sent to your email.
-
-                                    <br />
-                                    <br />
-
-                                    Please check your email
-                                    for the link to submit
-                                    your project details.
+                                <p>
+                                    Please read and accept the terms to proceed.
                                 </p>
-
-                                <button
-                                    type="button"
-                                    className="btn btn-primary px-5"
-                                    onClick={() => {
-                                        setShowSuccessModal(
-                                            false
-                                        );
-
-                                        setStudentDeclaration(
-                                            false
-                                        );
-
-                                        setTermsAccepted(
-                                            false
-                                        );
-
-                                        setFormData(
-                                            getInitialFormData()
-                                        );
-                                    }}
-                                >
-                                    OK
-                                </button>
 
                             </div>
 
                         </div>
+
+
+                        <div className="section-body declaration-body">
+
+
+                            {/* STUDENT DECLARATION */}
+
+                            <div className="custom-checkbox-row">
+
+                                <input
+                                    type="checkbox"
+                                    id="studentDeclaration"
+                                    className="custom-checkbox"
+                                    checked={
+                                        studentDeclaration
+                                    }
+                                    onChange={
+                                        handleStudentDeclarationChange
+                                    }
+                                />
+
+                                <label htmlFor="studentDeclaration">
+
+                                    I confirm that I am currently enrolled as a
+                                    college student and that the information
+                                    provided is correct.
+
+                                    <span className="required-star">
+                                        *
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+                            {/* TERMS */}
+
+                            <div className="custom-checkbox-row">
+
+                                <input
+                                    type="checkbox"
+                                    id="termsAgreement"
+                                    className="custom-checkbox"
+                                    checked={
+                                        termsAccepted
+                                    }
+                                    disabled={
+                                        !studentDeclaration
+                                    }
+                                    onChange={
+                                        handleTermsCheckboxClick
+                                    }
+                                />
+
+                                <label
+                                    htmlFor="termsAgreement"
+                                    className={
+                                        !studentDeclaration
+                                            ? "disabled-label"
+                                            : ""
+                                    }
+                                >
+
+                                    I agree to the{" "}
+
+                                    <span className="terms-link">
+                                        Hackathon Rules & Terms & Conditions.
+                                    </span>
+
+                                    <span className="required-star">
+                                        *
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+                            {!studentDeclaration && (
+
+                                <div className="terms-help">
+
+                                    Please accept the first declaration before
+                                    viewing the{" "}
+
+                                    <span>
+                                        Terms & Conditions.
+                                    </span>
+
+                                </div>
+
+                            )}
+
+                        </div>
+
                     </div>
+
+
+                    {/* =========================================
+                    PAYMENT
+                ========================================= */}
+
+                    <div className="payment-card">
+
+                        <div className="payment-content">
+
+                            <div className="payment-icon">
+                                <i className="ti ti-credit-card" />
+                            </div>
+
+                            <h3>
+                                Registration Fee
+                            </h3>
+
+                            <div className="payment-amount">
+                                ₹500
+                            </div>
+
+                            <p>
+                                Complete your registration by proceeding
+                                to secure payment.
+                            </p>
+                            <p className="text-warn">Please wait until the “Submission Successful” message is displayed. Do not refresh or close the page during the payment or submission process, as this may interrupt the transaction or submission.</p>
+
+                            <button
+                                type="submit"
+                                className="payment-btn"
+                                disabled={
+                                    paymentLoading ||
+                                    !studentDeclaration ||
+                                    !termsAccepted
+                                }
+                            >
+
+                                {paymentLoading ? (
+                                    <>
+                                        <span className="payment-spinner" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        Proceed to Payment
+                                        <i className="ti ti-arrow-right" />
+                                    </>
+                                )}
+
+                            </button>
+
+
+                            {(!studentDeclaration ||
+                                !termsAccepted) && (
+
+                                    <div className="payment-help">
+
+                                        Please complete both declarations
+                                        before proceeding to payment.
+
+                                    </div>
+
+                                )}
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            {/* =========================================
+            TERMS MODAL
+        ========================================= */}
+
+            {showTermsModal && (
+
+                <div
+                    className="hackathon-modal-backdrop"
+                    role="dialog"
+                    aria-modal="true"
+                >
+
+                    <div className="hackathon-modal terms-modal">
+
+                        <div className="hackathon-modal-header">
+
+                            <div>
+
+                                <h3>
+                                    Hackathon Rules & Terms & Conditions
+                                </h3>
+
+                                <p>
+                                    Please review the following information carefully.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="hackathon-modal-body">
+
+
+                            <div className="terms-intro">
+
+                                <h4>
+                                    Terms & Conditions
+                                </h4>
+
+                                <p>
+                                    Please read the following Terms & Conditions
+                                    carefully before registering for the Nexila Hackathon.
+                                </p>
+
+                            </div>
+
+
+                            {/* REGISTRATION */}
+
+                            <div className="terms-section">
+
+                                <h5>
+                                    I. Registration & Participation
+                                </h5>
+
+                                <ol>
+
+                                    <li>
+                                        Participants must register for the Hackathon
+                                        through the official Nexila Hackathon registration page.
+                                    </li>
+
+                                    <li>
+                                        The Hackathon is open to eligible college
+                                        students across Tamil Nadu, subject to the
+                                        eligibility requirements specified by Nexila.
+                                    </li>
+
+                                    <li>
+                                        Each team must consist of a minimum of
+                                        <strong> 2 </strong>
+                                        and a maximum of
+                                        <strong> 4 members</strong>.
+                                    </li>
+
+                                    <li>
+                                        Each individual participant may register
+                                        and participate in only one team.
+                                    </li>
+
+                                    <li>
+                                        Participants must provide their team name
+                                        at the time of registration.
+                                    </li>
+
+                                    <li>
+                                        Each team must nominate one member as the
+                                        <strong> Team Leader</strong>.
+                                    </li>
+
+                                    <li>
+                                        The Team Leader will be responsible for
+                                        providing accurate information relating to
+                                        all team members and for receiving official
+                                        communications from Nexila.
+                                    </li>
+
+                                    <li>
+                                        All participants must provide genuine and
+                                        accurate information, including their name,
+                                        college, department, year of study,
+                                        roll/registration number, contact details
+                                        and other information requested during registration.
+                                    </li>
+
+                                    <li>
+                                        Nexila reserves the right to verify the
+                                        eligibility and student status of any
+                                        participant at any stage of the Hackathon.
+                                    </li>
+
+                                    <li>
+                                        Participants may be required to present a
+                                        valid college/student identity card or other
+                                        acceptable proof of student status.
+                                    </li>
+
+                                    <li>
+                                        Participants must actively participate in
+                                        all required stages, checkpoints, mentoring
+                                        sessions, submissions and final presentations
+                                        as communicated by Nexila.
+                                    </li>
+
+                                    <li>
+                                        Failure to comply with the Hackathon requirements
+                                        or failure to respond to official communications
+                                        may result in disqualification of the participant
+                                        or the entire team.
+                                    </li>
+
+                                </ol>
+
+                            </div>
+
+
+                            {/* PAYMENT */}
+
+                            <div className="terms-section">
+
+                                <h5>
+                                    II. Registration Fee & Payment
+                                </h5>
+
+                                <ol>
+
+                                    <li>
+                                        Participation in the Hackathon requires
+                                        payment of the registration fee displayed
+                                        on the official Hackathon registration page.
+                                    </li>
+
+                                    <li>
+                                        The applicable registration fee must be paid
+                                        through the payment method provided by Nexila
+                                        or its authorized payment service provider.
+                                    </li>
+
+                                    <li>
+                                        Registration will be considered successfully
+                                        completed only after successful payment and
+                                        confirmation by the registration system/Nexila.
+                                    </li>
+
+                                    <li>
+                                        Participants are responsible for ensuring
+                                        that the information submitted during registration
+                                        is accurate before making payment.
+                                    </li>
+
+                                    <li>
+                                        Participants should retain their payment
+                                        transaction or reference number for future
+                                        communication or verification.
+                                    </li>
+
+                                    <li>
+                                        Payment of the registration fee confirms
+                                        registration but does not guarantee selection
+                                        for the final round, winning a prize, internship,
+                                        placement, or any other opportunity.
+                                    </li>
+
+                                    <li>
+                                        Any applicable payment gateway charges, taxes
+                                        or statutory deductions, if separately applicable,
+                                        will be handled in accordance with the applicable
+                                        payment terms and laws.
+                                    </li>
+
+                                </ol>
+
+                            </div>
+
+
+                            {/* REFUND */}
+
+                            <div className="terms-section">
+
+                                <h5>
+                                    III. Cancellation & Refund Policy
+                                </h5>
+
+                                <ol>
+
+                                    <li>
+                                        The registration fee is non-refundable once
+                                        the registration has been successfully completed,
+                                        except where a refund is required under applicable
+                                        law or where Nexila specifically decides otherwise.
+                                    </li>
+
+                                    <li>
+
+                                        Refunds will generally not be provided due to:
+
+                                        <ul>
+
+                                            <li>Change of mind</li>
+
+                                            <li>
+                                                Failure to attend the Hackathon
+                                            </li>
+
+                                            <li>
+                                                Failure to form or maintain a complete team
+                                            </li>
+
+                                            <li>
+                                                Failure to qualify for the next stage
+                                            </li>
+
+                                            <li>
+                                                Failure to submit the required project or idea
+                                            </li>
+
+                                            <li>
+                                                Disqualification due to violation of
+                                                the Hackathon rules
+                                            </li>
+
+                                            <li>
+                                                Personal, academic or other commitments
+                                            </li>
+
+                                            <li>
+                                                Failure to respond to official communications
+                                            </li>
+
+                                        </ul>
+
+                                    </li>
+
+                                    <li>
+                                        If Nexila cancels the Hackathon entirely,
+                                        Nexila will communicate the applicable refund
+                                        or alternative arrangement to registered participants.
+                                    </li>
+
+                                    <li>
+                                        If the Hackathon is postponed, Nexila may,
+                                        at its discretion, carry forward the participant's
+                                        registration to the rescheduled event.
+                                    </li>
+
+                                    <li>
+                                        Where a refund is approved, it will generally
+                                        be processed to the original payment method,
+                                        subject to applicable payment gateway and banking
+                                        processing timelines.
+                                    </li>
+
+                                </ol>
+
+                            </div>
+
+
+                            <div className="terms-notice">
+
+                                <i className="ti ti-info-circle" />
+
+                                <p>
+
+                                    By clicking <strong>OK</strong>, you confirm that
+                                    you have read, understood and agreed to the above
+                                    Terms & Conditions, including the Registration,
+                                    Payment, Cancellation and Refund Policies of the
+                                    Nexila Hackathon.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="hackathon-modal-footer">
+
+                            <button
+                                type="button"
+                                className="modal-ok-btn"
+                                onClick={handleTermsOk}
+                            >
+                                OK
+                            </button>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
+            )}
+
+
+            {/* =========================================
+            SUCCESS MODAL
+        ========================================= */}
+
+            {showSuccessModal && (
+
+                <div
+                    className="hackathon-modal-backdrop"
+                    role="dialog"
+                    aria-modal="true"
+                >
+
+                    <div className="hackathon-modal success-modal">
+
+                        <div className="success-content">
+
+                            <div className="success-icon">
+
+                                <i className="ti ti-check" />
+
+                            </div>
+
+
+                            <h2>
+                                Registration Successful!
+                            </h2>
+
+
+                            <p>
+
+                                Your Nexila Hackathon registration has been
+                                successfully completed.
+
+                                <br />
+
+                                Payment received successfully.
+
+                            </p>
+
+
+                            <div className="registration-id-box">
+
+                                <span>
+                                    Registration ID
+                                </span>
+
+                                <strong>
+                                    {registrationId}
+                                </strong>
+
+                            </div>
+
+
+                            <p className="success-note">
+
+                                Please take a screenshot of this Registration ID
+                                and keep it safely for future reference.
+
+                                <br />
+                                <br />
+
+                                Registration details have been sent to your email.
+
+                                <br />
+                                <br />
+
+                                Please check your email for the link to submit
+                                your project details.
+
+                            </p>
+
+
+                            <button
+                                type="button"
+                                className="success-ok-btn"
+                                onClick={() => {
+
+                                    setShowSuccessModal(false);
+
+                                    setStudentDeclaration(false);
+
+                                    setTermsAccepted(false);
+
+                                    setFormData(
+                                        getInitialFormData()
+                                    );
+
+                                }}
+                            >
+                                OK
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             )}
 
         </div>
+
     );
 };
 

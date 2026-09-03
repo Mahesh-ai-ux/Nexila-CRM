@@ -1,0 +1,1299 @@
+/* =====================================================
+   NEXILA HACKATHON REGISTRATION
+   SMOOTH MODERN UI
+===================================================== */
+
+.hackathon-page {
+    min-height: 100vh;
+
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.92),
+            rgba(125, 125, 255, 0.92)),
+        url("/bgnexila.jpg");
+
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    padding: 30px 0 60px;
+}
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+
+.hackathon-container {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.hackathon-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.hackathon-logo {
+    width: 175px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 12px;
+}
+
+.hackathon-header h1 {
+    margin: 0;
+    color: #132557;
+    font-size: 34px;
+    line-height: 1.2;
+    font-weight: 750;
+    letter-spacing: -0.7px;
+}
+
+.hackathon-header p {
+    margin: 8px 0 0;
+    color: #68728a;
+    font-size: 15px;
+}
+
+
+/* =====================================================
+   MAIN CARD
+===================================================== */
+
+.hackathon-card {
+    background: #ffffff;
+
+    border: 1px solid #e9ebf2;
+
+    border-radius: 12px;
+
+    margin-bottom: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 12px rgba(35, 43, 70, 0.035),
+        0 1px 3px rgba(35, 43, 70, 0.03);
+
+    transition:
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+}
+
+.hackathon-card:hover {
+    box-shadow:
+        0 8px 25px rgba(35, 43, 70, 0.06);
+}
+
+
+/* =====================================================
+   SECTION HEADER
+===================================================== */
+
+.section-header {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 16px 18px 12px;
+}
+
+.section-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-icon {
+    width: 32px;
+    height: 32px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #ffffff;
+
+    font-size: 16px;
+}
+
+.section-icon i {
+    line-height: 1;
+}
+
+
+/* =====================================================
+   SECTION ICON COLORS
+===================================================== */
+
+.student-icon,
+.hackathon-icon,
+.team-icon {
+    background: #4b3fe7;
+    box-shadow: 0 4px 10px rgba(75, 63, 231, 0.18);
+}
+
+.declaration-icon {
+    background: #54c789;
+    box-shadow: 0 4px 10px rgba(84, 199, 137, 0.18);
+}
+
+
+/* =====================================================
+   SECTION TITLE
+===================================================== */
+
+.section-header h3 {
+    margin: 0;
+
+    color: #18264a;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    line-height: 1.3;
+}
+
+.section-header p {
+    margin: 3px 0 0;
+
+    color: #8a92a5;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+/* =====================================================
+   SECTION BODY
+===================================================== */
+
+.section-body {
+    padding: 2px 18px 18px;
+}
+
+
+/* =====================================================
+   FORM FIELD
+===================================================== */
+
+.form-field {
+    margin-bottom: 13px;
+}
+
+.form-field label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #30394f;
+
+    font-size: 11.5px;
+
+    font-weight: 650;
+
+    line-height: 1.4;
+}
+
+.form-field label span {
+    color: #e04d55;
+
+    margin-left: 3px;
+}
+
+
+/* =====================================================
+   HELPER TEXT
+===================================================== */
+
+.field-helper {
+    font-size: 9.5px;
+
+    color: #8d95a7;
+
+    margin-top: -1px;
+
+    margin-bottom: 5px;
+}
+
+
+/* =====================================================
+   INPUT
+===================================================== */
+
+.hackathon-input {
+    width: 100%;
+
+    height: 39px;
+
+    padding: 8px 11px;
+
+    border: 1px solid #e1e4eb;
+
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    color: #30384b;
+
+    font-size: 11.5px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.hackathon-input::placeholder {
+    color: #a3a9b6;
+}
+
+.hackathon-input:hover {
+    border-color: #d0d4de;
+}
+
+.hackathon-input:focus {
+    border-color: #6557ed;
+
+    box-shadow:
+        0 0 0 3px rgba(101, 87, 237, 0.08);
+
+    background: #ffffff;
+}
+
+
+/* =====================================================
+   SELECT
+===================================================== */
+
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper .hackathon-input {
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    padding-right: 35px;
+
+    cursor: pointer;
+}
+
+.select-wrapper>i {
+    position: absolute;
+
+    right: 11px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #727b8e;
+
+    pointer-events: none;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   TEAM HEADER
+===================================================== */
+
+.team-header {
+    justify-content: space-between;
+}
+
+.add-member-btn {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    border: 0;
+
+    border-radius: 6px;
+
+    background: #4d3fe8;
+
+    color: #ffffff;
+
+    padding: 7px 12px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.add-member-btn i {
+    font-size: 13px;
+}
+
+.add-member-btn:hover {
+    background: #4033d5;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(77, 63, 232, 0.2);
+}
+
+.add-member-btn:disabled {
+    opacity: 0.45;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* =====================================================
+   TEAM MEMBER CARD
+===================================================== */
+
+.team-member-card {
+    border: 1px solid #eceef3;
+
+    border-radius: 8px;
+
+    padding: 10px;
+
+    margin-bottom: 10px;
+
+    background: #ffffff;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.team-member-card:hover {
+    border-color: #dedff0;
+
+    box-shadow:
+        0 4px 14px rgba(38, 43, 67, 0.035);
+}
+
+
+/* =====================================================
+   TEAM MEMBER TITLE
+===================================================== */
+
+.team-member-title {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 9px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #344064;
+}
+
+.team-member-title>span:first-child {
+    background: #f1efff;
+
+    color: #5548db;
+
+    padding: 5px 8px;
+
+    border-radius: 5px;
+}
+
+.team-lead-label {
+    color: #665be0;
+
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   REMOVE BUTTON
+===================================================== */
+
+.remove-member-btn {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #e0525c;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    padding: 4px 6px;
+
+    border-radius: 5px;
+
+    transition: background 0.2s ease;
+}
+
+.remove-member-btn:hover {
+    background: #fff0f1;
+}
+
+.remove-member-btn i {
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   DECLARATION
+===================================================== */
+
+.declaration-body {
+    padding-top: 3px;
+}
+
+.custom-checkbox-row {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin-bottom: 10px;
+}
+
+.custom-checkbox {
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    width: 14px;
+
+    height: 14px;
+
+    min-width: 14px;
+
+    margin-top: 1px;
+
+    border: 1px solid #d6dae3;
+
+    border-radius: 3px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.custom-checkbox:checked {
+    background: #4f43df;
+
+    border-color: #4f43df;
+}
+
+.custom-checkbox:checked::after {
+    content: "";
+
+    position: absolute;
+
+    width: 4px;
+
+    height: 7px;
+
+    border-right: 1.5px solid #ffffff;
+
+    border-bottom: 1.5px solid #ffffff;
+
+    transform: rotate(45deg);
+
+    left: 4px;
+
+    top: 2px;
+}
+
+.custom-checkbox:disabled {
+    background: #f3f4f6;
+
+    cursor: not-allowed;
+}
+
+.custom-checkbox-row label {
+    color: #454d60;
+
+    font-size: 11px;
+
+    line-height: 1.55;
+
+    cursor: pointer;
+}
+
+.required-star {
+    color: #df5159;
+
+    margin-left: 3px;
+}
+
+.disabled-label {
+    color: #a4a9b5 !important;
+
+    cursor: not-allowed !important;
+}
+
+.terms-link {
+    color: #4c40dc;
+
+    font-weight: 600;
+}
+
+.terms-help {
+    margin-left: 23px;
+
+    margin-top: -5px;
+
+    color: #9299a9;
+
+    font-size: 9.5px;
+}
+
+.terms-help span {
+    color: #4f45d9;
+}
+
+
+/* =====================================================
+   PAYMENT CARD
+===================================================== */
+
+.payment-card {
+    background: #ffffff;
+
+    border: 1px solid #e9ebf2;
+
+    border-radius: 12px;
+
+    margin-top: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 12px rgba(35, 43, 70, 0.035);
+}
+
+.payment-content {
+    text-align: center;
+
+    padding: 25px 20px 27px;
+}
+
+.payment-icon {
+    width: 38px;
+
+    height: 38px;
+
+    margin: 0 auto 8px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eeedff;
+
+    color: #5144df;
+
+    font-size: 18px;
+}
+
+.payment-content h3 {
+    margin: 0;
+
+    color: #343d53;
+
+    font-size: 14px;
+
+    font-weight: 650;
+}
+
+.payment-amount {
+    margin-top: 5px;
+
+    color: #18264a;
+
+    font-size: 28px;
+
+    font-weight: 750;
+}
+
+.payment-content p {
+    margin: 5px 0 15px;
+
+    color: #9298a7;
+
+    font-size: 10.5px;
+}
+
+.payment-btn {
+    min-width: 220px;
+
+    height: 42px;
+
+    border: 0;
+
+    border-radius: 7px;
+
+    background: #4d3fe8;
+
+    color: #ffffff;
+
+    padding: 0 18px;
+
+    font-size: 12px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.payment-btn:hover {
+    background: #4033d5;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 18px rgba(77, 63, 232, 0.2);
+}
+
+.payment-btn:disabled {
+    opacity: 0.45;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+.payment-btn i {
+    font-size: 14px;
+}
+
+.payment-help {
+    margin-top: 9px;
+
+    color: #979eae;
+
+    font-size: 9.5px;
+}
+
+
+/* =====================================================
+   PAYMENT LOADING
+===================================================== */
+
+.payment-spinner {
+    width: 14px;
+
+    height: 14px;
+
+    border: 2px solid rgba(255, 255, 255, 0.35);
+
+    border-top-color: #ffffff;
+
+    border-radius: 50%;
+
+    animation: paymentSpin 0.7s linear infinite;
+}
+
+@keyframes paymentSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =====================================================
+   MODAL BACKDROP
+===================================================== */
+
+.hackathon-modal-backdrop {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(17, 24, 39, 0.52);
+
+    backdrop-filter: blur(4px);
+
+    animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.hackathon-modal {
+    width: 100%;
+
+    max-width: 850px;
+
+    max-height: 90vh;
+
+    background: #ffffff;
+
+    border-radius: 13px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.18);
+
+    animation: modalSlideUp 0.25s ease;
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+
+        transform: translateY(15px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* =====================================================
+   MODAL HEADER
+===================================================== */
+
+.hackathon-modal-header {
+    padding: 18px 22px;
+
+    border-bottom: 1px solid #eceef3;
+
+    background: #ffffff;
+}
+
+.hackathon-modal-header h3 {
+    margin: 0;
+
+    color: #1c2848;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+.hackathon-modal-header p {
+    margin: 4px 0 0;
+
+    color: #9299a9;
+
+    font-size: 10.5px;
+}
+
+
+/* =====================================================
+   MODAL BODY
+===================================================== */
+
+.hackathon-modal-body {
+    padding: 22px;
+
+    max-height: calc(90vh - 125px);
+
+    overflow-y: auto;
+
+    color: #50596b;
+
+    font-size: 11.5px;
+
+    line-height: 1.65;
+}
+
+.terms-intro {
+    margin-bottom: 20px;
+}
+
+.terms-intro h4 {
+    margin: 0 0 5px;
+
+    color: #273353;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+.terms-intro p {
+    margin: 0;
+
+    color: #858d9e;
+}
+
+.terms-section {
+    margin-bottom: 22px;
+}
+
+.terms-section h5 {
+    margin: 0 0 9px;
+
+    color: #273353;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.terms-section ol {
+    margin: 0;
+
+    padding-left: 22px;
+}
+
+.terms-section li {
+    margin-bottom: 7px;
+}
+
+.terms-section ul {
+    margin-top: 7px;
+
+    padding-left: 20px;
+}
+
+.terms-notice {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    padding: 12px;
+
+    border: 1px solid #e7e8ef;
+
+    border-radius: 8px;
+
+    background: #fafafd;
+}
+
+.terms-notice i {
+    color: #5144df;
+
+    font-size: 16px;
+
+    margin-top: 1px;
+}
+
+.terms-notice p {
+    margin: 0;
+
+    color: #656d7e;
+
+    font-size: 10.5px;
+}
+
+
+/* =====================================================
+   MODAL FOOTER
+===================================================== */
+
+.hackathon-modal-footer {
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding: 12px 20px;
+
+    border-top: 1px solid #eceef3;
+
+    background: #fafbfc;
+}
+
+.modal-ok-btn {
+    min-width: 75px;
+
+    height: 35px;
+
+    border: 0;
+
+    border-radius: 6px;
+
+    background: #4d3fe8;
+
+    color: #ffffff;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.modal-ok-btn:hover {
+    background: #4033d5;
+}
+
+
+/* =====================================================
+   SUCCESS MODAL
+===================================================== */
+
+.success-modal {
+    max-width: 440px;
+}
+
+.success-content {
+    text-align: center;
+
+    padding: 40px 30px;
+}
+
+.success-icon {
+    width: 65px;
+
+    height: 65px;
+
+    margin: 0 auto 17px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e9f9f0;
+
+    color: #32b66f;
+
+    font-size: 30px;
+}
+
+.success-content h2 {
+    margin: 0 0 8px;
+
+    color: #202b49;
+
+    font-size: 21px;
+
+    font-weight: 700;
+}
+
+.success-content>p {
+    margin: 0;
+
+    color: #7d8596;
+
+    font-size: 11px;
+
+    line-height: 1.7;
+}
+
+.registration-id-box {
+    margin: 20px auto 15px;
+
+    padding: 11px 18px;
+
+    border-radius: 8px;
+
+    background: #f1f0ff;
+
+    width: fit-content;
+
+    min-width: 180px;
+}
+
+.registration-id-box span {
+    display: block;
+
+    color: #777d90;
+
+    font-size: 9px;
+
+    margin-bottom: 3px;
+}
+
+.registration-id-box strong {
+    display: block;
+
+    color: #5144df;
+
+    font-size: 19px;
+
+    letter-spacing: 0.5px;
+}
+
+.success-note {
+    color: #858c9d !important;
+
+    font-size: 10px !important;
+}
+
+.success-ok-btn {
+    min-width: 110px;
+
+    height: 38px;
+
+    margin-top: 16px;
+
+    border: 0;
+
+    border-radius: 6px;
+
+    background: #4d3fe8;
+
+    color: #ffffff;
+
+    font-size: 11px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.success-ok-btn:hover {
+    background: #4033d5;
+
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+.hackathon-modal-body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.hackathon-modal-body::-webkit-scrollbar-track {
+    background: #f5f6f8;
+}
+
+.hackathon-modal-body::-webkit-scrollbar-thumb {
+    background: #cfd3dd;
+
+    border-radius: 10px;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 767px) {
+
+    .hackathon-page {
+        padding: 22px 10px 40px;
+    }
+
+    .hackathon-header {
+        margin-bottom: 22px;
+    }
+
+    .hackathon-logo {
+        width: 145px;
+    }
+
+    .hackathon-header h1 {
+        font-size: 27px;
+    }
+
+    .hackathon-header p {
+        font-size: 13px;
+    }
+
+    .hackathon-card {
+        border-radius: 10px;
+
+        margin-bottom: 12px;
+    }
+
+    .section-header {
+        padding: 14px 14px 10px;
+
+        gap: 9px;
+    }
+
+    .section-body {
+        padding: 2px 14px 14px;
+    }
+
+    .section-icon {
+        width: 30px;
+
+        height: 30px;
+
+        font-size: 14px;
+    }
+
+    .section-header h3 {
+        font-size: 14px;
+    }
+
+    .section-header p {
+        font-size: 9.5px;
+    }
+
+    .form-field {
+        margin-bottom: 12px;
+    }
+
+    .hackathon-input {
+        height: 41px;
+
+        font-size: 12px;
+    }
+
+    .team-header {
+        align-items: flex-start;
+    }
+
+    .add-member-btn {
+        padding: 6px 9px;
+
+        font-size: 9px;
+    }
+
+    .team-member-card {
+        padding: 9px;
+    }
+
+    .team-member-title {
+        font-size: 10px;
+    }
+
+    .custom-checkbox-row label {
+        font-size: 10.5px;
+    }
+
+    .payment-content {
+        padding: 22px 15px;
+    }
+
+    .payment-btn {
+        width: 100%;
+
+        min-width: 0;
+    }
+
+    .hackathon-modal-backdrop {
+        padding: 10px;
+    }
+
+    .hackathon-modal {
+        max-height: 94vh;
+
+        border-radius: 10px;
+    }
+
+    .hackathon-modal-body {
+        padding: 16px;
+
+        max-height: calc(94vh - 115px);
+    }
+
+    .hackathon-modal-header {
+        padding: 15px 16px;
+    }
+
+    .hackathon-modal-header h3 {
+        font-size: 14px;
+    }
+
+    .terms-section {
+        margin-bottom: 18px;
+    }
+
+    .success-content {
+        padding: 32px 20px;
+    }
+
+}

@@ -673,14 +673,18 @@ const HackathonProjectDetails = () => {
                         deadline.
                     </small>
                     <small className="d-block text-danger mt-3">
-                        <strong>Important:</strong> OTP access will be available only after
-                        your payment has been successfully verified by the Nexila Hackathon Team.
-                        Once you have completed the payment, please send a clear screenshot of
-                        the successful payment to our WhatsApp number:
+                        <strong>Important:</strong> OTP access is available only after your
+                        payment has been successfully completed and verified.
+
+                        If you have already completed the payment, click the
+                        <strong> Get OTP </strong>
+                        button to access the project details page. The OTP will be sent to
+                        the <strong>Team Lead's registered email ID</strong>. Please allow a
+                        few seconds for the OTP to be delivered.
+
+                        If you experience any issues with receiving the OTP or accessing the
+                        project details page, please contact our support team at
                         <strong> +91 9803061234</strong>.
-                        After your payment has been verified and you receive confirmation from
-                        our team, you will be able to request the OTP and access the project
-                        details page to update your submission.
                     </small>
 
                 </div>

@@ -6,13 +6,20 @@ const axios = require("axios");
 
 const WATI_BASE_URL = process.env.WATI_BASE_URL;
 const WATI_API_KEY = process.env.WATI_API_KEY;
+const HACKATHON_PROJECT_DETAILS = process.env.HACKATHON_PROJECT_DETAILS_URL;
+
+
+
 
 // =====================================================
 // SEND HACKATHON REGISTRATION SUCCESS WHATSAPP
 // =====================================================
 
 const sendHackathonWhatsApp = async (student) => {
-
+const projectDetailsUrl =
+    `${HACKATHON_PROJECT_DETAILS}?registrationId=${encodeURIComponent(
+        student.registrationId
+    )}`;
     try {
 
         // =================================================
@@ -20,12 +27,34 @@ const sendHackathonWhatsApp = async (student) => {
         // =================================================
 
         if (!WATI_BASE_URL) {
-            throw new Error("WATI_BASE_URL is missing");
+            throw new Error(
+                "WATI_BASE_URL is missing"
+            );
         }
 
         if (!WATI_API_KEY) {
-            throw new Error("WATI_API_KEY is missing");
+            throw new Error(
+                "WATI_API_KEY is missing"
+            );
         }
+
+        if (!projectDetailsUrl) {
+            throw new Error(
+                "Project details URL is missing"
+            );
+        }
+
+
+        // =================================================
+        // VALIDATE STUDENT
+        // =================================================
+
+        if (!student) {
+            throw new Error(
+                "Student details are required"
+            );
+        }
+
 
         // =================================================
         // VALIDATE PHONE
@@ -37,6 +66,7 @@ const sendHackathonWhatsApp = async (student) => {
             );
         }
 
+
         // =================================================
         // CLEAN PHONE NUMBER
         // =================================================
@@ -45,35 +75,50 @@ const sendHackathonWhatsApp = async (student) => {
             .replace(/\D/g, "")
             .trim();
 
+
         if (phoneNumber.length !== 10) {
             throw new Error(
                 "Student phone number must contain 10 digits"
             );
         }
 
-        // India country code
-        const whatsappNumber = `91${phoneNumber}`;
 
         // =================================================
-        // TEMPLATE PARAMETERS
+        // INDIA COUNTRY CODE
+        // =================================================
+
+        const whatsappNumber = `91${phoneNumber}`;
+
+
+        // =================================================
+        // TEAM MEMBERS COUNT
+        // =================================================
+
+        const teamMembersCount =
+            Array.isArray(student.teamMembers)
+                ? student.teamMembers.length
+                : 0;
+
+
+        // =================================================
+        // WATI TEMPLATE PARAMETERS
         // =================================================
         //
-        // Template:
-        //
-        // Hello {{1}},
-        //
-        // Your Nexila Hackathon registration has been
-        // successfully completed.
-        //
-        // College: {{2}}
-        // Project: {{3}}
-        // Team Size: {{4}}
-        // Amount Paid: ₹{{5}}
-        // Payment Status: {{6}}
+        // {{1}} - Student / Team Lead Name
+        // {{2}} - Registration ID
+        // {{3}} - Team Lead
+        // {{4}} - College
+        // {{5}} - Team Name
+        // {{6}} - Team Members
+        // {{7}} - Hackathon Track
+        // {{8}} - Primary Technical Skill
+        // {{9}} - Project Details URL
         //
         // =================================================
 
         const parameters = [
+
+            // {{1}}
             {
                 name: "1",
                 value: String(
@@ -81,54 +126,97 @@ const sendHackathonWhatsApp = async (student) => {
                 ),
             },
 
+
+            // {{2}}
             {
                 name: "2",
+                value: String(
+                    student.registrationId || ""
+                ),
+            },
+
+
+            // {{3}}
+            {
+                name: "3",
+                value: String(
+                    student.fullName || ""
+                ),
+            },
+
+
+            // {{4}}
+            {
+                name: "4",
                 value: String(
                     student.collegeName || ""
                 ),
             },
 
-            {
-                name: "3",
-                value: String(
-                    student.projectTitle || ""
-                ),
-            },
 
-            {
-                name: "4",
-                value: String(
-                    student.teamMembers?.length || 0
-                ),
-            },
-
+            // {{5}}
             {
                 name: "5",
                 value: String(
-                    student.paymentAmount || 0
+                    student.teamName || ""
                 ),
             },
 
+
+            // {{6}}
             {
                 name: "6",
                 value: String(
-                    student.paymentStatus || ""
+                    teamMembersCount
                 ),
             },
+
+
+            // {{7}}
+            {
+                name: "7",
+                value: String(
+                    student.hackathonTrack || ""
+                ),
+            },
+
+
+            // {{8}}
+            {
+                name: "8",
+                value: String(
+                    student.primaryTechnicalSkill || ""
+                ),
+            },
+
+
+            // {{9}}
+            {
+                name: "9",
+                value:
+                    projectDetailsUrl,
+            },
+
+            // {{10}}
+            {
+                name: "10",
+                value:
+                    String(
+                        student.paymentStatus || ""
+                    )
+            }
+
         ];
+
 
         // =================================================
         // WATI API URL
-        // =================================================
-        //
-        // IMPORTANT:
-        // whatsappNumber must be in QUERY PARAMETER
-        //
         // =================================================
 
         const url =
             `${WATI_BASE_URL}/api/v1/sendTemplateMessage` +
             `?whatsappNumber=${whatsappNumber}`;
+
 
         // =================================================
         // REQUEST BODY
@@ -137,16 +225,18 @@ const sendHackathonWhatsApp = async (student) => {
         const requestBody = {
 
             template_name:
-                "nexila_hackathon_registration_success",
+                "nexila_hackathon_registration_success2",
 
             broadcast_name:
-                "nexila_hackathon_registration",
+                "nexila_hackathon_registration2",
 
             parameters,
+
         };
 
+
         // =================================================
-        // DEBUG
+        // DEBUG LOGGING
         // =================================================
 
         console.log(
@@ -158,8 +248,7 @@ const sendHackathonWhatsApp = async (student) => {
         );
 
         console.log(
-            "URL:",
-            url
+            "================================="
         );
 
         console.log(
@@ -170,6 +259,51 @@ const sendHackathonWhatsApp = async (student) => {
         console.log(
             "Template:",
             requestBody.template_name
+        );
+
+        console.log(
+            "Registration ID:",
+            student.registrationId
+        );
+
+        console.log(
+            "Team Lead:",
+            student.fullName
+        );
+
+        console.log(
+            "Team Name:",
+            student.teamName
+        );
+
+        console.log(
+            "College:",
+            student.collegeName
+        );
+
+        console.log(
+            "Team Members:",
+            teamMembersCount
+        );
+
+        console.log(
+            "Hackathon Track:",
+            student.hackathonTrack
+        );
+
+        console.log(
+            "Primary Technical Skill:",
+            student.primaryTechnicalSkill
+        );
+
+        console.log(
+            "Payment Status:",
+            student.paymentStatus
+        );
+
+        console.log(
+            "Project Details URL:",
+            projectDetailsUrl
         );
 
         console.log(
@@ -195,13 +329,17 @@ const sendHackathonWhatsApp = async (student) => {
             "================================="
         );
 
+
         // =================================================
-        // SEND REQUEST
+        // SEND REQUEST TO WATI
         // =================================================
 
         const response = await axios.post(
+
             url,
+
             requestBody,
+
             {
                 headers: {
 
@@ -213,11 +351,15 @@ const sendHackathonWhatsApp = async (student) => {
 
                     Accept:
                         "application/json",
+
                 },
 
                 timeout: 15000,
+
             }
+
         );
+
 
         // =================================================
         // SUCCESS
@@ -232,6 +374,7 @@ const sendHackathonWhatsApp = async (student) => {
         );
 
         console.log(
+            "Response:",
             response.data
         );
 
@@ -239,7 +382,9 @@ const sendHackathonWhatsApp = async (student) => {
             "================================="
         );
 
+
         return response.data;
+
 
     } catch (error) {
 
@@ -252,7 +397,7 @@ const sendHackathonWhatsApp = async (student) => {
         );
 
         console.error(
-            "WATI ERROR"
+            "WATI WHATSAPP ERROR"
         );
 
         console.error(
@@ -279,9 +424,13 @@ const sendHackathonWhatsApp = async (student) => {
             "================================="
         );
 
+
         throw error;
+
     }
+
 };
+
 
 // =====================================================
 // EXPORT

@@ -17,6 +17,9 @@ const {
     sendManualRegistrationSuccess,
     sendTeamDetailsEmail,
 } = require("../services/hackathonEmailService");
+const {
+    sendHackathonWhatsApp
+} = require("../services/watiService");
 // =====================================================
 // CONSTANTS
 // =====================================================
@@ -840,13 +843,13 @@ const verifyHackathonPayment = async (req, res) => {
             razorpay_signature,
         } = req.body;
 
-        console.log("======================================== - hackathonController.js:843");
-        console.log("HACKATHON PAYMENT VERIFICATION - hackathonController.js:844");
-        console.log("======================================== - hackathonController.js:845");
+        console.log("======================================== - hackathonController.js:846");
+        console.log("HACKATHON PAYMENT VERIFICATION - hackathonController.js:847");
+        console.log("======================================== - hackathonController.js:848");
 
-        console.log("Order ID: - hackathonController.js:847", razorpay_order_id);
-        console.log("Payment ID: - hackathonController.js:848", razorpay_payment_id);
-        console.log("Team Name: - hackathonController.js:849", formData?.teamName);
+        console.log("Order ID: - hackathonController.js:850", razorpay_order_id);
+        console.log("Payment ID: - hackathonController.js:851", razorpay_payment_id);
+        console.log("Team Name: - hackathonController.js:852", formData?.teamName);
         console.log(
             "Team Members:",
             formData?.teamMembers?.length
@@ -1465,6 +1468,26 @@ try {
         "Team/project details email failed:",
         emailError
     );
+}
+// =====================================================
+// SEND HACKATHON WHATSAPP
+// =====================================================
+
+try {
+
+    await sendHackathonWhatsApp(student);
+
+    console.log(
+        "Hackathon registration WhatsApp message sent successfully"
+    );
+
+} catch (whatsappError) {
+
+    console.error(
+        "Hackathon registration WhatsApp message failed:",
+        whatsappError
+    );
+
 }
         // =====================================================
         // SUCCESS RESPONSE
