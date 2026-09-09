@@ -5,7 +5,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
-
+const hackathonInterestRoutes = require("./routes/hackathonInterestRoutes");
 const {
     verifyMailTransporter,
 } = require("./services/hackathonEmailService");
@@ -46,7 +46,7 @@ connectDB(process.env.MONGO_URI);
 
 
 app.use(cors({
-  origin: ["https://crm.nexilatechnologies.com", "http://localhost:5173"],
+  origin: ["https://crm.nexilatechnologies.com", "http://localhost:5173",'http://127.0.0.1:5500','http://127.0.0.1:5501'],
   //origin: 'http://localhost:5173', // your Vite frontend
   credentials: true
 }));
@@ -60,8 +60,12 @@ app.use("/api/deals", require("./routes/deals"));
 app.use("/api/students", require("./routes/student"));
 
 app.use("/api/hackathon", require("./routes/hackathon"));
+app.use(
+  "/api/hackathon-interest",
+  hackathonInterestRoutes
+);
 app.get('/', (req, res) => res.send('Leads backend running'));
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT} - server.js:65`);
-  console.log('Mongo URI: - server.js:66', process.env.MONGO_URI);
+  console.log(`Server running on port ${PORT} - server.js:69`);
+  console.log('Mongo URI: - server.js:70', process.env.MONGO_URI);
 });;
