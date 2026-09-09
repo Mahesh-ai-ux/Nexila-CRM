@@ -223,6 +223,27 @@ export const SidebarData = [
         submenuItems: [],
       },
 
+      // =================================================
+    // HACKATHON INTERESTED
+    // =================================================
+    {
+      label: "Hackathon Interested",
+      link: route.hachathonInterested,
+
+      relatedRoutes: [
+        route.hachathonInterested,
+      ],
+
+      submenu: false,
+      showSubRoute: false,
+      icon: "user-check",
+
+      base: "hackathon-interested",
+      materialicons: "start",
+      dot: true,
+      submenuItems: [],
+    },
+
     ],
   },
 

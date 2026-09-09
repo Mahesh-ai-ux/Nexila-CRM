@@ -315,12 +315,14 @@ export const all_routes = {
 
 
   // Nexila Hackathon
-  hackathonPublic: "/nexila-hackathon",
-  hackathonPublicNormal: "/nexila-hackathon1",
+  hackathonPublic: "/nexila-hackathon1",
+  hackathonPublicNormal: "/nexila-hackathon",
   hackathonList: "/hackathon",
   hackathonDetails: "/hackathon/details/:id",
   hackathonEditForm: "/hackathon/edit/:id",
 
-  hackathonProjectDetails: "/nexila-hackathon/project-details"
+  hackathonProjectDetails: "/nexila-hackathon/project-details",
+
+  hachathonInterested: "/hackathon-interested"
 
 };

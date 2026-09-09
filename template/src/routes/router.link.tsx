@@ -222,6 +222,7 @@ import HackathonDetails from "../feature-module/hackathon/hackathonDetails";
 import HackathonEditForm from "../feature-module/hackathon/hackathonEditForm";
 
 import HackathonProjectDetails from "../feature-module/Pages/public/hackathonProjectDetails";
+import HackathonInterests from "../feature-module/hackathon/HackathonInterests";
 const route = all_routes;
 
 export const publicRoutes = [
@@ -1673,6 +1674,13 @@ export const publicRoutes = [
     route: Route,
     meta_title: "Hackathon Edit Form",
   },
+  {
+    id: "hackathon-interested",
+    path: route.hachathonInterested,
+    element: <HackathonInterests />,
+    route: Route,
+    meta_title: "Hackathon Interested",
+  },
 ];
 
 export const authRoutes = [
@@ -1781,5 +1789,5 @@ export const authRoutes = [
     route: Route,
     meta_title: "Hackathon Project Details",
   },
-  
+
 ];
