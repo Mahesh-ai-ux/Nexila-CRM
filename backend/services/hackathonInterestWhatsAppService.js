@@ -12,11 +12,11 @@ const sendHackathonInterestWhatsApp = async (student) => {
       .slice(-10);
 
     // Add India country code
-    const fullWhatsappNumber = 91${whatsappNumber};
+    const fullWhatsappNumber = `91${whatsappNumber}`;
 
     const url =
-      ${WATI_BASE_URL}/api/v1/sendTemplateMessage +
-      ?whatsappNumber=${fullWhatsappNumber};
+      `${WATI_BASE_URL}/api/v1/sendTemplateMessage` +
+      `?whatsappNumber=${fullWhatsappNumber}`;
 
     const requestBody = {
       template_name: "hack_welcome_msg",
@@ -28,7 +28,7 @@ const sendHackathonInterestWhatsApp = async (student) => {
       requestBody,
       {
         headers: {
-          Authorization: Bearer ${WATI_API_KEY},
+          Authorization: `Bearer ${WATI_API_KEY}`,
           "Content-Type": "application/json",
           Accept: "application/json"
         },
