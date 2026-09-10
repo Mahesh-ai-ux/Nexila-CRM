@@ -1,5 +1,7 @@
 const HackathonInterest = require("../models/HackathonInterest");
-
+const {
+  sendHackathonInterestWhatsApp
+} = require("../services/hackathonInterestWhatsAppService");
 // CREATE
 const createHackathonInterest = async (req, res) => {
   try {
@@ -34,14 +36,53 @@ const createHackathonInterest = async (req, res) => {
       mobileNumber,
       status: "interested",
     });
+ // ==========================================
+    // SEND WHATSAPP
+    // ==========================================
 
+    try {
+
+      await sendHackathonInterestWhatsApp(
+        student
+      );
+
+      // ========================================
+      // WHATSAPP SUCCESS
+      // Change status to "link sent"
+      // ========================================
+
+      student.status = "link sent";
+
+      await student.save();
+
+
+      console.log(
+        "Hackathon interest WhatsApp sent successfully"
+      );
+
+      console.log(
+        "Interest status changed to: link sent"
+      );
+
+    } catch (whatsappError) {
+
+      console.error(
+        "Hackathon interest WhatsApp failed:",
+        whatsappError
+      );
+
+      // IMPORTANT:
+      // Do not fail the registration
+      // if WhatsApp fails.
+
+    }
     return res.status(201).json({
       success: true,
       message: "Interest registered successfully",
       data: student,
     });
   } catch (error) {
-    console.error("Create hackathon interest error: - hackathonInterestController.js:44", error);
+    console.error("Create hackathon interest error: - hackathonInterestController.js:85", error);
 
     return res.status(500).json({
       success: false,
@@ -60,6 +101,7 @@ const getHackathonInterests = async (req, res) => {
 
     if (
       status === "interested" ||
+      status === "link sent" ||
       status === "not interested"
     ) {
       filter.status = status;
@@ -73,7 +115,7 @@ const getHackathonInterests = async (req, res) => {
       data: students,
     });
   } catch (error) {
-    console.error("Get hackathon interests error: - hackathonInterestController.js:76", error);
+    console.error("Get hackathon interests error: - hackathonInterestController.js:118", error);
 
     return res.status(500).json({
       success: false,
@@ -91,6 +133,7 @@ const updateHackathonInterestStatus = async (req, res) => {
 
     if (
       status !== "interested" &&
+      status !== "link sent" &&
       status !== "not interested"
     ) {
       return res.status(400).json({
@@ -123,7 +166,7 @@ const updateHackathonInterestStatus = async (req, res) => {
       data: student,
     });
   } catch (error) {
-    console.error("Update status error: - hackathonInterestController.js:126", error);
+    console.error("Update status error: - hackathonInterestController.js:169", error);
 
     return res.status(500).json({
       success: false,

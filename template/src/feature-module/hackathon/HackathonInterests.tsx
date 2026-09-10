@@ -11,7 +11,7 @@ import API_URL from "../../api/apiconfig";
 // STATUS TYPE
 // =====================================================
 
-type InterestStatus = "interested" | "not interested" | string;
+type InterestStatus = "interested" | "not interested" | "link sent" | string;
 
 // =====================================================
 // STATUS OPTIONS
@@ -20,6 +20,7 @@ type InterestStatus = "interested" | "not interested" | string;
 const STATUS_OPTIONS: InterestStatus[] = [
     "interested",
     "not interested",
+    "link sent"
 ];
 
 // =====================================================
@@ -303,10 +304,20 @@ const HackathonInterests = () => {
     ) => {
 
         switch (
-            status?.toLowerCase()
+        status?.toLowerCase()
         ) {
 
             case "interested":
+
+                return {
+                    backgroundColor:
+                        "#ffee00",
+
+                    color:
+                        "#050505",
+                };
+
+            case "link sent":
 
                 return {
                     backgroundColor:
@@ -791,25 +802,15 @@ const HackathonInterests = () => {
                         }
                     >
 
-                        {STATUS_OPTIONS.map(
-                            (status) => (
-
-                                <option
-                                    key={
-                                        status
-                                    }
-                                    value={
-                                        status
-                                    }
-                                >
-                                    {status ===
-                                        "not interested"
-                                        ? "Not Interested"
+                        {STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>
+                                {status === "not interested"
+                                    ? "Not Interested"
+                                    : status === "link sent"
+                                        ? "Link Sent"
                                         : "Interested"}
-                                </option>
-
-                            )
-                        )}
+                            </option>
+                        ))}
 
                     </select>
 
@@ -958,6 +959,10 @@ const HackathonInterests = () => {
 
                                         <option value="interested">
                                             Interested
+                                        </option>
+
+                                        <option value="link sent">
+                                            Link Sent
                                         </option>
 
                                         <option value="not interested">

@@ -315,8 +315,8 @@ export const all_routes = {
 
 
   // Nexila Hackathon
-  hackathonPublic: "/nexila-hackathon1",
-  hackathonPublicNormal: "/nexila-hackathon",
+  hackathonPublic: "/nexila-hackathon",
+  hackathonPublicNormal: "/nexila-hackathon1",
   hackathonList: "/hackathon",
   hackathonDetails: "/hackathon/details/:id",
   hackathonEditForm: "/hackathon/edit/:id",

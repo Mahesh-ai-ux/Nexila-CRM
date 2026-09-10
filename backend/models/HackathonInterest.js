@@ -23,7 +23,7 @@ const hackathonInterestSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["interested", "not interested"],
+      enum: ["interested","link sent", "not interested"],
       default: "interested",
     },
   },
