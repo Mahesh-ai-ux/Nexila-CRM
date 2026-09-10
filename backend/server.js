@@ -46,7 +46,7 @@ connectDB(process.env.MONGO_URI);
 
 
 app.use(cors({
-  origin: ["https://crm.nexilatechnologies.com", "http://localhost:5173",'http://127.0.0.1:5500','http://127.0.0.1:5501','https://www.nexilatechnologies.com'],
+  origin: ["https://crm.nexilatechnologies.com",'https://www.nexilatechnologies.com'],
   //origin: 'http://localhost:5173', // your Vite frontend
   credentials: true
 }));
