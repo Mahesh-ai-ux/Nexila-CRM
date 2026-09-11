@@ -51,9 +51,9 @@ const createHackathonInterest = async (req, res) => {
       // Change status to "link sent"
       // ========================================
 
-      student.status = "link sent";
+      // student.status = "link sent";
 
-      await student.save();
+      // await student.save();
 
 
       console.log(
