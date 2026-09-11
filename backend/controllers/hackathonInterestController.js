@@ -175,9 +175,45 @@ const updateHackathonInterestStatus = async (req, res) => {
   }
 };
 
+// SEND WELCOME WHATSAPP MANUALLY
+const sendWelcomeWhatsApp = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find student
+    const student = await HackathonInterest.findById(id);
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    // Send WhatsApp using existing WATI service
+    await sendHackathonInterestWhatsApp(student);
+
+    return res.status(200).json({
+      success: true,
+      message: "Welcome WhatsApp message sent successfully",
+    });
+
+  } catch (error) {
+    console.error(
+      "Manual welcome WhatsApp error:",
+      error.response?.data || error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send welcome WhatsApp message",
+    });
+  }
+};
 
 module.exports = {
   createHackathonInterest,
   getHackathonInterests,
   updateHackathonInterestStatus,
+  sendWelcomeWhatsApp,
 };

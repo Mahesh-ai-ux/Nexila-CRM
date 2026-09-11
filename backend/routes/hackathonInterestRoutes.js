@@ -7,6 +7,7 @@ const {
   createHackathonInterest,
   getHackathonInterests,
   updateHackathonInterestStatus,
+  sendWelcomeWhatsApp,
 } = require("../controllers/hackathonInterestController");
 
 
@@ -20,6 +21,8 @@ router.get("/", authMiddleware,getHackathonInterests);
 
 // CRM status update
 router.patch("/:id/status", authMiddleware,updateHackathonInterestStatus);
+
+router.post("/:id/send-welcome-whatsapp", sendWelcomeWhatsApp);
 
 
 module.exports = router;

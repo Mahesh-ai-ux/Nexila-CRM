@@ -17,9 +17,9 @@ const sendHackathonInterestWhatsApp = async (student) => {
     const url =
       `${WATI_BASE_URL}/api/v1/sendTemplateMessage` +
       `?whatsappNumber=${fullWhatsappNumber}`;
-
+//
     const requestBody = {
-      template_name: "hack_welcome_msg",
+      template_name: "hack_welcome_msg2",
       broadcast_name: "nexila_hackathon_welcome"
     };
 

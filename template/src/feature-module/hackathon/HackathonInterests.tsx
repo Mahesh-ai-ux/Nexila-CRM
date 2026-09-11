@@ -65,6 +65,7 @@ const HackathonInterests = () => {
     const [changingStatusId, setChangingStatusId] =
         useState<string | null>(null);
 
+    const [sendingWelcomeId, setSendingWelcomeId] = useState<string | null>(null);
     // =================================================
     // FILTER
     // =================================================
@@ -208,6 +209,45 @@ const HackathonInterests = () => {
         },
         []
     );
+    const handleSendWelcomeWhatsApp = async (studentId: string) => {
+        try {
+            setSendingWelcomeId(studentId);
+
+            const token = localStorage.getItem("token");
+
+            const response = await axios.post(
+                `${API_URL}/hackathon-interest/${studentId}/send-welcome-whatsapp`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            alert(
+                response.data?.message ||
+                "Welcome WhatsApp message sent successfully"
+            );
+
+        } catch (error: any) {
+
+            console.error(
+                "Send welcome WhatsApp error:",
+                error
+            );
+
+            alert(
+                error.response?.data?.message ||
+                "Failed to send welcome WhatsApp message"
+            );
+
+        } finally {
+            setSendingWelcomeId(null);
+        }
+    };
 
     // =================================================
     // INITIAL FETCH
@@ -815,6 +855,52 @@ const HackathonInterests = () => {
                     </select>
 
                 </div>
+
+            ),
+
+            sorter: () => 0,
+        },
+        {
+            title: "WhatsApp",
+
+            dataIndex: "whatsapp",
+
+            key: "whatsapp",
+
+            render: (
+                _: any,
+                record: HackathonInterest
+            ) => (
+
+                <button
+                    type="button"
+                    className="btn btn-sm btn-success"
+                    title="Send Welcome WhatsApp"
+                    disabled={
+                        sendingWelcomeId ===
+                        record._id
+                    }
+                    onClick={() =>
+                        handleSendWelcomeWhatsApp(
+                            record._id
+                        )
+                    }
+                >
+
+                    {sendingWelcomeId ===
+                        record._id ? (
+                        <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                        />
+                    ) : (
+                        <i className="ti ti-brand-whatsapp me-1" />
+                    )}
+
+                    Send Welcome
+
+                </button>
 
             ),
 
