@@ -898,7 +898,7 @@ const HackathonInterests = () => {
                         <i className="ti ti-brand-whatsapp me-1" />
                     )}
 
-                    Send Welcome
+                    Send Follow-up Message
 
                 </button>
 

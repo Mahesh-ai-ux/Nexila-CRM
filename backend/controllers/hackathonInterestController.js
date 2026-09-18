@@ -1,6 +1,7 @@
 const HackathonInterest = require("../models/HackathonInterest");
 const {
-  sendHackathonInterestWhatsApp
+  sendHackathonInterestWhatsApp,
+  sendHackathonFollowupWhatsApp
 } = require("../services/hackathonInterestWhatsAppService");
 // CREATE
 const createHackathonInterest = async (req, res) => {
@@ -51,9 +52,9 @@ const createHackathonInterest = async (req, res) => {
       // Change status to "link sent"
       // ========================================
 
-      // student.status = "link sent";
+      student.status = "link sent";
 
-      // await student.save();
+      await student.save();
 
 
       console.log(
@@ -82,7 +83,7 @@ const createHackathonInterest = async (req, res) => {
       data: student,
     });
   } catch (error) {
-    console.error("Create hackathon interest error: - hackathonInterestController.js:85", error);
+    console.error("Create hackathon interest error: - hackathonInterestController.js:86", error);
 
     return res.status(500).json({
       success: false,
@@ -115,7 +116,7 @@ const getHackathonInterests = async (req, res) => {
       data: students,
     });
   } catch (error) {
-    console.error("Get hackathon interests error: - hackathonInterestController.js:118", error);
+    console.error("Get hackathon interests error: - hackathonInterestController.js:119", error);
 
     return res.status(500).json({
       success: false,
@@ -166,7 +167,7 @@ const updateHackathonInterestStatus = async (req, res) => {
       data: student,
     });
   } catch (error) {
-    console.error("Update status error: - hackathonInterestController.js:169", error);
+    console.error("Update status error: - hackathonInterestController.js:170", error);
 
     return res.status(500).json({
       success: false,
@@ -191,7 +192,7 @@ const sendWelcomeWhatsApp = async (req, res) => {
     }
 
     // Send WhatsApp using existing WATI service
-    await sendHackathonInterestWhatsApp(student);
+    await sendHackathonFollowupWhatsApp(student);
 
     return res.status(200).json({
       success: true,
