@@ -1,0 +1,104 @@
+[{
+  "_id": {
+    "$oid": "69147e10a88bbb0f5c813ca0"
+  },
+  "name": "Bhavani",
+  "email": "nexila.bhavani@gmail.com",
+  "password": "$2b$10$9idlSNPYHxPvJ49QOBqYAe8Ivt2fx3I0wm/GqoR.EgC.D2MvURrfa",
+  "role": "employee",
+  "createdAt": {
+    "$date": "2025-11-12T12:31:12.346Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69147e57a88bbb0f5c813ca4"
+  },
+  "name": "Ranjana",
+  "email": "nexila.ranjana@gmail.com",
+  "password": "$2b$10$O4UceN5A2bgTpyu4DhbWz.FB2QosHlwVeYsTMAtVwVz0387BpV/Ke",
+  "role": "employee",
+  "createdAt": {
+    "$date": "2025-11-12T12:32:23.119Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691480ffa88bbb0f5c813caa"
+  },
+  "name": "Mahesh",
+  "email": "nexila.mahesh@gmail.com",
+  "password": "$2b$10$7aYFgMxyg9vjf8r0Aru/tu6tr/fcKst9loX9N/rNQyNwgCOkD3afK",
+  "role": "employee",
+  "createdAt": {
+    "$date": "2025-11-12T12:43:43.590Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69148142a88bbb0f5c813cad"
+  },
+  "name": "Brindha",
+  "email": "nexila.brindha@gmail.com",
+  "password": "$2b$10$3NYwxQPq2S41vJtCDfPiJ.dHyiwfVvnsuMBMfFFwLo/wRv9c7B4Fi",
+  "role": "employee",
+  "createdAt": {
+    "$date": "2025-11-12T12:44:50.943Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691481d9a88bbb0f5c813cb0"
+  },
+  "name": "Balaji",
+  "email": "nexila.balaji@gmail.com",
+  "password": "$2b$10$t1o7ex/0bp9s.IulicA3GOZZigf1aKijiyrgOh.osUm.LxgLu5ZSG",
+  "role": "employee",
+  "createdAt": {
+    "$date": "2025-11-12T12:47:21.714Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69148232a88bbb0f5c813cb3"
+  },
+  "name": "Manjusri",
+  "email": "nexila.manjusri@gmail.com",
+  "password": "$2b$10$oAQbRNtziZDCDlDjeK7oS.8U6JmlZJtRGj8QLzh.k4pWxC1NF0bYG",
+  "role": "employee",
+  "createdAt": {
+    "$date": "2025-11-12T12:48:50.491Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69148288a88bbb0f5c813cb6"
+  },
+  "name": "Sudharsana",
+  "email": "nexila.sudharsana@gmail.com",
+  "password": "$2b$10$nQ8tVatOdHk38eZ0gHIAvOlvByuppmE.mHqUe/N17arYr1IReneIi",
+  "role": "employee",
+  "createdAt": {
+    "$date": "2025-11-12T12:50:16.909Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6914833da88bbb0f5c813cbd"
+  },
+  "name": "Loganathan",
+  "email": "Loganathan@nexila.com",
+  "password": "$2b$10$reN/3xJrs/.YVQwq6NFUDOvZXPFI4XX9ixwUGoWvPu2sigJNiNOCm",
+  "role": "admin",
+  "createdAt": {
+    "$date": "2025-11-12T12:53:17.411Z"
+  },
+  "__v": 0
+}]

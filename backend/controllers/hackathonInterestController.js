@@ -1,0 +1,219 @@
+const HackathonInterest = require("../models/HackathonInterest");
+const {
+  sendHackathonInterestWhatsApp
+} = require("../services/hackathonInterestWhatsAppService");
+// CREATE
+const createHackathonInterest = async (req, res) => {
+  try {
+    const { name, email, mobileNumber } = req.body;
+
+    // Validation
+    if (!name || !email || !mobileNumber) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, email and mobile number are required",
+      });
+    }
+
+    // Check duplicate email/mobile
+    // const existingStudent = await HackathonInterest.findOne({
+    //   $or: [
+    //     { email: email.toLowerCase() },
+    //     { mobileNumber: mobileNumber },
+    //   ],
+    // });
+
+    // if (existingStudent) {
+    //   return res.status(409).json({
+    //     success: false,
+    //     message: "This email or mobile number is already registered",
+    //   });
+    // }
+
+    const student = await HackathonInterest.create({
+      name: name.toUpperCase(),
+      email: email.toLowerCase(),
+      mobileNumber,
+      status: "interested",
+    });
+ // ==========================================
+    // SEND WHATSAPP
+    // ==========================================
+
+    try {
+
+      await sendHackathonInterestWhatsApp(
+        student
+      );
+
+      // ========================================
+      // WHATSAPP SUCCESS
+      // Change status to "link sent"
+      // ========================================
+
+      // student.status = "link sent";
+
+      // await student.save();
+
+
+      console.log(
+        "Hackathon interest WhatsApp sent successfully"
+      );
+
+      console.log(
+        "Interest status changed to: link sent"
+      );
+
+    } catch (whatsappError) {
+
+      console.error(
+        "Hackathon interest WhatsApp failed:",
+        whatsappError
+      );
+
+      // IMPORTANT:
+      // Do not fail the registration
+      // if WhatsApp fails.
+
+    }
+    return res.status(201).json({
+      success: true,
+      message: "Interest registered successfully",
+      data: student,
+    });
+  } catch (error) {
+    console.error("Create hackathon interest error: - hackathonInterestController.js:85", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+
+// GET ALL
+const getHackathonInterests = async (req, res) => {
+  try {
+    const { status } = req.query;
+
+    let filter = {};
+
+    if (
+      status === "interested" ||
+      status === "link sent" ||
+      status === "not interested"
+    ) {
+      filter.status = status;
+    }
+
+    const students = await HackathonInterest.find(filter)
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      data: students,
+    });
+  } catch (error) {
+    console.error("Get hackathon interests error: - hackathonInterestController.js:118", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+
+// UPDATE STATUS ONLY
+const updateHackathonInterestStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (
+      status !== "interested" &&
+      status !== "link sent" &&
+      status !== "not interested"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status",
+      });
+    }
+
+    const student = await HackathonInterest.findByIdAndUpdate(
+      id,
+      {
+        status,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Status updated successfully",
+      data: student,
+    });
+  } catch (error) {
+    console.error("Update status error: - hackathonInterestController.js:169", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+// SEND WELCOME WHATSAPP MANUALLY
+const sendWelcomeWhatsApp = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find student
+    const student = await HackathonInterest.findById(id);
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    // Send WhatsApp using existing WATI service
+    await sendHackathonInterestWhatsApp(student);
+
+    return res.status(200).json({
+      success: true,
+      message: "Welcome WhatsApp message sent successfully",
+    });
+
+  } catch (error) {
+    console.error(
+      "Manual welcome WhatsApp error:",
+      error.response?.data || error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send welcome WhatsApp message",
+    });
+  }
+};
+
+module.exports = {
+  createHackathonInterest,
+  getHackathonInterests,
+  updateHackathonInterestStatus,
+  sendWelcomeWhatsApp,
+};
