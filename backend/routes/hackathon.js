@@ -19,6 +19,8 @@ const {
     createHackathonStudent,
     updateHackathonStudent,
     deleteHackathonStudent,
+
+    sendProjectDetailsReminder,
 } = require("../controllers/hackathonController");
 
 // =====================================================
@@ -155,6 +157,11 @@ router.delete(
     deleteHackathonStudent
 );
 
+
+router.post(
+  "/:id/send-project-details-reminder",
+  sendProjectDetailsReminder
+);
 // =====================================================
 // EXPORT
 // =====================================================

@@ -18,7 +18,8 @@ const {
     sendTeamDetailsEmail,
 } = require("../services/hackathonEmailService");
 const {
-    sendHackathonWhatsApp
+    sendHackathonWhatsApp,
+    sendProjectDetailsReminderWhatsApp,
 } = require("../services/watiService");
 // =====================================================
 // CONSTANTS
@@ -843,13 +844,13 @@ const verifyHackathonPayment = async (req, res) => {
             razorpay_signature,
         } = req.body;
 
-        console.log("======================================== - hackathonController.js:846");
-        console.log("HACKATHON PAYMENT VERIFICATION - hackathonController.js:847");
-        console.log("======================================== - hackathonController.js:848");
+        console.log("========================================");
+        console.log("HACKATHON PAYMENT VERIFICATION");
+        console.log("========================================");
 
-        console.log("Order ID: - hackathonController.js:850", razorpay_order_id);
-        console.log("Payment ID: - hackathonController.js:851", razorpay_payment_id);
-        console.log("Team Name: - hackathonController.js:852", formData?.teamName);
+        console.log("Order ID:", razorpay_order_id);
+        console.log("Payment ID:", razorpay_payment_id);
+        console.log("Team Name:", formData?.teamName);
         console.log(
             "Team Members:",
             formData?.teamMembers?.length
@@ -2840,6 +2841,40 @@ const updateStudentProject = async (
     }
 };
 
+
+const sendProjectDetailsReminder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const student = await HackathonStudent.findById(id);
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    await sendProjectDetailsReminderWhatsApp(student);
+
+    return res.status(200).json({
+      success: true,
+      message: "Project details reminder sent successfully",
+    });
+  } catch (error) {
+    console.error(
+      "Project details reminder WhatsApp error:",
+      error.response?.data || error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send project details reminder",
+    });
+  }
+};
+
+
 // =====================================================
 // EXPORT
 // =====================================================
@@ -2870,4 +2905,6 @@ module.exports = {
 
     // Middleware
     verifyProjectAccess,
+
+    sendProjectDetailsReminder,
 };

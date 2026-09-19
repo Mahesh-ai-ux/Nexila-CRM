@@ -431,6 +431,96 @@ const projectDetailsUrl =
 
 };
 
+const sendProjectDetailsReminderWhatsApp = async (student) => {
+  if (!WATI_BASE_URL || !WATI_API_KEY) {
+    throw new Error("WATI configuration is missing");
+  }
+
+  if (!student) {
+    throw new Error("Student details are missing");
+  }
+
+  const phone = String(student.phone || "").replace(/\D/g, "");
+
+  if (phone.length !== 10) {
+    throw new Error("Invalid student phone number");
+  }
+
+  if (!student.registrationId) {
+    throw new Error("Registration ID is missing");
+  }
+
+  const whatsappNumber = `91${phone}`;
+
+  const projectDetailsUrl =
+    `${HACKATHON_PROJECT_DETAILS}?registrationId=${encodeURIComponent(
+      student.registrationId
+    )}`;
+
+  const teamMembersCount = Array.isArray(student.teamMembers)
+    ? student.teamMembers.length
+    : 0;
+
+  const parameters = [
+    {
+      name: "1",
+      value: String(student.fullName || student.name || ""),
+    },
+    {
+      name: "2",
+      value: String(student.registrationId),
+    },
+    {
+      name: "3",
+      value: String(student.fullName || student.name || ""),
+    },
+    {
+      name: "4",
+      value: String(student.collegeName || ""),
+    },
+    {
+      name: "5",
+      value: String(student.teamName || ""),
+    },
+    {
+      name: "6",
+      value: String(teamMembersCount),
+    },
+    {
+      name: "7",
+      value: String(student.hackathonTrack || ""),
+    },
+    {
+      name: "8",
+      value: String(student.primaryTechnicalSkill || ""),
+    },
+    {
+      name: "9",
+      value: projectDetailsUrl,
+    },
+  ];
+
+  const url =
+    `${WATI_BASE_URL}/api/v1/sendTemplateMessage` +
+    `?whatsappNumber=${whatsappNumber}`;
+
+  const requestBody = {
+    template_name: "nexila_project_details_reminder",
+    broadcast_name: "nexila_project_details_reminder",
+    parameters,
+  };
+
+  const response = await axios.post(url, requestBody, {
+    headers: {
+      Authorization: `Bearer ${WATI_API_KEY}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    timeout: 15000,
+  });
+
+  return response.data;
+};
 
 // =====================================================
 // EXPORT
@@ -438,4 +528,5 @@ const projectDetailsUrl =
 
 module.exports = {
     sendHackathonWhatsApp,
+     sendProjectDetailsReminderWhatsApp,
 };

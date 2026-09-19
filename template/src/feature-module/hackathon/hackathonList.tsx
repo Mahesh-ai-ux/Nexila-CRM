@@ -123,6 +123,10 @@ const HackathonList = () => {
     const [projectFilter, setProjectFilter] =
         useState<string>("ALL");
 
+    const [sendingReminderId, setSendingReminderId] = useState<string | null>(
+  null
+);
+
     // =================================================
     // SEARCH
     // =================================================
@@ -736,6 +740,45 @@ const HackathonList = () => {
 
     };
 
+    const handleSendProjectDetailsReminder = async (studentId: string) => {
+  const confirmed = window.confirm(
+    "Send project details reminder to this student?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setSendingReminderId(studentId);
+
+    const token = localStorage.getItem("token");
+
+    await axios.post(
+      `${API_URL}/hackathon/${studentId}/send-project-details-reminder`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+
+    alert("Project details reminder sent successfully!");
+  } catch (error: any) {
+    console.error(
+      "Reminder sending error:",
+      error.response?.data || error.message
+    );
+
+    alert(
+      error.response?.data?.message ||
+        "Failed to send project details reminder"
+    );
+  } finally {
+    setSendingReminderId(null);
+  }
+};
     // =====================================================
     // CHANGE STATUS
     // =====================================================
@@ -1549,6 +1592,37 @@ const HackathonList = () => {
 
             sorter: () => 0,
         },
+        {
+  title: "Project Reminder",
+  dataIndex: "projectReminder",
+  key: "projectReminder",
+  render: (_: any, record: any) => (
+    <button
+      type="button"
+      className="btn btn-sm btn-outline-success"
+      disabled={sendingReminderId === record._id}
+      onClick={() =>
+        handleSendProjectDetailsReminder(record._id)
+      }
+    >
+      {sendingReminderId === record._id ? (
+        <>
+          <span
+            className="spinner-border spinner-border-sm me-1"
+            role="status"
+          ></span>
+          Sending...
+        </>
+      ) : (
+        <>
+          <i className="ti ti-brand-whatsapp me-1"></i>
+          Send Reminder
+        </>
+      )}
+    </button>
+  ),
+  sorter: () => 0,
+},
 
     ];
 
