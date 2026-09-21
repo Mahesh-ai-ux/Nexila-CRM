@@ -1089,6 +1089,18 @@ const HackathonInterests = () => {
                                             Not Interested
                                         </option>
 
+                                        <option value="not answering">
+                                            Not Answering
+                                        </option>
+
+                                        <option value="following">
+                                            Following
+                                        </option>
+
+                                        <option value="registered">
+                                            Registered
+                                        </option>
+
                                     </select>
 
                                 </div>
