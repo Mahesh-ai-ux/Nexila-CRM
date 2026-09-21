@@ -52,9 +52,9 @@ const createHackathonInterest = async (req, res) => {
       // Change status to "link sent"
       // ========================================
 
-      student.status = "link sent";
+      //student.status = "link sent";
 
-      await student.save();
+      //await student.save();
 
 
       console.log(
@@ -196,18 +196,18 @@ const sendWelcomeWhatsApp = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Welcome WhatsApp message sent successfully",
+      message: "follow up WhatsApp message sent successfully",
     });
 
   } catch (error) {
     console.error(
-      "Manual welcome WhatsApp error:",
+      "Manual follow up WhatsApp error:",
       error.response?.data || error.message
     );
 
     return res.status(500).json({
       success: false,
-      message: "Failed to send welcome WhatsApp message",
+      message: "Failed to send follow up WhatsApp message",
     });
   }
 };
