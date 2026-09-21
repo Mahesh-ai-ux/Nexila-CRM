@@ -11,7 +11,7 @@ import API_URL from "../../api/apiconfig";
 // STATUS TYPE
 // =====================================================
 
-type InterestStatus = "interested" | "not interested" | "link sent" | string;
+type InterestStatus = "interested" | "not interested" | "link sent" | "following" | "not answering" | "registered" | string;
 
 // =====================================================
 // STATUS OPTIONS
@@ -20,7 +20,10 @@ type InterestStatus = "interested" | "not interested" | "link sent" | string;
 const STATUS_OPTIONS: InterestStatus[] = [
     "interested",
     "not interested",
-    "link sent"
+    "link sent",
+    "following",
+    "not answering",
+    "registered"
 ];
 
 // =====================================================
@@ -372,6 +375,31 @@ const HackathonInterests = () => {
                 return {
                     backgroundColor:
                         "#dc3545",
+
+                    color:
+                        "#ffffff",
+                };
+
+            case "following":
+                return {
+                    backgroundColor:
+                        "#007bff",
+                    color:
+                        "#ffffff",
+                };
+
+            case "not answering":
+                return {
+                    backgroundColor:
+                        "#6c757d",
+                    color:
+                        "#ffffff",
+                };
+
+            case "registered":
+                return {
+                    backgroundColor:
+                        "#198754",
 
                     color:
                         "#ffffff",
@@ -848,7 +876,13 @@ const HackathonInterests = () => {
                                     ? "Not Interested"
                                     : status === "link sent"
                                         ? "Link Sent"
-                                        : "Interested"}
+                                        : status === "following"
+                                            ? "Following"
+                                            : status === "not answering"
+                                                ? "Not Answering"
+                                                : status === "registered"
+                                                    ? "Registered"
+                                                    : "Interested "}
                             </option>
                         ))}
 
@@ -898,7 +932,7 @@ const HackathonInterests = () => {
                         <i className="ti ti-brand-whatsapp me-1" />
                     )}
 
-                    Send Follow-up Message
+                    Send Follow-up
 
                 </button>
 
