@@ -676,19 +676,20 @@ const NexilaHackathon: React.FC = () => {
             ================================================= */
 
             const orderResponse = await fetch(
-                "/api/hackathon/public/create-order",
+                "https://crm.nexilatechnologies.com:5000/api/hackathon/public/create-order",
                 {
                     method: "POST",
                     headers: {
                         "Content-Type":
                             "application/json",
                     },
-                    body: JSON.stringify({
-                        teamName:
-                            formData.teamName,
-                        teamMembers:
-                            formData.teamMembers,
-                    }),
+                    // body: JSON.stringify({
+                    //     teamName:
+                    //         formData.teamName,
+                    //     teamMembers:
+                    //         formData.teamMembers,
+                    // }),
+                    body: JSON.stringify(formData),
                 }
             );
 
@@ -788,7 +789,7 @@ const NexilaHackathon: React.FC = () => {
 
                             const verifyResponse =
                                 await fetch(
-                                    "/api/hackathon/public/verify-payment",
+                                    "https://crm.nexilatechnologies.com:5000/api/hackathon/public/verify-payment",
                                     {
                                         method: "POST",
 
@@ -878,26 +879,68 @@ const NexilaHackathon: React.FC = () => {
             const razorpay =
                 new window.Razorpay(options);
 
-            razorpay.on(
-                "payment.failed",
-                function (
-                    response: any
-                ) {
+            // razorpay.on(
+            //     "payment.failed",
+            //     function (
+            //         response: any
+            //     ) {
+            //         console.error(
+            //             "Payment Failed:",
+            //             response.error
+            //         );
+
+            //         setPaymentLoading(
+            //             false
+            //         );
+
+            //         alert(
+            //             response.error?.description ||
+            //             "Payment failed"
+            //         );
+            //     }
+            // );
+            razorpay.on("payment.failed", async (response:any) => {
+
+                try {
+
+                    await fetch(
+                        "https://crm.nexilatechnologies.com:5000/api/hackathon/public/payment-failed",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+                            },
+
+                            body: JSON.stringify({
+
+                                razorpay_order_id:
+                                    response.error?.metadata?.order_id,
+
+                                error_description:
+                                    response.error?.description,
+
+                            }),
+
+                        }
+                    );
+
+                } catch (error) {
+
                     console.error(
-                        "Payment Failed:",
-                        response.error
+                        "Failed to update payment status:",
+                        error
                     );
 
-                    setPaymentLoading(
-                        false
-                    );
-
-                    alert(
-                        response.error?.description ||
-                        "Payment failed"
-                    );
                 }
-            );
+
+                alert(
+                    "Payment failed. Please try again."
+                );
+
+                setPaymentLoading(false);
+            });
 
             razorpay.open();
 
@@ -935,7 +978,7 @@ const NexilaHackathon: React.FC = () => {
                     <img
                         src="/nexilalogo1.jpeg"
                         alt="Nexila Technologies"
-                        className="hackathon-logo"
+                        className="hackathon-logo rounded-2"
                     />
 
                     <h1>

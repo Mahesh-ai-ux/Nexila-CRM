@@ -46,6 +46,12 @@ const STATUS_OPTIONS: RegistrationStatus[] = [
     "WINNER",
 ];
 
+const PAYMENT_STATUS_OPTIONS = [
+    "PENDING",
+    "PAID",
+    "FAILED",
+];
+
 // =====================================================
 // HACKATHON STUDENT
 // =====================================================
@@ -124,8 +130,11 @@ const HackathonList = () => {
         useState<string>("ALL");
 
     const [sendingReminderId, setSendingReminderId] = useState<string | null>(
-  null
-);
+        null
+    );
+
+    const [paymentStatusFilter, setPaymentStatusFilter] =
+        useState("ALL");
 
     // =================================================
     // SEARCH
@@ -460,6 +469,17 @@ const HackathonList = () => {
             }
 
             // =============================================
+            // PAYMENT STATUS FILTER
+            // =============================================
+
+            if (
+                paymentStatusFilter !== "ALL" &&
+                student.paymentStatus !== paymentStatusFilter
+            ) {
+                return false;
+            }
+
+            // =============================================
             // TRACK FILTER
             // =============================================
 
@@ -675,6 +695,7 @@ const HackathonList = () => {
         yearFilter,
         teamSizeFilter,
         projectFilter,
+        paymentStatusFilter
     ]);
 
     // =====================================================
@@ -741,44 +762,44 @@ const HackathonList = () => {
     };
 
     const handleSendProjectDetailsReminder = async (studentId: string) => {
-  const confirmed = window.confirm(
-    "Send project details reminder to this student?"
-  );
+        const confirmed = window.confirm(
+            "Send project details reminder to this student?"
+        );
 
-  if (!confirmed) return;
+        if (!confirmed) return;
 
-  try {
-    setSendingReminderId(studentId);
+        try {
+            setSendingReminderId(studentId);
 
-    const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token");
 
-    await axios.post(
-      `${API_URL}/hackathon/${studentId}/send-project-details-reminder`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
+            await axios.post(
+                `${API_URL}/hackathon/${studentId}/send-project-details-reminder`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                }
+            );
 
-    alert("Project details reminder sent successfully!");
-  } catch (error: any) {
-    console.error(
-      "Reminder sending error:",
-      error.response?.data || error.message
-    );
+            alert("Project details reminder sent successfully!");
+        } catch (error: any) {
+            console.error(
+                "Reminder sending error:",
+                error.response?.data || error.message
+            );
 
-    alert(
-      error.response?.data?.message ||
-        "Failed to send project details reminder"
-    );
-  } finally {
-    setSendingReminderId(null);
-  }
-};
+            alert(
+                error.response?.data?.message ||
+                "Failed to send project details reminder"
+            );
+        } finally {
+            setSendingReminderId(null);
+        }
+    };
     // =====================================================
     // CHANGE STATUS
     // =====================================================
@@ -1401,12 +1422,12 @@ const HackathonList = () => {
                             backgroundColor:
                                 isPaid
                                     ? "#198754"
-                                    : "#ffc107",
+                                    : "#ff0707",
 
                             color:
                                 isPaid
                                     ? "#ffffff"
-                                    : "#000000",
+                                    : "#f8f5f5",
 
                             padding:
                                 "6px 10px",
@@ -1593,36 +1614,36 @@ const HackathonList = () => {
             sorter: () => 0,
         },
         {
-  title: "Project Reminder",
-  dataIndex: "projectReminder",
-  key: "projectReminder",
-  render: (_: any, record: any) => (
-    <button
-      type="button"
-      className="btn btn-sm btn-outline-success"
-      disabled={sendingReminderId === record._id}
-      onClick={() =>
-        handleSendProjectDetailsReminder(record._id)
-      }
-    >
-      {sendingReminderId === record._id ? (
-        <>
-          <span
-            className="spinner-border spinner-border-sm me-1"
-            role="status"
-          ></span>
-          Sending...
-        </>
-      ) : (
-        <>
-          <i className="ti ti-brand-whatsapp me-1"></i>
-          Send Reminder
-        </>
-      )}
-    </button>
-  ),
-  sorter: () => 0,
-},
+            title: "Project Reminder",
+            dataIndex: "projectReminder",
+            key: "projectReminder",
+            render: (_: any, record: any) => (
+                <button
+                    type="button"
+                    className="btn btn-sm btn-outline-success"
+                    disabled={sendingReminderId === record._id}
+                    onClick={() =>
+                        handleSendProjectDetailsReminder(record._id)
+                    }
+                >
+                    {sendingReminderId === record._id ? (
+                        <>
+                            <span
+                                className="spinner-border spinner-border-sm me-1"
+                                role="status"
+                            ></span>
+                            Sending...
+                        </>
+                    ) : (
+                        <>
+                            <i className="ti ti-brand-whatsapp me-1"></i>
+                            Send Reminder
+                        </>
+                    )}
+                </button>
+            ),
+            sorter: () => 0,
+        },
 
     ];
 
@@ -1737,6 +1758,44 @@ const HackathonList = () => {
                             ================================================= */}
 
                             <div className="row g-2 mt-3">
+                                {/* PAYMENT STATUS */}
+
+                                <div className="col-md-2">
+
+                                    <label className="form-label mb-1">
+                                        Payment Status
+                                    </label>
+
+                                    <select
+                                        className="form-select"
+                                        value={paymentStatusFilter}
+                                        onChange={(event) =>
+                                            setPaymentStatusFilter(
+                                                event.target.value
+                                            )
+                                        }
+                                    >
+
+                                        <option value="ALL">
+                                            All Payment Status
+                                        </option>
+
+                                        {PAYMENT_STATUS_OPTIONS.map(
+                                            (paymentStatus) => (
+
+                                                <option
+                                                    key={paymentStatus}
+                                                    value={paymentStatus}
+                                                >
+                                                    {paymentStatus}
+                                                </option>
+
+                                            )
+                                        )}
+
+                                    </select>
+
+                                </div>
 
                                 {/* STATUS */}
 

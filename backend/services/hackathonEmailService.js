@@ -383,7 +383,7 @@ html: `
 
                 <p style="margin-top: 0;">
                     If your payment status is currently
-                    showing as <strong>"Pending"</strong>,
+                    showing as <strong>"Pending / Failed"</strong>,
                     please complete the payment and send
                     a clear screenshot of the successful
                     payment to the Nexila Technologies
@@ -1508,7 +1508,8 @@ College Roll No : ${member.collegeRollNo}
 
     <p>
         The Project Details Submission/Edit Link will remain valid until
-        <strong>October 3, 2026.</strong>
+        <strong>October 3, 2026.</strong> 
+         <!-- change deadline - October 3, 2026. -> October 10, 2026. -->
     </p>
 
 

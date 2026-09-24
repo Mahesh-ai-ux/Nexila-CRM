@@ -9,6 +9,7 @@ const router = express.Router();
 const {
     createHackathonPaymentOrder,
     verifyHackathonPayment,
+    markHackathonPaymentFailed,
 
     createHackathonManualRegistration,
 
@@ -59,6 +60,11 @@ router.post(
 router.post(
     "/public/verify-payment",
     verifyHackathonPayment
+);
+
+router.post(
+    "/public/payment-failed",
+    markHackathonPaymentFailed
 );
 
 // =====================================================
