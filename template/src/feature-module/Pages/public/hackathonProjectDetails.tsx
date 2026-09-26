@@ -668,7 +668,9 @@ const HackathonProjectDetails = () => {
                         option and check the Team Lead's registered email address for the OTP
                         to access and edit the project details. Please note that this project
                         details submission/editing page is valid only until
-                        <strong> October 3, 2026.</strong> Kindly ensure that all required
+                        <strong> October 19, 2026. </strong>
+                        {/* change deadline - > <strong> October 3, 2026.</strong> -> <strong> October 19, 2026.</strong>  */}
+                        Kindly ensure that all required
                         project details and supporting documents are submitted before the
                         deadline.
                     </small>

@@ -12,7 +12,7 @@ const {
 // =====================================================
 
 const PROJECT_DEADLINE =
-    new Date("2026-10-03T23:59:59+05:30");
+    new Date("2026-10-19T23:59:59+05:30"); // change deadline 2026-10-03T23:59:59+05:30 -> 2026-10-19T23:59:59+05:30 
 
 // =====================================================
 // CHECK DEADLINE
@@ -338,7 +338,7 @@ const verifyProjectOtp = async (
 
         if (
             student.projectOtpAttempts >=
-            5
+            20 // change deadline -> 5 -> 20
         ) {
 
             return res.status(429).json({

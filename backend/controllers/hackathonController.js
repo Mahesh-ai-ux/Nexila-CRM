@@ -30,7 +30,7 @@ const {
 
 const OTP_EXPIRY_MINUTES = 5;
 
-const MAX_OTP_ATTEMPTS = 5; //change deadline - //5 - 20
+const MAX_OTP_ATTEMPTS = 20; //change deadline - //5 - 20
 
 const OTP_RESEND_SECONDS = 60;
 

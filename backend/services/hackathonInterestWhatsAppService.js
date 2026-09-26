@@ -19,7 +19,7 @@ const sendHackathonInterestWhatsApp = async (student) => {
       `?whatsappNumber=${fullWhatsappNumber}`;
 //
     const requestBody = {
-      template_name: "hack_welcome_msg2",
+      template_name: "hack_welcome_msg2", 
       broadcast_name: "nexila_hackathon_welcome"
     };
 
@@ -73,7 +73,7 @@ const sendHackathonFollowupWhatsApp = async (student) => {
       `?whatsappNumber=${fullWhatsappNumber}`;
 
     const requestBody = {
-      template_name: "hack_followup_1",
+      template_name: "hack_ins_followup_v2", //change deadline -> hack_followup_1 -> hack_ins_followup_v2
       broadcast_name: "nexila_hackathon_followup"
     };
 
@@ -110,3 +110,6 @@ module.exports = {
   sendHackathonInterestWhatsApp,
   sendHackathonFollowupWhatsApp
 };
+
+// hack_welcome_msg2
+// hack_ins_followup_v2

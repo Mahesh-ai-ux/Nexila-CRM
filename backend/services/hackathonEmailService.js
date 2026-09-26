@@ -1508,8 +1508,8 @@ College Roll No : ${member.collegeRollNo}
 
     <p>
         The Project Details Submission/Edit Link will remain valid until
-        <strong>October 3, 2026.</strong> 
-         <!-- change deadline - October 3, 2026. -> October 10, 2026. -->
+        <strong>October 19, 2026.</strong> 
+         <!-- change deadline - October 3, 2026. -> October 19, 2026. -->
     </p>
 
 
