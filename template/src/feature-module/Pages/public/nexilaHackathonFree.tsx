@@ -701,7 +701,7 @@ const NexilaHackathonFree: React.FC = () => {
 
             const response =
                 await fetch(
-                    "http://localhost:5000/api/hackathon/register-free",
+                    "/api/hackathon/register-free",
                     {
                         method: "POST",
 
