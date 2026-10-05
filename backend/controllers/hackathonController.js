@@ -17,10 +17,20 @@ const {
     sendManualRegistrationSuccess,
     sendTeamDetailsEmail,
 } = require("../services/hackathonEmailService");
+
+const {
+    sendRegistrationSuccessFree,
+    sendTeamDetailsEmailFree,
+} = require("../services/hackathonEmailServiceFree.js");
+
+
 const {
     sendHackathonWhatsApp,
     sendProjectDetailsReminderWhatsApp,
 } = require("../services/watiService");
+const {
+    sendHackathonWhatsAppFree,
+} = require("../services/watiServiceFree");
 // =====================================================
 // CONSTANTS
 // =====================================================
@@ -198,6 +208,647 @@ const validateTeamMembers = (teamMembers) => {
 
     return null;
 };
+
+//WITHOUT PAYMENT OCTOBER 5
+const createHackathonRegisteredFree = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const data = req.body;
+
+        // =====================================================
+        // TEAM MEMBERS
+        // =====================================================
+
+        const teamError =
+            validateTeamMembers(
+                data.teamMembers
+            );
+
+        if (teamError) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    teamError,
+
+            });
+
+        }
+
+        // =====================================================
+        // TEAM NAME
+        // =====================================================
+
+        const teamName =
+            normalizeTeamName(
+                data.teamName
+            );
+
+        if (!teamName) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Team name is required",
+
+            });
+
+        }
+
+        // =====================================================
+        // CHECK DUPLICATE TEAM
+        // =====================================================
+
+        const existingTeam =
+            await HackathonStudent.findOne({
+                teamName,
+            });
+
+        if (existingTeam) {
+
+            return res.status(409).json({
+
+                success: false,
+
+                message:
+                    "This team name is already registered",
+
+            });
+
+        }
+
+        // =====================================================
+        // GENERATE REGISTRATION ID
+        // =====================================================
+
+        const registrationId =
+            await generateRegistrationId();
+
+        console.log(
+            "Generated registration ID:",
+            registrationId
+        );
+
+        // =====================================================
+        // AMOUNT
+        // =====================================================
+        //
+        // No payment is being collected currently.
+        //
+        // Keep amount = 0 so the existing payment structure
+        // remains available for future use.
+        //
+        // =====================================================
+
+        const amount = 0;
+
+        // =====================================================
+        // REGISTERED PAYMENT REFERENCE
+        // =====================================================
+        //
+        // No Razorpay transaction is created.
+        //
+        // These fields are only populated with a unique
+        // registration reference so the existing schema
+        // remains compatible.
+        //
+        // =====================================================
+
+        const registeredPaymentReference =
+            `REGISTERED_${registrationId}`;
+
+        // =====================================================
+        // CREATE STUDENT DATA
+        // =====================================================
+
+        const studentData = {
+
+            // -----------------------------------------------
+            // Registration
+            // -----------------------------------------------
+
+            registrationId,
+
+            // -----------------------------------------------
+            // Student
+            // -----------------------------------------------
+
+            fullName: String(
+                data.fullName || ""
+            ).trim(),
+
+            phone: String(
+                data.phone || ""
+            ).trim(),
+
+            email: String(
+                data.email || ""
+            )
+                .trim()
+                .toLowerCase(),
+
+            collegeName: String(
+                data.collegeName || ""
+            ).trim(),
+
+            degree: String(
+                data.degree || ""
+            ).trim(),
+
+            department: String(
+                data.department || ""
+            ).trim(),
+
+            collegeRollNo: String(
+                data.collegeRollNo || ""
+            ).trim(),
+
+            yearOfStudy: String(
+                data.yearOfStudy || ""
+            ).trim(),
+
+            district: String(
+                data.district || ""
+            ).trim(),
+
+            // -----------------------------------------------
+            // Team
+            // -----------------------------------------------
+
+            teamName,
+
+            teamMembers:
+                data.teamMembers,
+
+            // -----------------------------------------------
+            // Hackathon
+            // -----------------------------------------------
+
+            hackathonTrack: String(
+                data.hackathonTrack || ""
+            ).trim(),
+
+            primaryTechnicalSkill: String(
+                data.primaryTechnicalSkill || ""
+            ).trim(),
+
+            // -----------------------------------------------
+            // Project
+            // -----------------------------------------------
+
+            projectTitle: null,
+
+            projectDescription: null,
+
+            projectAbstract: null,
+
+            problemStatement: null,
+
+            proposedSolution: null,
+
+            techStack: null,
+
+            architectureDiagram: null,
+
+            expectedOutcome: null,
+
+            demoLink: null,
+
+            githubLink: null,
+
+            driveLink: null,
+
+            // -----------------------------------------------
+            // PAYMENT
+            // -----------------------------------------------
+            //
+            // No actual payment is taken.
+            //
+            // Registration is treated as PAID so existing
+            // project/OTP logic does not need to be changed.
+            //
+            // -----------------------------------------------
+
+            paymentStatus:
+                "PAID",
+
+            amount,
+
+            razorpayOrderId:
+                registeredPaymentReference,
+
+            razorpayPaymentId:
+                registeredPaymentReference,
+
+            razorpaySignature:
+                registeredPaymentReference,
+
+            paidAt:
+                new Date(),
+
+            // -----------------------------------------------
+            // HACKATHON STATUS
+            // -----------------------------------------------
+
+            status:
+                "REGISTERED",
+
+            // -----------------------------------------------
+            // TERMS
+            // -----------------------------------------------
+
+            termsAccepted:
+                data.termsAccepted === true,
+
+        };
+
+        // =====================================================
+        // REQUIRED FIELD CHECK
+        // =====================================================
+
+        const requiredFields = [
+
+            "fullName",
+
+            "phone",
+
+            "email",
+
+            "collegeName",
+
+            "degree",
+
+            "department",
+
+            "collegeRollNo",
+
+            "yearOfStudy",
+
+            "district",
+
+            "teamName",
+
+            "hackathonTrack",
+
+            "primaryTechnicalSkill",
+
+        ];
+
+        for (
+            const field of requiredFields
+        ) {
+
+            if (
+                !studentData[field]
+            ) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    message:
+                        `${field} is required`,
+
+                });
+
+            }
+
+        }
+
+        // =====================================================
+        // TERMS
+        // =====================================================
+
+        if (
+            studentData.termsAccepted !== true
+        ) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Terms and conditions must be accepted",
+
+            });
+
+        }
+
+        // =====================================================
+        // CREATE REGISTRATION
+        // =====================================================
+
+        console.log(
+            "Creating HackathonStudent..."
+        );
+
+        const student =
+            await HackathonStudent.create(
+                studentData
+            );
+
+        // =====================================================
+        // REGISTRATION LOG
+        // =====================================================
+
+        console.log(
+            "========================================"
+        );
+
+        console.log(
+            "HACKATHON REGISTRATION CREATED"
+        );
+
+        console.log(
+            "Registration ID:",
+            student.registrationId
+        );
+
+        console.log(
+            "Team Name:",
+            student.teamName
+        );
+
+        console.log(
+            "Payment Status:",
+            student.paymentStatus
+        );
+
+        console.log(
+            "Hackathon Status:",
+            student.status
+        );
+
+        console.log(
+            "========================================"
+        );
+
+        // =====================================================
+        // SEND WELCOME EMAIL
+        // =====================================================
+
+        try {
+
+            await sendRegistrationSuccessFree(
+                student
+            );
+
+            console.log(
+                "Registration welcome email sent successfully"
+            );
+
+        } catch (emailError) {
+
+            console.error(
+                "Registration welcome email failed:",
+                emailError
+            );
+
+        }
+
+        // =====================================================
+        // SEND PROJECT DETAILS EMAIL
+        // =====================================================
+        //
+        // You said you will edit this email later to contain
+        // the project submission link.
+        //
+        // Keep the existing service for now.
+        //
+        // =====================================================
+
+        try {
+
+            await sendTeamDetailsEmailFree(
+                student
+            );
+
+            console.log(
+                "Project/team details email sent successfully"
+            );
+
+        } catch (emailError) {
+
+            console.error(
+                "Project/team details email failed:",
+                emailError
+            );
+
+        }
+
+        // =====================================================
+        // SEND WATI WELCOME MESSAGE
+        // =====================================================
+
+        try {
+
+            await sendHackathonWhatsAppFree(
+                student
+            );
+
+            console.log(
+                "Hackathon WATI welcome message sent successfully"
+            );
+
+        } catch (whatsappError) {
+
+            console.error(
+                "Hackathon WATI message failed:",
+                whatsappError
+            );
+
+        }
+
+        // =====================================================
+        // SUCCESS RESPONSE
+        // =====================================================
+
+        return res.status(201).json({
+
+            success: true,
+
+            message:
+                "Hackathon registration completed successfully",
+
+            registrationId:
+                student.registrationId,
+
+            studentId:
+                student._id,
+
+            teamName:
+                student.teamName,
+
+            paymentStatus:
+                student.paymentStatus,
+
+            status:
+                student.status,
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "========================================"
+        );
+
+        console.error(
+            "HACKATHON REGISTRATION ERROR"
+        );
+
+        console.error(
+            "========================================"
+        );
+
+        console.error(error);
+
+        // =====================================================
+        // MONGOOSE VALIDATION ERROR
+        // =====================================================
+
+        if (
+            error?.name ===
+            "ValidationError"
+        ) {
+
+            const validationErrors =
+                Object.values(
+                    error.errors || {}
+                ).map((err) => ({
+
+                    field:
+                        err.path,
+
+                    message:
+                        err.message,
+
+                }));
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Registration validation failed",
+
+                errors:
+                    validationErrors,
+
+            });
+
+        }
+
+        // =====================================================
+        // DUPLICATE KEY ERROR
+        // =====================================================
+
+        if (
+            error?.code === 11000
+        ) {
+
+            console.error(
+                "MongoDB duplicate key:",
+                error.keyPattern,
+                error.keyValue
+            );
+
+            if (
+                error.keyPattern?.teamName
+            ) {
+
+                return res.status(409).json({
+
+                    success: false,
+
+                    message:
+                        "This team name is already registered",
+
+                });
+
+            }
+
+            if (
+                error.keyPattern?.registrationId
+            ) {
+
+                return res.status(409).json({
+
+                    success: false,
+
+                    message:
+                        "Registration ID already exists. Please try again.",
+
+                });
+
+            }
+
+            if (
+                error.keyPattern?.razorpayOrderId
+            ) {
+
+                return res.status(409).json({
+
+                    success: false,
+
+                    message:
+                        "Registration payment reference already exists. Please try again.",
+
+                });
+
+            }
+
+            if (
+                error.keyPattern?.razorpayPaymentId
+            ) {
+
+                return res.status(409).json({
+
+                    success: false,
+
+                    message:
+                        "Registration payment reference already exists. Please try again.",
+
+                });
+
+            }
+
+            return res.status(409).json({
+
+                success: false,
+
+                message:
+                    "Duplicate registration data",
+
+            });
+
+        }
+
+        // =====================================================
+        // GENERAL ERROR
+        // =====================================================
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                "Unable to complete hackathon registration",
+
+        });
+
+    }
+
+};
+
 // =====================================================
 // PUBLIC QR / MANUAL PAYMENT REGISTRATION
 // NO RAZORPAY
@@ -1281,13 +1932,13 @@ const verifyHackathonPayment = async (req, res) => {
             razorpay_signature,
         } = req.body;
 
-        console.log("======================================== - hackathonController.js:1284");
-        console.log("HACKATHON PAYMENT VERIFICATION - hackathonController.js:1285");
-        console.log("======================================== - hackathonController.js:1286");
+        console.log("========================================");
+        console.log("HACKATHON PAYMENT VERIFICATION");
+        console.log("========================================");
 
-        console.log("Order ID: - hackathonController.js:1288", razorpay_order_id);
-        console.log("Payment ID: - hackathonController.js:1289", razorpay_payment_id);
-        console.log("Team Name: - hackathonController.js:1290", formData?.teamName);
+        console.log("Order ID:", razorpay_order_id);
+        console.log("Payment ID:", razorpay_payment_id);
+        console.log("Team Name:", formData?.teamName);
         console.log(
             "Team Members:",
             formData?.teamMembers?.length
@@ -2160,11 +2811,11 @@ const markHackathonPaymentFailed = async (
         // =====================================================
 
       try {
-    console.log("STARTING EMAIL... - hackathonController.js:2163");
+    console.log("STARTING EMAIL...");
 
     await sendManualRegistrationSuccess(student);
 
-    console.log("EMAIL SENT SUCCESSFULLY - hackathonController.js:2167");
+    console.log("EMAIL SENT SUCCESSFULLY");
 } catch (emailError) {
     console.error(
         "EMAIL FAILED:",
@@ -2173,11 +2824,11 @@ const markHackathonPaymentFailed = async (
 }
 
 try {
-    console.log("STARTING TEAM EMAIL... - hackathonController.js:2176");
+    console.log("STARTING TEAM EMAIL...");
 
     await sendTeamDetailsEmail(student);
 
-    console.log("TEAM EMAIL SENT SUCCESSFULLY - hackathonController.js:2180");
+    console.log("TEAM EMAIL SENT SUCCESSFULLY");
 } catch (emailError) {
     console.error(
         "TEAM EMAIL FAILED:",
@@ -2186,11 +2837,11 @@ try {
 }
 
 try {
-    console.log("STARTING WATI... - hackathonController.js:2189");
+    console.log("STARTING WATI...");
 
     await sendHackathonWhatsApp(student);
 
-    console.log("WATI SENT SUCCESSFULLY - hackathonController.js:2193");
+    console.log("WATI SENT SUCCESSFULLY");
 } catch (watiError) {
     console.error(
         "WATI FAILED:",
@@ -3505,6 +4156,7 @@ const sendProjectDetailsReminder = async (req, res) => {
 
 module.exports = {
 
+    createHackathonRegisteredFree,
     // Payment
     createHackathonPaymentOrder,
     verifyHackathonPayment,

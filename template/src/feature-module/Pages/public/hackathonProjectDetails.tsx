@@ -675,12 +675,7 @@ const HackathonProjectDetails = () => {
                         deadline.
                     </small>
                     <small className="d-block text-danger mt-3">
-                        <strong>Important:</strong> OTP access is available only after your
-                        payment has been successfully completed and verified.
-
-                        If you have already completed the payment, click the
-                        <strong> Get OTP </strong>
-                        button to access the project details page. The OTP will be sent to
+                        <strong>Important:</strong>The OTP will be sent to
                         the <strong>Team Lead's registered email ID</strong>. Please allow a
                         few seconds for the OTP to be delivered.
 

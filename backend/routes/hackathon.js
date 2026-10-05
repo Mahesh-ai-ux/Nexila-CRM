@@ -7,6 +7,9 @@ const router = express.Router();
 // =====================================================
 
 const {
+
+
+    createHackathonRegisteredFree,
     createHackathonPaymentOrder,
     verifyHackathonPayment,
     markHackathonPaymentFailed,
@@ -42,6 +45,11 @@ const {
 const authMiddleware = require("../middleware/auth");
 const projectAccessMiddleware = require("../middleware/projectAccess");
 
+
+router.post(
+    "/register-free",
+    createHackathonRegisteredFree
+);
 // =====================================================
 // PUBLIC HACKATHON PAYMENT
 // =====================================================

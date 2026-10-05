@@ -1123,44 +1123,122 @@ const HackathonList = () => {
                         b.email || ""
                     ),
         },
-
-        // =================================================
-        // COLLEGE
+         // =================================================
+        // PROJECT TITLE
         // =================================================
 
         {
-            title: "College",
+            title: "Project Title",
 
-            dataIndex: "collegeName",
+            dataIndex: "projectTitle",
 
-            key: "collegeName",
+            key: "projectTitle",
 
-            render: (text: string) => (
+            render: (text: string) => {
 
-                <span
-                    title={text}
-                    style={{
-                        display: "block",
-                        maxWidth: "220px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                    }}
-                >
-                    {text || "-"}
-                </span>
+                const submitted =
+                    text &&
+                    text.trim() !== "";
 
-            ),
+                return (
+
+                    <div
+                        style={{
+                            maxWidth: "220px",
+                        }}
+                    >
+
+                        {submitted ? (
+
+                            <span
+                                title={text}
+                                style={{
+                                    display:
+                                        "block",
+                                    whiteSpace:
+                                        "nowrap",
+                                    overflow:
+                                        "hidden",
+                                    textOverflow:
+                                        "ellipsis",
+                                }}
+                            >
+                                {text}
+                            </span>
+
+                        ) : (
+
+                            <span
+                                className="badge"
+                                style={{
+                                    backgroundColor:
+                                        "#6c757d",
+                                    color:
+                                        "#ffffff",
+                                    padding:
+                                        "6px 10px",
+                                    borderRadius:
+                                        "6px",
+                                    fontSize:
+                                        "12px",
+                                    fontWeight:
+                                        500,
+                                }}
+                            >
+                                Not Submitted
+                            </span>
+
+                        )}
+
+                    </div>
+
+                );
+
+            },
 
             sorter: (
                 a: HackathonStudent,
                 b: HackathonStudent
             ) =>
-                (a.collegeName || "")
-                    .localeCompare(
-                        b.collegeName || ""
-                    ),
+                (
+                    a.projectTitle || ""
+                ).localeCompare(
+                    b.projectTitle || ""
+                ),
         },
+
+        {
+            title: "Project Reminder",
+            dataIndex: "projectReminder",
+            key: "projectReminder",
+            render: (_: any, record: any) => (
+                <button
+                    type="button"
+                    className="btn btn-sm btn-outline-success"
+                    disabled={sendingReminderId === record._id}
+                    onClick={() =>
+                        handleSendProjectDetailsReminder(record._id)
+                    }
+                >
+                    {sendingReminderId === record._id ? (
+                        <>
+                            <span
+                                className="spinner-border spinner-border-sm me-1"
+                                role="status"
+                            ></span>
+                            Sending...
+                        </>
+                    ) : (
+                        <>
+                            <i className="ti ti-brand-whatsapp me-1"></i>
+                            Send Reminder
+                        </>
+                    )}
+                </button>
+            ),
+            sorter: () => 0,
+        },
+        
 
         // =================================================
         // TRACK
@@ -1313,161 +1391,9 @@ const HackathonList = () => {
                 Number(b.teamSize || 0),
         },
 
-        // =================================================
-        // PROJECT TITLE
-        // =================================================
+       
 
-        {
-            title: "Project Title",
-
-            dataIndex: "projectTitle",
-
-            key: "projectTitle",
-
-            render: (text: string) => {
-
-                const submitted =
-                    text &&
-                    text.trim() !== "";
-
-                return (
-
-                    <div
-                        style={{
-                            maxWidth: "220px",
-                        }}
-                    >
-
-                        {submitted ? (
-
-                            <span
-                                title={text}
-                                style={{
-                                    display:
-                                        "block",
-                                    whiteSpace:
-                                        "nowrap",
-                                    overflow:
-                                        "hidden",
-                                    textOverflow:
-                                        "ellipsis",
-                                }}
-                            >
-                                {text}
-                            </span>
-
-                        ) : (
-
-                            <span
-                                className="badge"
-                                style={{
-                                    backgroundColor:
-                                        "#6c757d",
-                                    color:
-                                        "#ffffff",
-                                    padding:
-                                        "6px 10px",
-                                    borderRadius:
-                                        "6px",
-                                    fontSize:
-                                        "12px",
-                                    fontWeight:
-                                        500,
-                                }}
-                            >
-                                Not Submitted
-                            </span>
-
-                        )}
-
-                    </div>
-
-                );
-
-            },
-
-            sorter: (
-                a: HackathonStudent,
-                b: HackathonStudent
-            ) =>
-                (
-                    a.projectTitle || ""
-                ).localeCompare(
-                    b.projectTitle || ""
-                ),
-        },
-
-        // =================================================
-        // PAYMENT STATUS
-        // =================================================
-
-        {
-            title: "Payment",
-
-            dataIndex: "paymentStatus",
-
-            key: "paymentStatus",
-
-            render: (status: string) => {
-
-                const isPaid =
-                    status?.toLowerCase() ===
-                    "paid";
-
-                return (
-
-                    <span
-                        className="badge"
-                        style={{
-                            backgroundColor:
-                                isPaid
-                                    ? "#198754"
-                                    : "#ff0707",
-
-                            color:
-                                isPaid
-                                    ? "#ffffff"
-                                    : "#f8f5f5",
-
-                            padding:
-                                "6px 10px",
-
-                            borderRadius:
-                                "6px",
-
-                            fontSize:
-                                "12px",
-
-                            fontWeight:
-                                500,
-
-                            display:
-                                "inline-block",
-
-                            minWidth:
-                                "65px",
-
-                            textAlign:
-                                "center",
-                        }}
-                    >
-                        {status || "Pending"}
-                    </span>
-
-                );
-
-            },
-
-            sorter: (
-                a: HackathonStudent,
-                b: HackathonStudent
-            ) =>
-                (
-                    a.paymentStatus || ""
-                ).localeCompare(
-                    b.paymentStatus || ""
-                ),
-        },
+     
 
         // =====================================================
         // STATUS
@@ -1553,6 +1479,7 @@ const HackathonList = () => {
                     b.createdAt || 0
                 ).valueOf(),
         },
+        
 
         // =================================================
         // ACTION
@@ -1613,37 +1540,7 @@ const HackathonList = () => {
 
             sorter: () => 0,
         },
-        {
-            title: "Project Reminder",
-            dataIndex: "projectReminder",
-            key: "projectReminder",
-            render: (_: any, record: any) => (
-                <button
-                    type="button"
-                    className="btn btn-sm btn-outline-success"
-                    disabled={sendingReminderId === record._id}
-                    onClick={() =>
-                        handleSendProjectDetailsReminder(record._id)
-                    }
-                >
-                    {sendingReminderId === record._id ? (
-                        <>
-                            <span
-                                className="spinner-border spinner-border-sm me-1"
-                                role="status"
-                            ></span>
-                            Sending...
-                        </>
-                    ) : (
-                        <>
-                            <i className="ti ti-brand-whatsapp me-1"></i>
-                            Send Reminder
-                        </>
-                    )}
-                </button>
-            ),
-            sorter: () => 0,
-        },
+        
 
     ];
 
@@ -1760,7 +1657,7 @@ const HackathonList = () => {
                             <div className="row g-2 mt-3">
                                 {/* PAYMENT STATUS */}
 
-                                <div className="col-md-2">
+                                {/* <div className="col-md-2">
 
                                     <label className="form-label mb-1">
                                         Payment Status
@@ -1795,7 +1692,7 @@ const HackathonList = () => {
 
                                     </select>
 
-                                </div>
+                                </div> */}
 
                                 {/* STATUS */}
 

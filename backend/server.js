@@ -1,4 +1,4 @@
-require('dotenv').config();
+ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs');
 const hackathonInterestRoutes = require("./routes/hackathonInterestRoutes");
 const {
     verifyMailTransporter,
-} = require("./services/hackathonEmailService");
+} = require("./services/hackathonEmailServiceFree");
 
 
 

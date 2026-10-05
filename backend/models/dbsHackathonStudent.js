@@ -244,12 +244,14 @@ driveLink: {
                 "PAID",
                 "FAILED",
             ],
-            default: "PENDING",
+            // default: "PENDING",
+            default: "PAID",
         },
 
         amount: {
             type: Number,
-            required: true,
+            // required: true,
+            default: 0,
         },
 
         razorpayOrderId: {

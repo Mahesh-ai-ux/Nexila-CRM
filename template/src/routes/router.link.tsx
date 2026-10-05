@@ -223,6 +223,7 @@ import HackathonEditForm from "../feature-module/hackathon/hackathonEditForm";
 
 import HackathonProjectDetails from "../feature-module/Pages/public/hackathonProjectDetails";
 import HackathonInterests from "../feature-module/hackathon/HackathonInterests";
+import NexilaHackathonFree from "../feature-module/Pages/public/nexilaHackathonFree";
 const route = all_routes;
 
 export const publicRoutes = [
@@ -1789,5 +1790,12 @@ export const authRoutes = [
     route: Route,
     meta_title: "Hackathon Project Details",
   },
-
+    {
+    id: "hackathon-public-free",
+    path: route.hackathonPublicFree,
+    element: <NexilaHackathonFree />,
+    route: Route,
+    meta_title: "Nexila Hackathon Free",
+  },
+  
 ];

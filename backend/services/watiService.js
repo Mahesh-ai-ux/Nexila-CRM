@@ -15,7 +15,7 @@ const HACKATHON_PROJECT_DETAILS = process.env.HACKATHON_PROJECT_DETAILS_URL;
 // SEND HACKATHON REGISTRATION SUCCESS WHATSAPP
 // =====================================================
 
-const sendHackathonWhatsApp = async (student) => {
+const sendHackathonWhatsAppFree = async (student) => {
 const projectDetailsUrl =
     `${HACKATHON_PROJECT_DETAILS}?registrationId=${encodeURIComponent(
         student.registrationId
@@ -197,14 +197,7 @@ const projectDetailsUrl =
                     projectDetailsUrl,
             },
 
-            // {{10}}
-            {
-                name: "10",
-                value:
-                    String(
-                        student.paymentStatus || ""
-                    )
-            }
+       
 
         ];
 
@@ -225,10 +218,10 @@ const projectDetailsUrl =
         const requestBody = {
 
             template_name:
-                "nexila_hackathon_registration_success_v2", //change deadline - nexila_hackathon_registration_success2 -> nexila_hackathon_registration_success_v2
+                "nex_hack_free", //change deadline - nexila_hackathon_registration_success2 -> nexila_hackathon_registration_success_v2
 
             broadcast_name:
-                "nexila_hackathon_registration2",
+                "nex_hack_free",
 
             parameters,
 
@@ -296,10 +289,7 @@ const projectDetailsUrl =
             student.primaryTechnicalSkill
         );
 
-        console.log(
-            "Payment Status:",
-            student.paymentStatus
-        );
+    
 
         console.log(
             "Project Details URL:",
@@ -431,7 +421,7 @@ const projectDetailsUrl =
 
 };
 
-const sendProjectDetailsReminderWhatsApp = async (student) => {
+const sendProjectDetailsReminderWhatsAppFree = async (student) => {
   if (!WATI_BASE_URL || !WATI_API_KEY) {
     throw new Error("WATI configuration is missing");
   }
@@ -527,10 +517,12 @@ const sendProjectDetailsReminderWhatsApp = async (student) => {
 // =====================================================
 
 module.exports = {
-    sendHackathonWhatsApp,
-     sendProjectDetailsReminderWhatsApp,
+    sendHackathonWhatsAppFree,
+     sendProjectDetailsReminderWhatsAppFree,
 };
 
 // nexila_hackathon_registration_success_v2
 // nexila_project_details_reminder_v2_1
+// nexila_project_details_reminder_v2_1
+
 //

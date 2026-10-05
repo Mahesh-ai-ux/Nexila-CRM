@@ -4,8 +4,8 @@ const jwt = require("jsonwebtoken");
 const HackathonStudent = require("../models/dbsHackathonStudent.js")
 
 const {
-    sendProjectOtpEmail,
-} = require("../services/hackathonEmailService");
+    sendProjectOtpEmailFree,
+} = require("../services/hackathonEmailServiceFree");
 
 // =====================================================
 // PROJECT DEADLINE
@@ -182,7 +182,7 @@ const requestProjectOtp = async (
         // SEND OTP
         // ---------------------------------------------
 
-        await sendProjectOtpEmail(
+        await sendProjectOtpEmailFree(
             student,
             otp
         );
