@@ -23,6 +23,24 @@ interface TeamMember {
 // =====================================================
 // REGISTRATION STATUS
 // =====================================================
+type ReminderStatus =
+    | "FOLLOW_UP_1"
+    | "FOLLOW_UP_2"
+    | "FOLLOW_UP_3"
+    | "FINAL_FOLLOW_UP"
+    | "SUBMITTED";
+
+const REMINDER_STATUS_OPTIONS: {
+    value: ReminderStatus;
+    label: string;
+}[] = [
+    { value: "FOLLOW_UP_1", label: "Follow Up 1" },
+    { value: "FOLLOW_UP_2", label: "Follow Up 2" },
+    { value: "FOLLOW_UP_3", label: "Follow Up 3" },
+    { value: "FINAL_FOLLOW_UP", label: "Final Follow" },
+    { value: "SUBMITTED", label: "Submitted" },
+];
+
 
 type RegistrationStatus =
     | "REGISTERED"
@@ -86,6 +104,8 @@ interface HackathonStudent {
 
     createdAt?: string;
     updatedAt?: string;
+
+    reminderStatus: ReminderStatus;
 }
 
 // =====================================================
@@ -300,6 +320,9 @@ const HackathonList = () => {
 
                         updatedAt:
                             student.updatedAt,
+
+                        reminderStatus:
+    student.reminderStatus || "FOLLOW_UP_1",
                     };
                 });
 
@@ -944,7 +967,81 @@ const HackathonList = () => {
     // =====================================================
     // TABLE COLUMNS
     // =====================================================
+const [changingReminderStatusId, setChangingReminderStatusId] =
+    useState<string | null>(null);
 
+const handleChangeReminderStatus = async (
+    studentId: string,
+    newStatus: ReminderStatus
+) => {
+    const student = data.find(
+        (item) => item._id === studentId
+    );
+
+    if (!student || student.reminderStatus === newStatus) {
+        return;
+    }
+
+    const previousStatus = student.reminderStatus;
+
+    try {
+        setChangingReminderStatusId(studentId);
+
+        const token = localStorage.getItem("token");
+
+        await axios.patch(
+            `${API_URL}/hackathon/${studentId}/reminder-status`,
+            {
+                reminderStatus: newStatus,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+            }
+        );
+
+        // Update the table after the API succeeds
+        setData((previous) =>
+            previous.map((item) =>
+                item._id === studentId
+                    ? {
+                          ...item,
+                          reminderStatus: newStatus,
+                      }
+                    : item
+            )
+        );
+
+        alert("Reminder status updated successfully!");
+    } catch (error: any) {
+        console.error(
+            "Reminder status update error:",
+            error.response?.data || error.message
+        );
+
+        alert(
+            error.response?.data?.message ||
+                "Failed to update reminder status."
+        );
+
+        // Keep the previous status if saving fails
+        setData((previous) =>
+            previous.map((item) =>
+                item._id === studentId
+                    ? {
+                          ...item,
+                          reminderStatus: previousStatus,
+                      }
+                    : item
+            )
+        );
+    } finally {
+        setChangingReminderStatusId(null);
+    }
+};
     const columns = [
 
         // =================================================
@@ -1238,6 +1335,50 @@ const HackathonList = () => {
             ),
             sorter: () => 0,
         },
+        {
+    title: "Reminder Status",
+    dataIndex: "reminderStatus",
+    key: "reminderStatus",
+
+    render: (
+        reminderStatus: ReminderStatus,
+        record: HackathonStudent
+    ) => (
+        <select
+            className="form-select form-select-sm"
+            value={reminderStatus || "FOLLOW_UP_1"}
+            disabled={
+                changingReminderStatusId === record._id
+            }
+            onChange={(event) =>
+                handleChangeReminderStatus(
+                    record._id,
+                    event.target.value as ReminderStatus
+                )
+            }
+            style={{
+                minWidth: "150px",
+            }}
+        >
+            {REMINDER_STATUS_OPTIONS.map((option) => (
+                <option
+                    key={option.value}
+                    value={option.value}
+                >
+                    {option.label}
+                </option>
+            ))}
+        </select>
+    ),
+
+    sorter: (
+        a: HackathonStudent,
+        b: HackathonStudent
+    ) =>
+        (a.reminderStatus || "").localeCompare(
+            b.reminderStatus || ""
+        ),
+},
         
 
         // =================================================

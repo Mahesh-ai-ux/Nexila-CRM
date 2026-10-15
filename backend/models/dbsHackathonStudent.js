@@ -305,6 +305,18 @@ status: {
     ],
     default: "REGISTERED"
 },
+
+reminderStatus: {
+    type: String,
+    enum: [
+        "FOLLOW_UP_1",
+        "FOLLOW_UP_2",
+        "FOLLOW_UP_3",
+        "FINAL_FOLLOW_UP",
+        "SUBMITTED",
+    ],
+    default: "FOLLOW_UP_1",
+},
         // =================================================
         // PROJECT OTP AUTHENTICATION
         // =================================================

@@ -4,6 +4,13 @@ const Razorpay = require("razorpay");
 const Counter = require("../models/counterSchema");
 const HackathonStudent = require("../models/dbsHackathonStudent.js");
 
+// import crypto from "crypto";
+// import jwt from "jsonwebtoken";
+// import Razorpay from "razorpay";
+// import Counter from "../models/counterSchema.js";
+// import HackathonStudent from "../models/dbsHackathonStudent.js";
+
+
 // =====================================================
 // RAZORPAY
 // =====================================================
@@ -1932,13 +1939,13 @@ const verifyHackathonPayment = async (req, res) => {
             razorpay_signature,
         } = req.body;
 
-        console.log("========================================");
-        console.log("HACKATHON PAYMENT VERIFICATION");
-        console.log("========================================");
+        console.log("======================================== - hackathonController.js:1942");
+        console.log("HACKATHON PAYMENT VERIFICATION - hackathonController.js:1943");
+        console.log("======================================== - hackathonController.js:1944");
 
-        console.log("Order ID:", razorpay_order_id);
-        console.log("Payment ID:", razorpay_payment_id);
-        console.log("Team Name:", formData?.teamName);
+        console.log("Order ID: - hackathonController.js:1946", razorpay_order_id);
+        console.log("Payment ID: - hackathonController.js:1947", razorpay_payment_id);
+        console.log("Team Name: - hackathonController.js:1948", formData?.teamName);
         console.log(
             "Team Members:",
             formData?.teamMembers?.length
@@ -2811,11 +2818,11 @@ const markHackathonPaymentFailed = async (
         // =====================================================
 
       try {
-    console.log("STARTING EMAIL...");
+    console.log("STARTING EMAIL... - hackathonController.js:2821");
 
     await sendManualRegistrationSuccess(student);
 
-    console.log("EMAIL SENT SUCCESSFULLY");
+    console.log("EMAIL SENT SUCCESSFULLY - hackathonController.js:2825");
 } catch (emailError) {
     console.error(
         "EMAIL FAILED:",
@@ -2824,11 +2831,11 @@ const markHackathonPaymentFailed = async (
 }
 
 try {
-    console.log("STARTING TEAM EMAIL...");
+    console.log("STARTING TEAM EMAIL... - hackathonController.js:2834");
 
     await sendTeamDetailsEmail(student);
 
-    console.log("TEAM EMAIL SENT SUCCESSFULLY");
+    console.log("TEAM EMAIL SENT SUCCESSFULLY - hackathonController.js:2838");
 } catch (emailError) {
     console.error(
         "TEAM EMAIL FAILED:",
@@ -2837,11 +2844,11 @@ try {
 }
 
 try {
-    console.log("STARTING WATI...");
+    console.log("STARTING WATI... - hackathonController.js:2847");
 
     await sendHackathonWhatsApp(student);
 
-    console.log("WATI SENT SUCCESSFULLY");
+    console.log("WATI SENT SUCCESSFULLY - hackathonController.js:2851");
 } catch (watiError) {
     console.error(
         "WATI FAILED:",
@@ -4149,7 +4156,52 @@ const sendProjectDetailsReminder = async (req, res) => {
   }
 };
 
+const updateReminderStatus = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const { reminderStatus } = req.body;
 
+        const allowedStatuses = [
+            "FOLLOW_UP_1",
+            "FOLLOW_UP_2",
+            "FOLLOW_UP_3",
+            "FINAL_FOLLOW_UP",
+            "SUBMITTED",
+        ];
+
+        if (!allowedStatuses.includes(reminderStatus)) {
+            return res.status(400).json({
+                message: "Invalid reminder status",
+            });
+        }
+
+        const student = await HackathonStudent.findByIdAndUpdate(
+            studentId,
+            { $set: { reminderStatus } },
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+
+        if (!student) {
+            return res.status(404).json({
+                message: "Hackathon student not found",
+            });
+        }
+
+        return res.status(200).json({
+            message: "Reminder status updated successfully",
+            student,
+        });
+    } catch (error) {
+        console.error("Update reminder status error: - hackathonController.js:4198", error);
+
+        return res.status(500).json({
+            message: "Failed to update reminder status",
+        });
+    }
+};
 // =====================================================
 // EXPORT
 // =====================================================
@@ -4184,4 +4236,6 @@ module.exports = {
     verifyProjectAccess,
 
     sendProjectDetailsReminder,
+
+    updateReminderStatus,
 };
