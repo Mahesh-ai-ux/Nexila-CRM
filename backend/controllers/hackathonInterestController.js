@@ -2,6 +2,55 @@ const HackathonInterest = require("../models/HackathonInterest");
 const {
   sendHackathonInterestWhatsApp, sendHackathonFollowupWhatsApp
 } = require("../services/hackathonInterestWhatsAppService");
+
+
+
+const createHackathonInterestEnd = async (req, res) => {
+  try {
+    const { name, email, mobileNumber } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !mobileNumber) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, email and mobile number are required",
+      });
+    }
+
+    // Store the interest in MongoDB
+    const student = await HackathonInterest.create({
+      name: name.trim().toUpperCase(),
+      email: email.trim().toLowerCase(),
+      mobileNumber: mobileNumber.trim(),
+      status: "interested",
+    });
+
+    // No WhatsApp message will be sent.
+    // Only save the interest in the CRM.
+
+    return res.status(201).json({
+      success: true,
+      message: "Interest registered successfully",
+      data: student,
+    });
+  } catch (error) {
+    console.error("Create hackathon interest error:", error);
+
+    // Handle duplicate-key errors if unique indexes exist
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "This interest record already exists",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
 // CREATE
 const createHackathonInterest = async (req, res) => {
   try {
@@ -82,7 +131,7 @@ const createHackathonInterest = async (req, res) => {
       data: student,
     });
   } catch (error) {
-    console.error("Create hackathon interest error: - hackathonInterestController.js:85", error);
+    console.error("Create hackathon interest error:", error);
 
     return res.status(500).json({
       success: false,
@@ -118,7 +167,7 @@ const getHackathonInterests = async (req, res) => {
       data: students,
     });
   } catch (error) {
-    console.error("Get hackathon interests error: - hackathonInterestController.js:121", error);
+    console.error("Get hackathon interests error:", error);
 
     return res.status(500).json({
       success: false,
@@ -172,7 +221,7 @@ const updateHackathonInterestStatus = async (req, res) => {
       data: student,
     });
   } catch (error) {
-    console.error("Update status error: - hackathonInterestController.js:175", error);
+    console.error("Update status error:", error);
 
     return res.status(500).json({
       success: false,
@@ -218,6 +267,7 @@ const sendWelcomeWhatsApp = async (req, res) => {
 };
 
 module.exports = {
+  createHackathonInterestEnd,
   createHackathonInterest,
   getHackathonInterests,
   updateHackathonInterestStatus,

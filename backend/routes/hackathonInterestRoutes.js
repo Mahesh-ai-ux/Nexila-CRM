@@ -4,13 +4,14 @@ const router = express.Router();
 const authMiddleware = require("../middleware/auth");
 
 const {
+  createHackathonInterestEnd,
   createHackathonInterest,
   getHackathonInterests,
   updateHackathonInterestStatus,
   sendWelcomeWhatsApp,
 } = require("../controllers/hackathonInterestController");
 
-
+router.post("/end", createHackathonInterestEnd);
 // Public form
 router.post("/", createHackathonInterest);
 
