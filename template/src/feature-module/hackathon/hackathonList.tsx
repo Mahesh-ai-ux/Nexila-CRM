@@ -153,6 +153,9 @@ const HackathonList = () => {
         null
     );
 
+    const [sendingFinalReminderId, setSendingFinalReminderId] =
+    useState<string | null>(null);
+
     const [paymentStatusFilter, setPaymentStatusFilter] =
         useState("ALL");
 
@@ -1042,6 +1045,51 @@ const handleChangeReminderStatus = async (
         setChangingReminderStatusId(null);
     }
 };
+
+
+
+const handleSendFinalProjectSubmissionReminder = async (
+    studentId: string
+) => {
+    const confirmed = window.confirm(
+        "Send final project submission reminder to this student?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+        setSendingFinalReminderId(studentId);
+
+        const token = localStorage.getItem("token");
+
+        await axios.post(
+            `${API_URL}/hackathon/${studentId}/send-final-project-submission-reminder`,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+            }
+        );
+
+        alert("Final project submission reminder sent successfully!");
+    } catch (error: any) {
+        console.error(
+            "Final submission reminder error:",
+            error.response?.data || error.message
+        );
+
+        alert(
+            error.response?.data?.message ||
+            "Failed to send final project submission reminder"
+        );
+    } finally {
+        setSendingFinalReminderId(null);
+    }
+};
+
     const columns = [
 
         // =================================================
@@ -1304,6 +1352,48 @@ const handleChangeReminderStatus = async (
                 ),
         },
 
+        {
+    title: "Semi - Final Reminder",
+    dataIndex: "projectTitle",
+    key: "finalSubmissionReminder",
+    render: (_: any, record: any) => {
+        const submitted =
+            typeof record.projectTitle === "string" &&
+            record.projectTitle.trim().length > 0;
+
+        // Hide the button if the project title is not submitted
+        if (!submitted) {
+            return null;
+        }
+
+        return (
+            <button
+                type="button"
+                className="btn btn-sm btn-outline-success"
+                disabled={sendingFinalReminderId === record._id}
+                onClick={() =>
+                    handleSendFinalProjectSubmissionReminder(record._id)
+                }
+            >
+                {sendingFinalReminderId === record._id ? (
+                    <>
+                        <span
+                            className="spinner-border spinner-border-sm me-1"
+                            role="status"
+                        ></span>
+                        Sending...
+                    </>
+                ) : (
+                    <>
+                        <i className="ti ti-brand-whatsapp me-1"></i>
+                        Send Reminder
+                    </>
+                )}
+            </button>
+        );
+    },
+    sorter: () => 0,
+},
         {
             title: "Project Reminder",
             dataIndex: "projectReminder",

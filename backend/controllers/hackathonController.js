@@ -34,6 +34,7 @@ const {
 const {
     sendHackathonWhatsApp,
     sendProjectDetailsReminderWhatsApp,
+    sendFinalProjectSubmissionReminderWhatsApp,
 } = require("../services/watiService");
 const {
     sendHackathonWhatsAppFree,
@@ -1939,13 +1940,13 @@ const verifyHackathonPayment = async (req, res) => {
             razorpay_signature,
         } = req.body;
 
-        console.log("======================================== - hackathonController.js:1942");
-        console.log("HACKATHON PAYMENT VERIFICATION - hackathonController.js:1943");
-        console.log("======================================== - hackathonController.js:1944");
+        console.log("======================================== - hackathonController.js:1943");
+        console.log("HACKATHON PAYMENT VERIFICATION - hackathonController.js:1944");
+        console.log("======================================== - hackathonController.js:1945");
 
-        console.log("Order ID: - hackathonController.js:1946", razorpay_order_id);
-        console.log("Payment ID: - hackathonController.js:1947", razorpay_payment_id);
-        console.log("Team Name: - hackathonController.js:1948", formData?.teamName);
+        console.log("Order ID: - hackathonController.js:1947", razorpay_order_id);
+        console.log("Payment ID: - hackathonController.js:1948", razorpay_payment_id);
+        console.log("Team Name: - hackathonController.js:1949", formData?.teamName);
         console.log(
             "Team Members:",
             formData?.teamMembers?.length
@@ -2818,11 +2819,11 @@ const markHackathonPaymentFailed = async (
         // =====================================================
 
       try {
-    console.log("STARTING EMAIL... - hackathonController.js:2821");
+    console.log("STARTING EMAIL... - hackathonController.js:2822");
 
     await sendManualRegistrationSuccess(student);
 
-    console.log("EMAIL SENT SUCCESSFULLY - hackathonController.js:2825");
+    console.log("EMAIL SENT SUCCESSFULLY - hackathonController.js:2826");
 } catch (emailError) {
     console.error(
         "EMAIL FAILED:",
@@ -2831,11 +2832,11 @@ const markHackathonPaymentFailed = async (
 }
 
 try {
-    console.log("STARTING TEAM EMAIL... - hackathonController.js:2834");
+    console.log("STARTING TEAM EMAIL... - hackathonController.js:2835");
 
     await sendTeamDetailsEmail(student);
 
-    console.log("TEAM EMAIL SENT SUCCESSFULLY - hackathonController.js:2838");
+    console.log("TEAM EMAIL SENT SUCCESSFULLY - hackathonController.js:2839");
 } catch (emailError) {
     console.error(
         "TEAM EMAIL FAILED:",
@@ -2844,11 +2845,11 @@ try {
 }
 
 try {
-    console.log("STARTING WATI... - hackathonController.js:2847");
+    console.log("STARTING WATI... - hackathonController.js:2848");
 
     await sendHackathonWhatsApp(student);
 
-    console.log("WATI SENT SUCCESSFULLY - hackathonController.js:2851");
+    console.log("WATI SENT SUCCESSFULLY - hackathonController.js:2852");
 } catch (watiError) {
     console.error(
         "WATI FAILED:",
@@ -4195,13 +4196,57 @@ const updateReminderStatus = async (req, res) => {
             student,
         });
     } catch (error) {
-        console.error("Update reminder status error: - hackathonController.js:4198", error);
+        console.error("Update reminder status error: - hackathonController.js:4199", error);
 
         return res.status(500).json({
             message: "Failed to update reminder status",
         });
     }
 };
+
+
+
+const sendFinalProjectSubmissionReminder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const student = await HackathonStudent.findById(id);
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    // Check whether the student has submitted project details
+    if (!student.projectTitle || !student.projectTitle.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Final reminder cannot be sent because project details have not been submitted",
+      });
+    }
+
+    // Send WhatsApp only if project details are submitted
+    await sendFinalProjectSubmissionReminderWhatsApp(student);
+
+    return res.status(200).json({
+      success: true,
+      message: "Final project submission reminder sent successfully",
+    });
+  } catch (error) {
+    console.error(
+      "Final project submission reminder WhatsApp error:",
+      error.response?.data || error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send final project submission reminder",
+    });
+  }
+};
+
 // =====================================================
 // EXPORT
 // =====================================================
@@ -4238,4 +4283,6 @@ module.exports = {
     sendProjectDetailsReminder,
 
     updateReminderStatus,
+
+    sendFinalProjectSubmissionReminder,
 };
