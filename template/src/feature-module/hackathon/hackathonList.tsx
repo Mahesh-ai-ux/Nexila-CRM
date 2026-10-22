@@ -1394,81 +1394,81 @@ const handleSendFinalProjectSubmissionReminder = async (
     },
     sorter: () => 0,
 },
-        {
-            title: "Project Reminder",
-            dataIndex: "projectReminder",
-            key: "projectReminder",
-            render: (_: any, record: any) => (
-                <button
-                    type="button"
-                    className="btn btn-sm btn-outline-success"
-                    disabled={sendingReminderId === record._id}
-                    onClick={() =>
-                        handleSendProjectDetailsReminder(record._id)
-                    }
-                >
-                    {sendingReminderId === record._id ? (
-                        <>
-                            <span
-                                className="spinner-border spinner-border-sm me-1"
-                                role="status"
-                            ></span>
-                            Sending...
-                        </>
-                    ) : (
-                        <>
-                            <i className="ti ti-brand-whatsapp me-1"></i>
-                            Send Reminder
-                        </>
-                    )}
-                </button>
-            ),
-            sorter: () => 0,
-        },
-        {
-    title: "Reminder Status",
-    dataIndex: "reminderStatus",
-    key: "reminderStatus",
+        // {
+        //     title: "Project Reminder",
+        //     dataIndex: "projectReminder",
+        //     key: "projectReminder",
+        //     render: (_: any, record: any) => (
+        //         <button
+        //             type="button"
+        //             className="btn btn-sm btn-outline-success"
+        //             disabled={sendingReminderId === record._id}
+        //             onClick={() =>
+        //                 handleSendProjectDetailsReminder(record._id)
+        //             }
+        //         >
+        //             {sendingReminderId === record._id ? (
+        //                 <>
+        //                     <span
+        //                         className="spinner-border spinner-border-sm me-1"
+        //                         role="status"
+        //                     ></span>
+        //                     Sending...
+        //                 </>
+        //             ) : (
+        //                 <>
+        //                     <i className="ti ti-brand-whatsapp me-1"></i>
+        //                     Send Reminder
+        //                 </>
+        //             )}
+        //         </button>
+        //     ),
+        //     sorter: () => 0,
+        // },
+//         {
+//     title: "Reminder Status",
+//     dataIndex: "reminderStatus",
+//     key: "reminderStatus",
 
-    render: (
-        reminderStatus: ReminderStatus,
-        record: HackathonStudent
-    ) => (
-        <select
-            className="form-select form-select-sm"
-            value={reminderStatus || "FOLLOW_UP_1"}
-            disabled={
-                changingReminderStatusId === record._id
-            }
-            onChange={(event) =>
-                handleChangeReminderStatus(
-                    record._id,
-                    event.target.value as ReminderStatus
-                )
-            }
-            style={{
-                minWidth: "150px",
-            }}
-        >
-            {REMINDER_STATUS_OPTIONS.map((option) => (
-                <option
-                    key={option.value}
-                    value={option.value}
-                >
-                    {option.label}
-                </option>
-            ))}
-        </select>
-    ),
+//     render: (
+//         reminderStatus: ReminderStatus,
+//         record: HackathonStudent
+//     ) => (
+//         <select
+//             className="form-select form-select-sm"
+//             value={reminderStatus || "FOLLOW_UP_1"}
+//             disabled={
+//                 changingReminderStatusId === record._id
+//             }
+//             onChange={(event) =>
+//                 handleChangeReminderStatus(
+//                     record._id,
+//                     event.target.value as ReminderStatus
+//                 )
+//             }
+//             style={{
+//                 minWidth: "150px",
+//             }}
+//         >
+//             {REMINDER_STATUS_OPTIONS.map((option) => (
+//                 <option
+//                     key={option.value}
+//                     value={option.value}
+//                 >
+//                     {option.label}
+//                 </option>
+//             ))}
+//         </select>
+//     ),
 
-    sorter: (
-        a: HackathonStudent,
-        b: HackathonStudent
-    ) =>
-        (a.reminderStatus || "").localeCompare(
-            b.reminderStatus || ""
-        ),
-},
+//     sorter: (
+//         a: HackathonStudent,
+//         b: HackathonStudent
+//     ) =>
+//         (a.reminderStatus || "").localeCompare(
+//             b.reminderStatus || ""
+//         ),
+// },
         
 
         // =================================================

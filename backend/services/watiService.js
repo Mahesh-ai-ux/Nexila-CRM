@@ -585,7 +585,7 @@ const sendFinalProjectSubmissionReminderWhatsApp = async (student) => {
     `?whatsappNumber=${whatsappNumber}`;
 
   const requestBody = {
-    template_name: "hack_final_project_submisson_v1", 
+    template_name: "nex_hack_final_sub_v2", 
     broadcast_name: "nexila_project_details_reminder",
     parameters,
   };
@@ -617,4 +617,4 @@ module.exports = {
 
 //hack_final_project_submisson_v1
 
-//
+//nex_hack_final_sub_v2

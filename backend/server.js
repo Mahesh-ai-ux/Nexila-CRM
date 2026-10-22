@@ -1,4 +1,4 @@
- require('dotenv').config();
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
@@ -64,8 +64,9 @@ app.use(
   "/api/hackathon-interest",
   hackathonInterestRoutes
 );
+app.use("/api/webhooks/meta", require("./routes/metaWebhook"))
 app.get('/', (req, res) => res.send('Leads backend running'));
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT} - server.js:69`);
-  console.log('Mongo URI: - server.js:70', process.env.MONGO_URI);
+  console.log(`Server running on port ${PORT} - server.js:70`);
+  console.log('Mongo URI: - server.js:71', process.env.MONGO_URI);
 });;
