@@ -28,6 +28,9 @@ const {
     updateReminderStatus,
 
     sendFinalProjectSubmissionReminder,
+
+    sendHackathonRejectionMessage,
+    sendSemiFinalProjectSubmissionReminder,
 } = require("../controllers/hackathonController");
 
 // =====================================================
@@ -186,7 +189,12 @@ router.patch(
 );
 router.post(
   "/:id/send-final-project-submission-reminder",
-  sendFinalProjectSubmissionReminder
+  sendSemiFinalProjectSubmissionReminder
+);
+
+router.post(
+  "/:id/rejection-message",
+  sendHackathonRejectionMessage
 );
 // =====================================================
 // EXPORT

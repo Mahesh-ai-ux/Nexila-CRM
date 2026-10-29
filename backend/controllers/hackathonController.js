@@ -34,8 +34,13 @@ const {
 const {
     sendHackathonWhatsApp,
     sendProjectDetailsReminderWhatsApp,
-    sendFinalProjectSubmissionReminderWhatsApp,
+   
 } = require("../services/watiService");
+
+const {
+sendHackathonRejectionWhatsApp,
+ sendSemiFinalProjectSubmissionReminderWhatsApp,
+} = require("../services/watiServiceHackathonFinalSemi");
 const {
     sendHackathonWhatsAppFree,
 } = require("../services/watiServiceFree");
@@ -1940,13 +1945,13 @@ const verifyHackathonPayment = async (req, res) => {
             razorpay_signature,
         } = req.body;
 
-        console.log("======================================== - hackathonController.js:1943");
-        console.log("HACKATHON PAYMENT VERIFICATION - hackathonController.js:1944");
-        console.log("======================================== - hackathonController.js:1945");
+        console.log("======================================== - hackathonController.js:1948");
+        console.log("HACKATHON PAYMENT VERIFICATION - hackathonController.js:1949");
+        console.log("======================================== - hackathonController.js:1950");
 
-        console.log("Order ID: - hackathonController.js:1947", razorpay_order_id);
-        console.log("Payment ID: - hackathonController.js:1948", razorpay_payment_id);
-        console.log("Team Name: - hackathonController.js:1949", formData?.teamName);
+        console.log("Order ID: - hackathonController.js:1952", razorpay_order_id);
+        console.log("Payment ID: - hackathonController.js:1953", razorpay_payment_id);
+        console.log("Team Name: - hackathonController.js:1954", formData?.teamName);
         console.log(
             "Team Members:",
             formData?.teamMembers?.length
@@ -2819,11 +2824,11 @@ const markHackathonPaymentFailed = async (
         // =====================================================
 
       try {
-    console.log("STARTING EMAIL... - hackathonController.js:2822");
+    console.log("STARTING EMAIL... - hackathonController.js:2827");
 
     await sendManualRegistrationSuccess(student);
 
-    console.log("EMAIL SENT SUCCESSFULLY - hackathonController.js:2826");
+    console.log("EMAIL SENT SUCCESSFULLY - hackathonController.js:2831");
 } catch (emailError) {
     console.error(
         "EMAIL FAILED:",
@@ -2832,11 +2837,11 @@ const markHackathonPaymentFailed = async (
 }
 
 try {
-    console.log("STARTING TEAM EMAIL... - hackathonController.js:2835");
+    console.log("STARTING TEAM EMAIL... - hackathonController.js:2840");
 
     await sendTeamDetailsEmail(student);
 
-    console.log("TEAM EMAIL SENT SUCCESSFULLY - hackathonController.js:2839");
+    console.log("TEAM EMAIL SENT SUCCESSFULLY - hackathonController.js:2844");
 } catch (emailError) {
     console.error(
         "TEAM EMAIL FAILED:",
@@ -2845,11 +2850,11 @@ try {
 }
 
 try {
-    console.log("STARTING WATI... - hackathonController.js:2848");
+    console.log("STARTING WATI... - hackathonController.js:2853");
 
     await sendHackathonWhatsApp(student);
 
-    console.log("WATI SENT SUCCESSFULLY - hackathonController.js:2852");
+    console.log("WATI SENT SUCCESSFULLY - hackathonController.js:2857");
 } catch (watiError) {
     console.error(
         "WATI FAILED:",
@@ -4196,7 +4201,7 @@ const updateReminderStatus = async (req, res) => {
             student,
         });
     } catch (error) {
-        console.error("Update reminder status error: - hackathonController.js:4199", error);
+        console.error("Update reminder status error: - hackathonController.js:4204", error);
 
         return res.status(500).json({
             message: "Failed to update reminder status",
@@ -4206,7 +4211,7 @@ const updateReminderStatus = async (req, res) => {
 
 
 
-const sendFinalProjectSubmissionReminder = async (req, res) => {
+const sendSemiFinalProjectSubmissionReminder = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -4219,16 +4224,28 @@ const sendFinalProjectSubmissionReminder = async (req, res) => {
       });
     }
 
-    // Check whether the student has submitted project details
-    if (!student.projectTitle || !student.projectTitle.trim()) {
+    // Allow only semi-finalist students
+    if (student.status !== "SEMI_FINALIST") {
       return res.status(400).json({
         success: false,
-        message: "Final reminder cannot be sent because project details have not been submitted",
+        message: "Reminder can only be sent to semi-finalist students",
       });
     }
 
-    // Send WhatsApp only if project details are submitted
-    await sendFinalProjectSubmissionReminderWhatsApp(student);
+    // Project title must not be null, empty, or whitespace
+    if (
+      typeof student.projectTitle !== "string" ||
+      student.projectTitle.trim() === ""
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Final reminder cannot be sent because project details have not been submitted",
+      });
+    }
+
+    // Send WhatsApp only if both conditions pass
+    await sendSemiFinalProjectSubmissionReminderWhatsApp(student);
 
     return res.status(200).json({
       success: true,
@@ -4246,6 +4263,61 @@ const sendFinalProjectSubmissionReminder = async (req, res) => {
     });
   }
 };
+
+
+const sendHackathonRejectionMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const student = await HackathonStudent.findById(id);
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    // Project title must be submitted
+    if (
+      typeof student.projectTitle !== "string" ||
+      student.projectTitle.trim() === ""
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Rejection message cannot be sent because project details have not been submitted",
+      });
+    }
+
+    // Do not send rejection messages to semi-finalists
+    if (student.status === "SEMI_FINALIST") {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Rejection message cannot be sent to semi-finalist students",
+      });
+    }
+
+    await sendHackathonRejectionWhatsApp(student);
+
+    return res.status(200).json({
+      success: true,
+      message: "Hackathon rejection message sent successfully",
+    });
+  } catch (error) {
+    console.error(
+      "Hackathon rejection WhatsApp error:",
+      error.response?.data || error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send hackathon rejection message",
+    });
+  }
+};
+
 
 // =====================================================
 // EXPORT
@@ -4284,5 +4356,7 @@ module.exports = {
 
     updateReminderStatus,
 
-    sendFinalProjectSubmissionReminder,
+    sendSemiFinalProjectSubmissionReminder,
+
+    sendHackathonRejectionMessage,
 };
