@@ -2857,8 +2857,8 @@ useEffect(() => {
                   </label>
  <TypeableDropdown
   name="internshipduration"
-  value={lead.internshipduration || ""}
-  onChange={handleselectchange}
+  value={formData.internshipduration || ""}
+  onChange={handleSelectChange}
   options={Internshipduration}
   required
 />
