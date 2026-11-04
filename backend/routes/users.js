@@ -58,7 +58,7 @@ router.post("/add-employee", async (req, res) => {
       employee: newEmployee,
     });
   } catch (error) {
-    console.error("❌ Error adding employee:", error);
+    console.error("❌ Error adding employee: - users.js:61", error);
     res.status(500).json({ success: false, message: "Server error", error });
   }
 });
@@ -69,7 +69,25 @@ router.get('/list', auth, async (req, res) => {
     const users = await User.find({}, 'name role');
     res.status(200).json(users);
   } catch (error) {
-    console.error('❌ Error fetching users:', error);
+    console.error('❌ Error fetching users: - users.js:72', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+// Get only active users for dropdowns
+router.get('/active-list', auth, async (req, res) => {
+  try {
+    const users = await User.find(
+      { isActive: true },
+      'name role'
+    );
+
+    res.status(200).json(users);
+
+  } catch (error) {
+    console.error('Error fetching active users: - users.js:90', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

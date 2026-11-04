@@ -34,6 +34,21 @@ exports.listUsers = async (req, res) => {
   }
 };
 
+// Get only active users
+exports.listActiveUsers = async (req, res) => {
+  try {
+    const users = await User.find({ isActive: true })
+      .select('-password')
+      .sort({ createdAt: -1 });
+
+    res.json(users);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+};
+
 exports.deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -44,4 +59,3 @@ exports.deleteUser = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
-
