@@ -14,6 +14,9 @@ const generateNexilaID = require("../utils/generateNexilaID");
 const Leadlog = require("../models/leadlog"); //nexila changes
 // ✅ Create Lead
 
+const generateGroupInternshipID = require(
+  "../utils/generateGroupInternshipID"
+);
 
 exports.createLead = async (req, res) => {
   try {
@@ -43,7 +46,7 @@ exports.createLead = async (req, res) => {
       data.assignto = null;
     }
 
-    // -----------------------------------------------
+    // ----------------------------------------------
     // 3. PAYMENT METHOD
     // Existing CRM requests without paymentMethod
     // continue using the MANUAL model default.
@@ -87,14 +90,14 @@ exports.createLead = async (req, res) => {
       delete data.paidAt;
     }
 
-    console.log("FINAL LEAD DATA: - leadController.js:90", data);
+    console.log("FINAL LEAD DATA: - leadController.js:93", data);
 
     // -----------------------------------------------
     // 4. GENERATE NEXILA ID
     // -----------------------------------------------
     const nexilaData = await generateNexilaID();
 
-    console.log("Generated Nexila: - leadController.js:97", nexilaData);
+    console.log("Generated Nexila: - leadController.js:100", nexilaData);
 
     // Use the permanent Nexila ID as the payment reference.
     if (paymentMethod === "RAZORPAY") {
@@ -131,11 +134,11 @@ exports.createLead = async (req, res) => {
       generatedDate: nexilaData.date,
     });
 
-    console.log("Lead ID: - leadController.js:134", newLead._id);
-    console.log("Nexila ID: - leadController.js:135", newLead.nexilaID);
-    console.log("Payment Method: - leadController.js:136", newLead.paymentMethod);
-    console.log("Payment Status: - leadController.js:137", newLead.paymentStatus);
-    console.log("Payment Reference: - leadController.js:138", newLead.paymentReference);
+    console.log("Lead ID: - leadController.js:137", newLead._id);
+    console.log("Nexila ID: - leadController.js:138", newLead.nexilaID);
+    console.log("Payment Method: - leadController.js:139", newLead.paymentMethod);
+    console.log("Payment Status: - leadController.js:140", newLead.paymentStatus);
+    console.log("Payment Reference: - leadController.js:141", newLead.paymentReference);
 
     // -----------------------------------------------
     // 7. CREATE LEAD LOG
@@ -184,7 +187,7 @@ exports.createLead = async (req, res) => {
         }
       );
 
-      console.log("Deal created from Lead - leadController.js:187");
+      console.log("Deal created from Lead - leadController.js:190");
     }
 
     // -----------------------------------------------
@@ -253,7 +256,7 @@ exports.createLead = async (req, res) => {
           });
         }
 
-        console.log("Student and student log created - leadController.js:256");
+        console.log("Student and student log created - leadController.js:259");
       }
     }
 
@@ -296,11 +299,11 @@ exports.createLead = async (req, res) => {
         }
       );
 
-      console.log("WATI message sent successfully - leadController.js:299");
+      console.log("WATI message sent successfully - leadController.js:302");
     } catch (err) {
       // WhatsApp failure should not undo a saved lead.
-      console.log("WATI STATUS: - leadController.js:302", err.response?.status);
-      console.log("WATI DATA: - leadController.js:303", err.response?.data);
+      console.log("WATI STATUS: - leadController.js:305", err.response?.status);
+      console.log("WATI DATA: - leadController.js:306", err.response?.data);
     }
 
     // -----------------------------------------------
@@ -324,6 +327,601 @@ exports.createLead = async (req, res) => {
   }
 };
 
+exports.createGroupInternship = async (req, res) => {
+  try {
+    const {
+      college,
+      location,
+      graduate,
+      year,
+      domain,
+      dateofjoin,
+      duration,
+      members,
+    } = req.body;
+
+    // --------------------------------
+    // 1. VALIDATE GROUP
+    // --------------------------------
+
+    if (
+  !Array.isArray(members) ||
+  members.length < 6 ||
+  members.length > 15
+) {
+  return res.status(400).json({
+    success: false,
+    message: "A group must contain minimum 6 and maximum 15 members.",
+  });
+}
+
+    if (
+      !college ||
+      !location ||
+      !graduate ||
+      !year ||
+      !domain ||
+      !dateofjoin ||
+      !duration
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please complete all common group details.",
+      });
+    }
+
+    // --------------------------------
+    // 2. VALIDATE JOINING DATE
+    // --------------------------------
+
+    const joiningDate = new Date(`${dateofjoin}T00:00:00Z`);
+
+    if (
+      Number.isNaN(joiningDate.getTime()) ||
+      joiningDate.getUTCDay() !== 3
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Joining date must be a Wednesday.",
+      });
+    }
+
+    // --------------------------------
+    // 3. GROUP PRICING
+    // --------------------------------
+
+    const GROUP_PRICING = {
+      15: {
+        amount: 1299,
+        days: "15 days",
+        programme: "Group Internship",
+      },
+
+      30: {
+        amount: 2150,
+        days: "30 days",
+        programme: "Group Internship",
+      },
+
+      60: {
+        amount: 4500,
+        days: "60 days",
+        programme: "Group Internship",
+      },
+
+      90: {
+        amount: 6899,
+        days: "90 days",
+        programme: "Group Internship",
+      },
+    };
+
+    const selectedPlan = GROUP_PRICING[String(duration)];
+
+    if (!selectedPlan) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid internship duration.",
+      });
+    }
+
+    // --------------------------------
+    // 4. VALIDATE EACH MEMBER
+    // --------------------------------
+
+    for (let i = 0; i < members.length; i++) {
+      const member = members[i];
+
+      if (
+        !member.name?.trim() ||
+        !member.phone?.trim() ||
+        !member.email?.trim() ||
+        !member.collegeRegisterId?.trim()
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: `Please complete all details for Member ${i + 1}.`,
+        });
+      }
+
+      if (!/^\d{10}$/.test(member.phone.trim())) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid phone number for Member ${i + 1}.`,
+        });
+      }
+
+      if (
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(member.email.trim())
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid email for Member ${i + 1}.`,
+        });
+      }
+    }
+
+    // --------------------------------
+    // 5. GENERATE ONE GROUP ID
+    // --------------------------------
+
+    const groupInternshipId =
+      await generateGroupInternshipID();
+
+    console.log("GROUP ID: - leadController.js:471", groupInternshipId);
+
+    // --------------------------------
+    // 6. CREATE SIX INDIVIDUAL LEADS
+    // --------------------------------
+
+    const createdLeads = [];
+
+    for (let i = 0; i < members.length; i++) {
+      const member = members[i];
+
+      const crmData = {
+        // Individual details
+        name: member.name.trim(),
+        phone: member.phone.trim(),
+        email: member.email.trim(),
+
+        collegeRegisterId:
+          member.collegeRegisterId.trim(),
+
+        // Common details
+        collegename: college,
+        location,
+        graduate,
+        category: year,
+        domain,
+
+        dateofjoin: joiningDate,
+
+        internshipduration: selectedPlan.days,
+        noofday: selectedPlan.days,
+
+        lookingfor: selectedPlan.programme,
+
+        // Individual fee
+        fees: String(selectedPlan.amount),
+        feepaid: "0",
+        pendingfee: String(selectedPlan.amount),
+
+        // Existing CRM fields
+        leadstatus: "New Lead",
+        leadsource: "Website",
+
+        joinstatus: null,
+        notes: null,
+        remark: null,
+        domainreason: null,
+        dropreason: null,
+
+        followdate: null,
+        demodate: null,
+
+        feetype: null,
+        assignfrom: null,
+        assignto: null,
+
+        // Payment
+        paymentMethod: "MANUAL",
+        paymentStatus: "PENDING",
+
+        paymentReference: null,
+
+        // IMPORTANT: Same ID for all six leads
+        groupInternshipId,
+      };
+
+      // --------------------------------
+      // REUSE EXISTING createLead
+      // --------------------------------
+
+      // const fakeReq = {
+      //   ...req,
+      //   body: crmData,
+      // };
+const fakeReq = {
+  ...req,
+  user: req.user || null,
+  body: crmData,
+};
+      const fakeRes = {
+        statusCode: 200,
+        responseData: null,
+
+        status(code) {
+          this.statusCode = code;
+          return this;
+        },
+
+        json(data) {
+          this.responseData = data;
+          return this;
+        },
+      };
+
+      await exports.createLead(fakeReq, fakeRes);
+
+      // --------------------------------
+      // CHECK LEAD CREATION
+      // --------------------------------
+
+      if (
+        fakeRes.statusCode !== 201 ||
+        !fakeRes.responseData?.success
+      ) {
+        return res.status(500).json({
+          success: false,
+          message: `Unable to create Member ${i + 1}.`,
+          groupInternshipId,
+          createdLeads,
+          failedMember: i + 1,
+          error: fakeRes.responseData?.message,
+        });
+      }
+
+      const savedLead =
+        fakeRes.responseData.data;
+
+      createdLeads.push({
+        name: savedLead.name,
+        leadId: savedLead._id,
+        nexilaID: savedLead.nexilaID,
+        groupInternshipId:
+          savedLead.groupInternshipId,
+        fees: savedLead.fees,
+        paymentStatus: savedLead.paymentStatus,
+      });
+    }
+
+    // --------------------------------
+    // 7. FINAL RESPONSE
+    // --------------------------------
+
+    return res.status(201).json({
+      success: true,
+      message: "Group internship registered successfully.",
+
+      groupInternshipId,
+
+      totalMembers: createdLeads.length,
+
+      duration: selectedPlan.days,
+
+      perPersonFee: selectedPlan.amount,
+
+      groupTotal:
+        selectedPlan.amount * createdLeads.length,
+
+      data: createdLeads,
+    });
+
+  } catch (error) {
+    console.error("Group Internship Error: - leadController.js:622", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// exports.createLead = async (req, res) => {
+//   try {
+
+
+//     const data = { ...req.body };
+
+//     // ---------------- assignfrom ----------------
+//     if (data.assignfrom) {
+//       if (mongoose.Types.ObjectId.isValid(data.assignfrom)) {
+//         // already ObjectId → keep
+//         data.assignfrom = data.assignfrom;
+//       } else {
+//         // name → convert
+//         const user = await User.findOne({ name: data.assignfrom });
+//         data.assignfrom = user ? user._id : null;
+//       }
+//     } else {
+//       data.assignfrom = null;
+//     }
+
+//     // ---------------- assignto ----------------
+//     if (data.assignto) {
+//       if (mongoose.Types.ObjectId.isValid(data.assignto)) {
+//         data.assignto = data.assignto;
+//       } else {
+//         const user = await User.findOne({ name: data.assignto });
+//         data.assignto = user ? user._id : null;
+//       }
+//     } else {
+//       data.assignto = null;
+//     }
+
+//     console.log("✅ FINAL DATA:", data);
+
+
+
+// // Generate Nexila ID first
+// const nexilaData = await generateNexilaID();
+
+// console.log("Generated Nexila:", nexilaData);
+
+
+// // Create Lead
+// const newLead = new Lead({
+//   ...data,
+//    nexilaID: nexilaData.nexilaID,
+//   createdBy: req.user ? req.user._id : null,
+// });
+
+// await newLead.save();
+
+
+// // Save Nexila ID separately
+// await NexilaID.create({
+//     nexilaID: nexilaData.nexilaID,
+//     sequence: nexilaData.sequence,
+//     leadId: newLead._id,
+//     generatedDate: nexilaData.date
+// });
+
+
+// console.log("Lead ID:", newLead._id);
+// console.log("Nexila ID:", nexilaData.nexilaID);
+//     // ===============================
+
+//     await Leadlog.create({
+//       leadid: newLead._id,
+//       action: "create",
+//       updatedby: req.user?._id,
+//       changes: [
+//         { field: "name", oldvalue: "-", newvalue: newLead.name },
+//         { field: "phone", oldvalue: "-", newvalue: newLead.phone },
+//         { field: "leadstatus", oldvalue: "-", newvalue: newLead.leadstatus },
+//         { field: "assignto", oldvalue: "-", newvalue: newLead.assignto }
+//       ]
+//     });
+//     //nexila changes
+
+//     // --------------------------------------------------
+//     // 5️⃣ SYNC DEAL ON CREATE
+//     // --------------------------------------------------
+//     if (newLead.leadstatus === "Demo Scheduled") {
+//       await Deal.findOneAndUpdate(
+//         { leadId: newLead._id },
+//         { ...newLead.toObject(), leadId: newLead._id },
+//         { upsert: true, new: true }
+//       );
+//       console.log("📦 Deal created from Lead");
+//     }
+
+//     // --------------------------------------------------
+//     // 6️⃣ SYNC STUDENT ON CREATE
+//     // --------------------------------------------------
+//     if (newLead.leadstatus === "Student") {
+//       let student = await Student.findOne({ leadid: newLead._id });
+
+//       if (!student) {
+//         student = await Student.create({
+//           name: newLead.name,
+//           phone: newLead.phone,
+//           email: newLead.email,
+//           nexilaID: newLead.nexilaID, //nexila changes
+//           collegename: newLead.collegename,
+//           collegeRegisterId: newLead.collegeRegisterId,
+//           location: newLead.location,
+//           category: newLead.category,
+//           leadsource: newLead.leadsource,
+//           domain: newLead.domain,
+//           graduate: newLead.graduate,
+//           leadstatus: newLead.leadstatus,
+//           dateofjoin: newLead.dateofjoin,
+//           feetype: newLead.feetype,
+//           leadid: newLead._id,
+//           fees: Number(newLead.fees) || 0,
+//           feepaid: Number(newLead.feepaid) || 0,
+//           pendingfee:
+//             (Number(newLead.fees) || 0) -
+//             (Number(newLead.feepaid) || 0),
+//           assignto: newLead.assignto,
+//           lookingfor: newLead.lookingfor,
+//           noofday: newLead.noofday,
+//           internshipduration: newLead.internshipduration
+
+//         });
+
+//         console.log("student data:", student);
+//         // ✅ log creation
+//         await Studentlog.create({
+//           studentid: student._id,
+//           action: "create",
+//           source: "lead_create",
+//           updatedby: req.user?._id,
+//         });
+
+//         // create payment log if fee paid
+//         if (student.feepaid && Number(student.feepaid) > 0) {
+//           await Studentlog.create({
+//             studentid: student._id,
+//             action: "payment",
+//             source: "lead_create",
+//             payment: {
+//               amount: Number(student.feepaid),
+//               paymentMode: "cash",
+
+//             },
+//             updatedby: req.user?._id,
+//           });
+//         }
+//         console.log("Student and student log created");
+//       }
+//     }
+
+
+
+//     //  2️⃣ Prepare WhatsApp Number
+//     let phone = newLead.phone; // 🔴 make sure this field exists
+//     if (!phone) {
+//       return res.status(201).json({
+//         success: true,
+//         message: "Lead created (No phone to send WhatsApp)",
+//         data: newLead,
+//       });
+//     }
+
+//     // Convert to international format
+//     const whatsappId = phone.startsWith("91") ? phone : `91${phone}`;
+
+//     // 3️⃣ AUTO TRIGGER WhatsApp Message
+//     await axios.post(
+//       `${process.env.WATI_BASE_URL}/sendTemplateMessage` +
+//       `?whatsappNumber=${whatsappId}`,
+//       {
+
+//         template_name: "ds_dec13_link",
+//         broadcast_name: "auto_lead",
+//         parameters: [
+//           {
+//             name: "name",
+//             value: newLead.name,
+//           },
+//         ],
+//       },
+//       {
+//         headers: {
+//           Authorization: `Bearer ${process.env.WATI_API_KEY}`,
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     )
+//       .then(res => {
+//         console.log("✅ WATI OK", res.data);
+//       })
+//       .catch(err => {
+//         console.log("❌ STATUS:", err.response?.status);
+//         console.log("❌ DATA:", err.response?.data);
+//       });
+
+//     console.log(data);
+
+//     // 4️⃣ Final Response
+//     res.status(201).json({
+//       success: true,
+//       message: "Lead created & WhatsApp sent automatically",
+//       data: newLead,
+//     });
+
+//   } catch (err) {
+//     console.error("❌ Error creating lead:", err.response?.data || err.message);
+//     res.status(500).json({
+//       success: false,
+//       message: "Lead created but WhatsApp failed",
+//     });
+//   }
+// };
+
+// ✅ List Leads (Admin sees all, Employee sees only assigned/created)
+// exports.listLeads = async (req, res) => {
+//   try {
+//     const userRole = req.user.role;
+//     const userId = req.user._id;
+//     let filter = {};
+
+//     if (userRole !== "admin") {
+//       filter = {
+//         $or: [
+//           { assignto: userId },
+//           { assignfrom: userId },
+//           { createdBy: userId },
+//           { createdBy: null }, //nexila changes
+//         ],
+//       };
+//     }
+
+//     const leads = await Lead.find(filter)
+//       .populate("assignfrom", "name email role")
+//       .populate("assignto", "name email role")
+//       .populate("createdBy", "name email role")
+//       .sort({ createdAt: -1 });
+
+//     res.status(200).json({
+//       success: true,
+//       count: leads.length,
+//       leads,
+//     });
+//   } catch (err) {
+//     console.error("❌ Error fetching leads:", err.message);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
+
+// ✅ List Leads (Admin sees all, Employee sees assigned + created + public leads)
+// exports.listLeads = async (req, res) => {
+//   try {
+//     const userRole = req.user.role;
+//     const userId = req.user._id;
+
+//     let filter = {};
+
+//     // Admin sees everything
+//     if (userRole === "admin") {
+//       filter = {};
+//     } 
+//     else {
+//       filter = {
+//         $or: [
+//           { assignto: userId },
+//           { assignfrom: userId },
+//           { createdBy: userId },
+
+//           // ✅ PUBLIC LEADS (IMPORTANT FIX)
+//           { createdBy: { $exists: false } },
+//           { createdBy: null }
+//         ],
+//       };
+//     }
+
+//     const leads = await Lead.find(filter)
+//       .populate("assignfrom", "name email role")
+//       .populate("assignto", "name email role")
+//       .populate("createdBy", "name email role")
+//       .sort({ createdAt: -1 });
+
+//     res.status(200).json({
+//       success: true,
+//       count: leads.length,
+//       leads,
+//     });
+
+//   } catch (err) {
+//     console.error("❌ Error fetching leads:", err.message);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
 
 //fetch lead to all use fixed
 exports.listLeads = async (req, res) => {
@@ -342,7 +940,7 @@ exports.listLeads = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ Error fetching leads: - leadController.js:345", err.message);
+    console.error("❌ Error fetching leads: - leadController.js:943", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -361,7 +959,7 @@ exports.getLead = async (req, res) => {
 
     res.status(200).json({ success: true, lead });
   } catch (err) {
-    console.error("❌ Error fetching lead: - leadController.js:364", err.message);
+    console.error("❌ Error fetching lead: - leadController.js:962", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -379,8 +977,8 @@ exports.updateLead = async (req, res) => {
       });
     }
 
-    console.log("✏️ Updating lead: - leadController.js:382", id);
-    console.log("📦 Incoming: - leadController.js:383", req.body);
+    console.log("✏️ Updating lead: - leadController.js:980", id);
+    console.log("📦 Incoming: - leadController.js:981", req.body);
 
     const payload = { ...req.body };
 
@@ -420,7 +1018,7 @@ exports.updateLead = async (req, res) => {
       });
     }
 
-    console.log("✅ Lead updated - leadController.js:423");
+    console.log("✅ Lead updated - leadController.js:1021");
 
     // --------------------------------------------------
     // 2. LEAD CHANGE LOG
@@ -524,9 +1122,9 @@ exports.updateLead = async (req, res) => {
       leadId: updatedLead._id,
     });
 
-    console.log("Lead ID: - leadController.js:527", updatedLead._id);
-    console.log("Lead Status: - leadController.js:528", updatedLead.leadstatus);
-    console.log("Existing Student: - leadController.js:529", existingStudent?._id || null);
+    console.log("Lead ID: - leadController.js:1125", updatedLead._id);
+    console.log("Lead Status: - leadController.js:1126", updatedLead.leadstatus);
+    console.log("Existing Student: - leadController.js:1127", existingStudent?._id || null);
 
     // --------------------------------------------------
     // 5. CREATE OR UPDATE STUDENT
@@ -600,7 +1198,7 @@ exports.updateLead = async (req, res) => {
           { $set: { studentId: student._id } }
         );
 
-        console.log("✅ Student created: - leadController.js:603", student._id);
+        console.log("✅ Student created: - leadController.js:1201", student._id);
 
         const studentChanges = Object.keys(studentData).map((key) => ({
           field: key,
@@ -638,7 +1236,7 @@ exports.updateLead = async (req, res) => {
           { new: true, runValidators: true }
         );
 
-        console.log("✅ Existing Student updated: - leadController.js:641", existingStudent._id);
+        console.log("✅ Existing Student updated: - leadController.js:1239", existingStudent._id);
       }
     }
 
@@ -658,7 +1256,7 @@ exports.updateLead = async (req, res) => {
       lead: updatedLead,
     });
   } catch (err) {
-    console.error("❌ Error updating lead: - leadController.js:661", err);
+    console.error("❌ Error updating lead: - leadController.js:1259", err);
 
     return res.status(500).json({
       success: false,
@@ -679,7 +1277,7 @@ exports.deleteLead = async (req, res) => {
     await Lead.findByIdAndDelete(id);
     res.status(200).json({ success: true, message: "Lead deleted successfully" });
   } catch (err) {
-    console.error("❌ Error deleting lead: - leadController.js:682", err.message);
+    console.error("❌ Error deleting lead: - leadController.js:1280", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -696,7 +1294,7 @@ exports.recentLeads = async (req, res) => {
 
     res.status(200).json({ success: true, leads });
   } catch (err) {
-    console.error("❌ Error fetching recent leads: - leadController.js:699", err.message);
+    console.error("❌ Error fetching recent leads: - leadController.js:1297", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };

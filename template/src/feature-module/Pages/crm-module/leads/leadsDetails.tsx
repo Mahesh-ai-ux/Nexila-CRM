@@ -41,6 +41,7 @@ const FIELD_GROUPS: Record<string, string[]> = {
 interface Lead {
   _id: string;
   nexilaID?: string;
+  groupInternshipId?: string;
   name: string;
   phone: string;
   email?: string;
@@ -110,6 +111,7 @@ const LeadsDetails = () => {
         setLead({
           _id: l._id,
           nexilaID: l.nexilaID || "-",
+          groupInternshipId: l.groupInternshipId || "-",
           name: l.name || "-",
           phone: l.phone || "-",
           email: l.email || "-",
@@ -281,6 +283,14 @@ const LeadsDetails = () => {
               <p><b>Email:</b> {lead.email}</p>
               <p><b>College:</b> {lead.collegename}</p>
               <p><b>College Register ID:</b> {lead.collegeRegisterId}</p>
+              {lead.groupInternshipId && lead.groupInternshipId !== "-" && (
+  <p>
+    <b>Internship Group ID:</b>{" "}
+    <span className="badge bg-primary">
+      {lead.groupInternshipId}
+    </span>
+  </p>
+)}
               <p><b>Location:</b> {lead.address}</p>
 
               <p><b>Category:</b> {lead.category}</p>
