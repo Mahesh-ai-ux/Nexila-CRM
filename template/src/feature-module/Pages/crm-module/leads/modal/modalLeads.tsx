@@ -1829,7 +1829,7 @@ const ModalLeads: React.FC<ModalLeadsProps> = ({
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`${API_URL}/users/list`, {
+        const res = await axios.get(`${API_URL}/users/active-list`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
