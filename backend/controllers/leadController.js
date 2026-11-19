@@ -18,6 +18,8 @@ const generateGroupInternshipID = require(
   "../utils/generateGroupInternshipID"
 );
 
+const createLeadWatiMsg  = require("../LeadServices/leadWatiService.js"); 
+
 exports.createLead = async (req, res) => {
   try {
     const data = { ...req.body };
@@ -90,14 +92,14 @@ exports.createLead = async (req, res) => {
       delete data.paidAt;
     }
 
-    console.log("FINAL LEAD DATA: - leadController.js:93", data);
+    console.log("FINAL LEAD DATA: - leadController.js:95", data);
 
     // -----------------------------------------------
     // 4. GENERATE NEXILA ID
     // -----------------------------------------------
     const nexilaData = await generateNexilaID();
 
-    console.log("Generated Nexila: - leadController.js:100", nexilaData);
+    console.log("Generated Nexila: - leadController.js:102", nexilaData);
 
     // Use the permanent Nexila ID as the payment reference.
     if (paymentMethod === "RAZORPAY") {
@@ -134,11 +136,11 @@ exports.createLead = async (req, res) => {
       generatedDate: nexilaData.date,
     });
 
-    console.log("Lead ID: - leadController.js:137", newLead._id);
-    console.log("Nexila ID: - leadController.js:138", newLead.nexilaID);
-    console.log("Payment Method: - leadController.js:139", newLead.paymentMethod);
-    console.log("Payment Status: - leadController.js:140", newLead.paymentStatus);
-    console.log("Payment Reference: - leadController.js:141", newLead.paymentReference);
+    console.log("Lead ID: - leadController.js:139", newLead._id);
+    console.log("Nexila ID: - leadController.js:140", newLead.nexilaID);
+    console.log("Payment Method: - leadController.js:141", newLead.paymentMethod);
+    console.log("Payment Status: - leadController.js:142", newLead.paymentStatus);
+    console.log("Payment Reference: - leadController.js:143", newLead.paymentReference);
 
     // -----------------------------------------------
     // 7. CREATE LEAD LOG
@@ -187,7 +189,7 @@ exports.createLead = async (req, res) => {
         }
       );
 
-      console.log("Deal created from Lead - leadController.js:190");
+      console.log("Deal created from Lead - leadController.js:192");
     }
 
     // -----------------------------------------------
@@ -256,55 +258,68 @@ exports.createLead = async (req, res) => {
           });
         }
 
-        console.log("Student and student log created - leadController.js:259");
+        console.log("Student and student log created - leadController.js:261");
       }
     }
 
     // -----------------------------------------------
     // 10. EXISTING WHATSAPP MESSAGE
     // -----------------------------------------------
-    const phone = newLead.phone;
+    // const phone = newLead.phone;
 
-    if (!phone) {
-      return res.status(201).json({
-        success: true,
-        message: "Lead created (No phone to send WhatsApp)",
-        data: newLead,
-      });
-    }
+    // if (!phone) {
+    //   return res.status(201).json({
+    //     success: true,
+    //     message: "Lead created (No phone to send WhatsApp)",
+    //     data: newLead,
+    //   });
+    // }
 
-    const whatsappId = phone.startsWith("91")
-      ? phone
-      : `91${phone}`;
+    // const whatsappId = phone.startsWith("91")
+    //   ? phone
+    //   : `91${phone}`;
 
-    try {
-      await axios.post(
-        `${process.env.WATI_BASE_URL}/sendTemplateMessage` +
-          `?whatsappNumber=${whatsappId}`,
-        {
-          template_name: "ds_dec13_link",
-          broadcast_name: "auto_lead",
-          parameters: [
-            {
-              name: "name",
-              value: newLead.name,
-            },
-          ],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.WATI_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    // try {
+    //   await axios.post(
+    //     `${process.env.WATI_BASE_URL}/sendTemplateMessage` +
+    //       `?whatsappNumber=${whatsappId}`,
+    //     {
+    //       template_name: "ds_dec13_link",
+    //       broadcast_name: "auto_lead",
+    //       parameters: [
+    //         {
+    //           name: "name",
+    //           value: newLead.name,
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${process.env.WATI_API_KEY}`,
+    //         "Content-Type": "application/json",
+    //       },
+    //     }
+    //   );
 
-      console.log("WATI message sent successfully - leadController.js:302");
-    } catch (err) {
-      // WhatsApp failure should not undo a saved lead.
-      console.log("WATI STATUS: - leadController.js:305", err.response?.status);
-      console.log("WATI DATA: - leadController.js:306", err.response?.data);
-    }
+    //   console.log("WATI message sent successfully");
+    // } catch (err) {
+    //   // WhatsApp failure should not undo a saved lead.
+    //   console.log("WATI STATUS:", err.response?.status);
+    //   console.log("WATI DATA:", err.response?.data);
+    // }
+// -----------------------------------------------
+// 10. SEND LEAD WHATSAPP MESSAGE
+// -----------------------------------------------
+
+// Lead and related records are already saved.
+// WhatsApp failure will not affect lead creation.
+
+await createLeadWatiMsg(newLead);
+
+// -----------------------------------------------
+// 11. FINAL RESPONSE
+// -----------------------------------------------
+
 
     // -----------------------------------------------
     // 11. FINAL RESPONSE
@@ -326,6 +341,316 @@ exports.createLead = async (req, res) => {
     });
   }
 };
+
+
+// exports.createLead = async (req, res) => {
+//   try {
+//     const data = { ...req.body };
+
+//     // -----------------------------------------------
+//     // 1. ASSIGN FROM
+//     // -----------------------------------------------
+//     if (data.assignfrom) {
+//       if (!mongoose.Types.ObjectId.isValid(data.assignfrom)) {
+//         const user = await User.findOne({ name: data.assignfrom });
+//         data.assignfrom = user ? user._id : null;
+//       }
+//     } else {
+//       data.assignfrom = null;
+//     }
+
+//     // -----------------------------------------------
+//     // 2. ASSIGN TO
+//     // -----------------------------------------------
+//     if (data.assignto) {
+//       if (!mongoose.Types.ObjectId.isValid(data.assignto)) {
+//         const user = await User.findOne({ name: data.assignto });
+//         data.assignto = user ? user._id : null;
+//       }
+//     } else {
+//       data.assignto = null;
+//     }
+
+//     // ----------------------------------------------
+//     // 3. PAYMENT METHOD
+//     // Existing CRM requests without paymentMethod
+//     // continue using the MANUAL model default.
+//     // -----------------------------------------------
+//     const paymentMethod =
+//       String(data.paymentMethod || "MANUAL").toUpperCase();
+
+//     if (!["RAZORPAY", "MANUAL"].includes(paymentMethod)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid payment method",
+//       });
+//     }
+
+//     data.paymentMethod = paymentMethod;
+
+//     if (paymentMethod === "RAZORPAY") {
+//       // Website Razorpay applications always begin
+//       // as New Lead with pending payment.
+//       data.leadstatus = "New Lead";
+//       data.paymentStatus = "PENDING";
+
+//       // Never accept payment verification details
+//       // directly from the frontend.
+//       delete data.razorpayOrderId;
+//       delete data.razorpayPaymentId;
+//       delete data.razorpaySignature;
+//       delete data.paidAt;
+
+//       data.paymentReference = null;
+//     } else {
+//       // Preserve the existing CRM lead status and
+//       // other existing manual-entry behaviour.
+//       data.paymentStatus = data.paymentStatus || "PENDING";
+
+//       // Do not accept Razorpay verification details
+//       // for a manual payment.
+//       delete data.razorpayOrderId;
+//       delete data.razorpayPaymentId;
+//       delete data.razorpaySignature;
+//       delete data.paidAt;
+//     }
+
+//     console.log("FINAL LEAD DATA:", data);
+
+//     // -----------------------------------------------
+//     // 4. GENERATE NEXILA ID
+//     // -----------------------------------------------
+//     const nexilaData = await generateNexilaID();
+
+//     console.log("Generated Nexila:", nexilaData);
+
+//     // Use the permanent Nexila ID as the payment reference.
+//     if (paymentMethod === "RAZORPAY") {
+//       data.paymentReference = `Pending_${nexilaData.nexilaID}`;
+//     } else if (
+//       data.paymentStatus === "PAID" &&
+//       data.paymentMethod === "MANUAL"
+//     ) {
+//       data.paymentReference = `Manual_${nexilaData.nexilaID}`;
+//     } else {
+//       // Preserve an existing supplied reference if present.
+//       data.paymentReference =
+//         data.paymentReference || `Manual_${nexilaData.nexilaID}`;
+//     }
+
+//     // -----------------------------------------------
+//     // 5. CREATE LEAD
+//     // -----------------------------------------------
+//     const newLead = new Lead({
+//       ...data,
+//       nexilaID: nexilaData.nexilaID,
+//       createdBy: req.user ? req.user._id : null,
+//     });
+
+//     await newLead.save();
+
+//     // -----------------------------------------------
+//     // 6. SAVE NEXILA ID RECORD
+//     // -----------------------------------------------
+//     await NexilaID.create({
+//       nexilaID: nexilaData.nexilaID,
+//       sequence: nexilaData.sequence,
+//       leadId: newLead._id,
+//       generatedDate: nexilaData.date,
+//     });
+
+//     console.log("Lead ID:", newLead._id);
+//     console.log("Nexila ID:", newLead.nexilaID);
+//     console.log("Payment Method:", newLead.paymentMethod);
+//     console.log("Payment Status:", newLead.paymentStatus);
+//     console.log("Payment Reference:", newLead.paymentReference);
+
+//     // -----------------------------------------------
+//     // 7. CREATE LEAD LOG
+//     // -----------------------------------------------
+//     await Leadlog.create({
+//       leadid: newLead._id,
+//       action: "create",
+//       updatedby: req.user?._id,
+//       changes: [
+//         {
+//           field: "name",
+//           oldvalue: "-",
+//           newvalue: newLead.name,
+//         },
+//         {
+//           field: "phone",
+//           oldvalue: "-",
+//           newvalue: newLead.phone,
+//         },
+//         {
+//           field: "leadstatus",
+//           oldvalue: "-",
+//           newvalue: newLead.leadstatus,
+//         },
+//         {
+//           field: "assignto",
+//           oldvalue: "-",
+//           newvalue: newLead.assignto,
+//         },
+//       ],
+//     });
+
+//     // -----------------------------------------------
+//     // 8. EXISTING DEAL SYNC
+//     // -----------------------------------------------
+//     if (newLead.leadstatus === "Demo Scheduled") {
+//       await Deal.findOneAndUpdate(
+//         { leadId: newLead._id },
+//         {
+//           ...newLead.toObject(),
+//           leadId: newLead._id,
+//         },
+//         {
+//           upsert: true,
+//           new: true,
+//         }
+//       );
+
+//       console.log("Deal created from Lead");
+//     }
+
+//     // -----------------------------------------------
+//     // 9. EXISTING STUDENT SYNC
+//     // -----------------------------------------------
+//     if (newLead.leadstatus === "Student") {
+//       let student = await Student.findOne({
+//         leadId: newLead._id,
+//       });
+
+//       if (!student) {
+//         student = await Student.create({
+//           name: newLead.name,
+//           phone: newLead.phone,
+//           email: newLead.email,
+//           nexilaID: newLead.nexilaID,
+//           collegename: newLead.collegename,
+//           collegeRegisterId: newLead.collegeRegisterId,
+//           location: newLead.location,
+//           category: newLead.category,
+//           leadsource: newLead.leadsource,
+//           domain: newLead.domain,
+//           graduate: newLead.graduate,
+//           leadstatus: newLead.leadstatus,
+//           dateofjoin: newLead.dateofjoin,
+//           feetype: newLead.feetype,
+//           leadid: newLead._id,
+//           fees: Number(newLead.fees) || 0,
+//           feepaid: Number(newLead.feepaid) || 0,
+//           pendingfee:
+//             (Number(newLead.fees) || 0) -
+//             (Number(newLead.feepaid) || 0),
+//           assignto: newLead.assignto,
+//           lookingfor: newLead.lookingfor,
+//           noofday: newLead.noofday,
+//           internshipduration: newLead.internshipduration,
+
+//           // Copy payment information when creating a Student.
+//           paymentStatus: newLead.paymentStatus,
+//           paymentMethod: newLead.paymentMethod,
+//           paymentReference: newLead.paymentReference,
+//           razorpayOrderId: newLead.razorpayOrderId,
+//           razorpayPaymentId: newLead.razorpayPaymentId,
+//           razorpaySignature: newLead.razorpaySignature,
+//           paidAt: newLead.paidAt,
+//         });
+
+//         await Studentlog.create({
+//           studentid: student._id,
+//           action: "create",
+//           source: "lead_create",
+//           updatedby: req.user?._id,
+//         });
+
+//         // Preserve existing payment-log behaviour.
+//         if (student.feepaid && Number(student.feepaid) > 0) {
+//           await Studentlog.create({
+//             studentid: student._id,
+//             action: "payment",
+//             source: "lead_create",
+//             payment: {
+//               amount: Number(student.feepaid),
+//               paymentMode: "cash",
+//             },
+//             updatedby: req.user?._id,
+//           });
+//         }
+
+//         console.log("Student and student log created");
+//       }
+//     }
+
+//     // -----------------------------------------------
+//     // 10. EXISTING WHATSAPP MESSAGE
+//     // -----------------------------------------------
+//     const phone = newLead.phone;
+
+//     if (!phone) {
+//       return res.status(201).json({
+//         success: true,
+//         message: "Lead created (No phone to send WhatsApp)",
+//         data: newLead,
+//       });
+//     }
+
+//     const whatsappId = phone.startsWith("91")
+//       ? phone
+//       : `91${phone}`;
+
+//     try {
+//       await axios.post(
+//         `${process.env.WATI_BASE_URL}/sendTemplateMessage` +
+//           `?whatsappNumber=${whatsappId}`,
+//         {
+//           template_name: "ds_dec13_link",
+//           broadcast_name: "auto_lead",
+//           parameters: [
+//             {
+//               name: "name",
+//               value: newLead.name,
+//             },
+//           ],
+//         },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${process.env.WATI_API_KEY}`,
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
+
+//       console.log("WATI message sent successfully");
+//     } catch (err) {
+//       // WhatsApp failure should not undo a saved lead.
+//       console.log("WATI STATUS:", err.response?.status);
+//       console.log("WATI DATA:", err.response?.data);
+//     }
+
+//     // -----------------------------------------------
+//     // 11. FINAL RESPONSE
+//     // -----------------------------------------------
+//     return res.status(201).json({
+//       success: true,
+//       message: "Lead created successfully",
+//       data: newLead,
+//     });
+//   } catch (err) {
+//     console.error(
+//       "Error creating lead:",
+//       err.response?.data || err.message
+//     );
+
+//     return res.status(500).json({
+//       success: false,
+//       message: err.message,
+//     });
+//   }
+// };
 
 exports.createGroupInternship = async (req, res) => {
   try {
@@ -468,7 +793,7 @@ exports.createGroupInternship = async (req, res) => {
     const groupInternshipId =
       await generateGroupInternshipID();
 
-    console.log("GROUP ID: - leadController.js:471", groupInternshipId);
+    console.log("GROUP ID: - leadController.js:796", groupInternshipId);
 
     // --------------------------------
     // 6. CREATE SIX INDIVIDUAL LEADS
@@ -619,7 +944,7 @@ const fakeReq = {
     });
 
   } catch (error) {
-    console.error("Group Internship Error: - leadController.js:622", error);
+    console.error("Group Internship Error: - leadController.js:947", error);
 
     return res.status(500).json({
       success: false,
@@ -940,7 +1265,7 @@ exports.listLeads = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ Error fetching leads: - leadController.js:943", err.message);
+    console.error("❌ Error fetching leads: - leadController.js:1268", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -959,7 +1284,7 @@ exports.getLead = async (req, res) => {
 
     res.status(200).json({ success: true, lead });
   } catch (err) {
-    console.error("❌ Error fetching lead: - leadController.js:962", err.message);
+    console.error("❌ Error fetching lead: - leadController.js:1287", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -977,8 +1302,8 @@ exports.updateLead = async (req, res) => {
       });
     }
 
-    console.log("✏️ Updating lead: - leadController.js:980", id);
-    console.log("📦 Incoming: - leadController.js:981", req.body);
+    console.log("✏️ Updating lead: - leadController.js:1305", id);
+    console.log("📦 Incoming: - leadController.js:1306", req.body);
 
     const payload = { ...req.body };
 
@@ -1018,7 +1343,7 @@ exports.updateLead = async (req, res) => {
       });
     }
 
-    console.log("✅ Lead updated - leadController.js:1021");
+    console.log("✅ Lead updated - leadController.js:1346");
 
     // --------------------------------------------------
     // 2. LEAD CHANGE LOG
@@ -1122,9 +1447,9 @@ exports.updateLead = async (req, res) => {
       leadId: updatedLead._id,
     });
 
-    console.log("Lead ID: - leadController.js:1125", updatedLead._id);
-    console.log("Lead Status: - leadController.js:1126", updatedLead.leadstatus);
-    console.log("Existing Student: - leadController.js:1127", existingStudent?._id || null);
+    console.log("Lead ID: - leadController.js:1450", updatedLead._id);
+    console.log("Lead Status: - leadController.js:1451", updatedLead.leadstatus);
+    console.log("Existing Student: - leadController.js:1452", existingStudent?._id || null);
 
     // --------------------------------------------------
     // 5. CREATE OR UPDATE STUDENT
@@ -1198,7 +1523,7 @@ exports.updateLead = async (req, res) => {
           { $set: { studentId: student._id } }
         );
 
-        console.log("✅ Student created: - leadController.js:1201", student._id);
+        console.log("✅ Student created: - leadController.js:1526", student._id);
 
         const studentChanges = Object.keys(studentData).map((key) => ({
           field: key,
@@ -1236,7 +1561,7 @@ exports.updateLead = async (req, res) => {
           { new: true, runValidators: true }
         );
 
-        console.log("✅ Existing Student updated: - leadController.js:1239", existingStudent._id);
+        console.log("✅ Existing Student updated: - leadController.js:1564", existingStudent._id);
       }
     }
 
@@ -1256,7 +1581,7 @@ exports.updateLead = async (req, res) => {
       lead: updatedLead,
     });
   } catch (err) {
-    console.error("❌ Error updating lead: - leadController.js:1259", err);
+    console.error("❌ Error updating lead: - leadController.js:1584", err);
 
     return res.status(500).json({
       success: false,
@@ -1277,7 +1602,7 @@ exports.deleteLead = async (req, res) => {
     await Lead.findByIdAndDelete(id);
     res.status(200).json({ success: true, message: "Lead deleted successfully" });
   } catch (err) {
-    console.error("❌ Error deleting lead: - leadController.js:1280", err.message);
+    console.error("❌ Error deleting lead: - leadController.js:1605", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -1294,7 +1619,7 @@ exports.recentLeads = async (req, res) => {
 
     res.status(200).json({ success: true, leads });
   } catch (err) {
-    console.error("❌ Error fetching recent leads: - leadController.js:1297", err.message);
+    console.error("❌ Error fetching recent leads: - leadController.js:1622", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
