@@ -19,6 +19,12 @@ const generateGroupInternshipID = require(
 );
 
 const createLeadWatiMsg  = require("../LeadServices/leadWatiService.js"); 
+const {
+  sendLeadFollowUpWati,
+  sendLeadNotReachableWati,
+  sendLeadNotInterestedWati,
+  sendLeadStudentWati,
+} = require("../LeadServices/leadUpdateStatusWatiService.js");
 
 exports.createLead = async (req, res) => {
   try {
@@ -92,14 +98,14 @@ exports.createLead = async (req, res) => {
       delete data.paidAt;
     }
 
-    console.log("FINAL LEAD DATA: - leadController.js:95", data);
+    console.log("FINAL LEAD DATA: - leadController.js:101", data);
 
     // -----------------------------------------------
     // 4. GENERATE NEXILA ID
     // -----------------------------------------------
     const nexilaData = await generateNexilaID();
 
-    console.log("Generated Nexila: - leadController.js:102", nexilaData);
+    console.log("Generated Nexila: - leadController.js:108", nexilaData);
 
     // Use the permanent Nexila ID as the payment reference.
     if (paymentMethod === "RAZORPAY") {
@@ -136,11 +142,11 @@ exports.createLead = async (req, res) => {
       generatedDate: nexilaData.date,
     });
 
-    console.log("Lead ID: - leadController.js:139", newLead._id);
-    console.log("Nexila ID: - leadController.js:140", newLead.nexilaID);
-    console.log("Payment Method: - leadController.js:141", newLead.paymentMethod);
-    console.log("Payment Status: - leadController.js:142", newLead.paymentStatus);
-    console.log("Payment Reference: - leadController.js:143", newLead.paymentReference);
+    console.log("Lead ID: - leadController.js:145", newLead._id);
+    console.log("Nexila ID: - leadController.js:146", newLead.nexilaID);
+    console.log("Payment Method: - leadController.js:147", newLead.paymentMethod);
+    console.log("Payment Status: - leadController.js:148", newLead.paymentStatus);
+    console.log("Payment Reference: - leadController.js:149", newLead.paymentReference);
 
     // -----------------------------------------------
     // 7. CREATE LEAD LOG
@@ -189,7 +195,7 @@ exports.createLead = async (req, res) => {
         }
       );
 
-      console.log("Deal created from Lead - leadController.js:192");
+      console.log("Deal created from Lead - leadController.js:198");
     }
 
     // -----------------------------------------------
@@ -258,62 +264,11 @@ exports.createLead = async (req, res) => {
           });
         }
 
-        console.log("Student and student log created - leadController.js:261");
+        console.log("Student and student log created - leadController.js:267");
       }
     }
 
-    // -----------------------------------------------
-    // 10. EXISTING WHATSAPP MESSAGE
-    // -----------------------------------------------
-    // const phone = newLead.phone;
-
-    // if (!phone) {
-    //   return res.status(201).json({
-    //     success: true,
-    //     message: "Lead created (No phone to send WhatsApp)",
-    //     data: newLead,
-    //   });
-    // }
-
-    // const whatsappId = phone.startsWith("91")
-    //   ? phone
-    //   : `91${phone}`;
-
-    // try {
-    //   await axios.post(
-    //     `${process.env.WATI_BASE_URL}/sendTemplateMessage` +
-    //       `?whatsappNumber=${whatsappId}`,
-    //     {
-    //       template_name: "ds_dec13_link",
-    //       broadcast_name: "auto_lead",
-    //       parameters: [
-    //         {
-    //           name: "name",
-    //           value: newLead.name,
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${process.env.WATI_API_KEY}`,
-    //         "Content-Type": "application/json",
-    //       },
-    //     }
-    //   );
-
-    //   console.log("WATI message sent successfully");
-    // } catch (err) {
-    //   // WhatsApp failure should not undo a saved lead.
-    //   console.log("WATI STATUS:", err.response?.status);
-    //   console.log("WATI DATA:", err.response?.data);
-    // }
-// -----------------------------------------------
-// 10. SEND LEAD WHATSAPP MESSAGE
-// -----------------------------------------------
-
-// Lead and related records are already saved.
-// WhatsApp failure will not affect lead creation.
-
+ 
 await createLeadWatiMsg(newLead);
 
 // -----------------------------------------------
@@ -342,315 +297,6 @@ await createLeadWatiMsg(newLead);
   }
 };
 
-
-// exports.createLead = async (req, res) => {
-//   try {
-//     const data = { ...req.body };
-
-//     // -----------------------------------------------
-//     // 1. ASSIGN FROM
-//     // -----------------------------------------------
-//     if (data.assignfrom) {
-//       if (!mongoose.Types.ObjectId.isValid(data.assignfrom)) {
-//         const user = await User.findOne({ name: data.assignfrom });
-//         data.assignfrom = user ? user._id : null;
-//       }
-//     } else {
-//       data.assignfrom = null;
-//     }
-
-//     // -----------------------------------------------
-//     // 2. ASSIGN TO
-//     // -----------------------------------------------
-//     if (data.assignto) {
-//       if (!mongoose.Types.ObjectId.isValid(data.assignto)) {
-//         const user = await User.findOne({ name: data.assignto });
-//         data.assignto = user ? user._id : null;
-//       }
-//     } else {
-//       data.assignto = null;
-//     }
-
-//     // ----------------------------------------------
-//     // 3. PAYMENT METHOD
-//     // Existing CRM requests without paymentMethod
-//     // continue using the MANUAL model default.
-//     // -----------------------------------------------
-//     const paymentMethod =
-//       String(data.paymentMethod || "MANUAL").toUpperCase();
-
-//     if (!["RAZORPAY", "MANUAL"].includes(paymentMethod)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid payment method",
-//       });
-//     }
-
-//     data.paymentMethod = paymentMethod;
-
-//     if (paymentMethod === "RAZORPAY") {
-//       // Website Razorpay applications always begin
-//       // as New Lead with pending payment.
-//       data.leadstatus = "New Lead";
-//       data.paymentStatus = "PENDING";
-
-//       // Never accept payment verification details
-//       // directly from the frontend.
-//       delete data.razorpayOrderId;
-//       delete data.razorpayPaymentId;
-//       delete data.razorpaySignature;
-//       delete data.paidAt;
-
-//       data.paymentReference = null;
-//     } else {
-//       // Preserve the existing CRM lead status and
-//       // other existing manual-entry behaviour.
-//       data.paymentStatus = data.paymentStatus || "PENDING";
-
-//       // Do not accept Razorpay verification details
-//       // for a manual payment.
-//       delete data.razorpayOrderId;
-//       delete data.razorpayPaymentId;
-//       delete data.razorpaySignature;
-//       delete data.paidAt;
-//     }
-
-//     console.log("FINAL LEAD DATA:", data);
-
-//     // -----------------------------------------------
-//     // 4. GENERATE NEXILA ID
-//     // -----------------------------------------------
-//     const nexilaData = await generateNexilaID();
-
-//     console.log("Generated Nexila:", nexilaData);
-
-//     // Use the permanent Nexila ID as the payment reference.
-//     if (paymentMethod === "RAZORPAY") {
-//       data.paymentReference = `Pending_${nexilaData.nexilaID}`;
-//     } else if (
-//       data.paymentStatus === "PAID" &&
-//       data.paymentMethod === "MANUAL"
-//     ) {
-//       data.paymentReference = `Manual_${nexilaData.nexilaID}`;
-//     } else {
-//       // Preserve an existing supplied reference if present.
-//       data.paymentReference =
-//         data.paymentReference || `Manual_${nexilaData.nexilaID}`;
-//     }
-
-//     // -----------------------------------------------
-//     // 5. CREATE LEAD
-//     // -----------------------------------------------
-//     const newLead = new Lead({
-//       ...data,
-//       nexilaID: nexilaData.nexilaID,
-//       createdBy: req.user ? req.user._id : null,
-//     });
-
-//     await newLead.save();
-
-//     // -----------------------------------------------
-//     // 6. SAVE NEXILA ID RECORD
-//     // -----------------------------------------------
-//     await NexilaID.create({
-//       nexilaID: nexilaData.nexilaID,
-//       sequence: nexilaData.sequence,
-//       leadId: newLead._id,
-//       generatedDate: nexilaData.date,
-//     });
-
-//     console.log("Lead ID:", newLead._id);
-//     console.log("Nexila ID:", newLead.nexilaID);
-//     console.log("Payment Method:", newLead.paymentMethod);
-//     console.log("Payment Status:", newLead.paymentStatus);
-//     console.log("Payment Reference:", newLead.paymentReference);
-
-//     // -----------------------------------------------
-//     // 7. CREATE LEAD LOG
-//     // -----------------------------------------------
-//     await Leadlog.create({
-//       leadid: newLead._id,
-//       action: "create",
-//       updatedby: req.user?._id,
-//       changes: [
-//         {
-//           field: "name",
-//           oldvalue: "-",
-//           newvalue: newLead.name,
-//         },
-//         {
-//           field: "phone",
-//           oldvalue: "-",
-//           newvalue: newLead.phone,
-//         },
-//         {
-//           field: "leadstatus",
-//           oldvalue: "-",
-//           newvalue: newLead.leadstatus,
-//         },
-//         {
-//           field: "assignto",
-//           oldvalue: "-",
-//           newvalue: newLead.assignto,
-//         },
-//       ],
-//     });
-
-//     // -----------------------------------------------
-//     // 8. EXISTING DEAL SYNC
-//     // -----------------------------------------------
-//     if (newLead.leadstatus === "Demo Scheduled") {
-//       await Deal.findOneAndUpdate(
-//         { leadId: newLead._id },
-//         {
-//           ...newLead.toObject(),
-//           leadId: newLead._id,
-//         },
-//         {
-//           upsert: true,
-//           new: true,
-//         }
-//       );
-
-//       console.log("Deal created from Lead");
-//     }
-
-//     // -----------------------------------------------
-//     // 9. EXISTING STUDENT SYNC
-//     // -----------------------------------------------
-//     if (newLead.leadstatus === "Student") {
-//       let student = await Student.findOne({
-//         leadId: newLead._id,
-//       });
-
-//       if (!student) {
-//         student = await Student.create({
-//           name: newLead.name,
-//           phone: newLead.phone,
-//           email: newLead.email,
-//           nexilaID: newLead.nexilaID,
-//           collegename: newLead.collegename,
-//           collegeRegisterId: newLead.collegeRegisterId,
-//           location: newLead.location,
-//           category: newLead.category,
-//           leadsource: newLead.leadsource,
-//           domain: newLead.domain,
-//           graduate: newLead.graduate,
-//           leadstatus: newLead.leadstatus,
-//           dateofjoin: newLead.dateofjoin,
-//           feetype: newLead.feetype,
-//           leadid: newLead._id,
-//           fees: Number(newLead.fees) || 0,
-//           feepaid: Number(newLead.feepaid) || 0,
-//           pendingfee:
-//             (Number(newLead.fees) || 0) -
-//             (Number(newLead.feepaid) || 0),
-//           assignto: newLead.assignto,
-//           lookingfor: newLead.lookingfor,
-//           noofday: newLead.noofday,
-//           internshipduration: newLead.internshipduration,
-
-//           // Copy payment information when creating a Student.
-//           paymentStatus: newLead.paymentStatus,
-//           paymentMethod: newLead.paymentMethod,
-//           paymentReference: newLead.paymentReference,
-//           razorpayOrderId: newLead.razorpayOrderId,
-//           razorpayPaymentId: newLead.razorpayPaymentId,
-//           razorpaySignature: newLead.razorpaySignature,
-//           paidAt: newLead.paidAt,
-//         });
-
-//         await Studentlog.create({
-//           studentid: student._id,
-//           action: "create",
-//           source: "lead_create",
-//           updatedby: req.user?._id,
-//         });
-
-//         // Preserve existing payment-log behaviour.
-//         if (student.feepaid && Number(student.feepaid) > 0) {
-//           await Studentlog.create({
-//             studentid: student._id,
-//             action: "payment",
-//             source: "lead_create",
-//             payment: {
-//               amount: Number(student.feepaid),
-//               paymentMode: "cash",
-//             },
-//             updatedby: req.user?._id,
-//           });
-//         }
-
-//         console.log("Student and student log created");
-//       }
-//     }
-
-//     // -----------------------------------------------
-//     // 10. EXISTING WHATSAPP MESSAGE
-//     // -----------------------------------------------
-//     const phone = newLead.phone;
-
-//     if (!phone) {
-//       return res.status(201).json({
-//         success: true,
-//         message: "Lead created (No phone to send WhatsApp)",
-//         data: newLead,
-//       });
-//     }
-
-//     const whatsappId = phone.startsWith("91")
-//       ? phone
-//       : `91${phone}`;
-
-//     try {
-//       await axios.post(
-//         `${process.env.WATI_BASE_URL}/sendTemplateMessage` +
-//           `?whatsappNumber=${whatsappId}`,
-//         {
-//           template_name: "ds_dec13_link",
-//           broadcast_name: "auto_lead",
-//           parameters: [
-//             {
-//               name: "name",
-//               value: newLead.name,
-//             },
-//           ],
-//         },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${process.env.WATI_API_KEY}`,
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
-
-//       console.log("WATI message sent successfully");
-//     } catch (err) {
-//       // WhatsApp failure should not undo a saved lead.
-//       console.log("WATI STATUS:", err.response?.status);
-//       console.log("WATI DATA:", err.response?.data);
-//     }
-
-//     // -----------------------------------------------
-//     // 11. FINAL RESPONSE
-//     // -----------------------------------------------
-//     return res.status(201).json({
-//       success: true,
-//       message: "Lead created successfully",
-//       data: newLead,
-//     });
-//   } catch (err) {
-//     console.error(
-//       "Error creating lead:",
-//       err.response?.data || err.message
-//     );
-
-//     return res.status(500).json({
-//       success: false,
-//       message: err.message,
-//     });
-//   }
-// };
 
 exports.createGroupInternship = async (req, res) => {
   try {
@@ -793,7 +439,7 @@ exports.createGroupInternship = async (req, res) => {
     const groupInternshipId =
       await generateGroupInternshipID();
 
-    console.log("GROUP ID: - leadController.js:796", groupInternshipId);
+    console.log("GROUP ID: - leadController.js:442", groupInternshipId);
 
     // --------------------------------
     // 6. CREATE SIX INDIVIDUAL LEADS
@@ -944,7 +590,7 @@ const fakeReq = {
     });
 
   } catch (error) {
-    console.error("Group Internship Error: - leadController.js:947", error);
+    console.error("Group Internship Error: - leadController.js:593", error);
 
     return res.status(500).json({
       success: false,
@@ -953,302 +599,7 @@ const fakeReq = {
   }
 };
 
-// exports.createLead = async (req, res) => {
-//   try {
 
-
-//     const data = { ...req.body };
-
-//     // ---------------- assignfrom ----------------
-//     if (data.assignfrom) {
-//       if (mongoose.Types.ObjectId.isValid(data.assignfrom)) {
-//         // already ObjectId → keep
-//         data.assignfrom = data.assignfrom;
-//       } else {
-//         // name → convert
-//         const user = await User.findOne({ name: data.assignfrom });
-//         data.assignfrom = user ? user._id : null;
-//       }
-//     } else {
-//       data.assignfrom = null;
-//     }
-
-//     // ---------------- assignto ----------------
-//     if (data.assignto) {
-//       if (mongoose.Types.ObjectId.isValid(data.assignto)) {
-//         data.assignto = data.assignto;
-//       } else {
-//         const user = await User.findOne({ name: data.assignto });
-//         data.assignto = user ? user._id : null;
-//       }
-//     } else {
-//       data.assignto = null;
-//     }
-
-//     console.log("✅ FINAL DATA:", data);
-
-
-
-// // Generate Nexila ID first
-// const nexilaData = await generateNexilaID();
-
-// console.log("Generated Nexila:", nexilaData);
-
-
-// // Create Lead
-// const newLead = new Lead({
-//   ...data,
-//    nexilaID: nexilaData.nexilaID,
-//   createdBy: req.user ? req.user._id : null,
-// });
-
-// await newLead.save();
-
-
-// // Save Nexila ID separately
-// await NexilaID.create({
-//     nexilaID: nexilaData.nexilaID,
-//     sequence: nexilaData.sequence,
-//     leadId: newLead._id,
-//     generatedDate: nexilaData.date
-// });
-
-
-// console.log("Lead ID:", newLead._id);
-// console.log("Nexila ID:", nexilaData.nexilaID);
-//     // ===============================
-
-//     await Leadlog.create({
-//       leadid: newLead._id,
-//       action: "create",
-//       updatedby: req.user?._id,
-//       changes: [
-//         { field: "name", oldvalue: "-", newvalue: newLead.name },
-//         { field: "phone", oldvalue: "-", newvalue: newLead.phone },
-//         { field: "leadstatus", oldvalue: "-", newvalue: newLead.leadstatus },
-//         { field: "assignto", oldvalue: "-", newvalue: newLead.assignto }
-//       ]
-//     });
-//     //nexila changes
-
-//     // --------------------------------------------------
-//     // 5️⃣ SYNC DEAL ON CREATE
-//     // --------------------------------------------------
-//     if (newLead.leadstatus === "Demo Scheduled") {
-//       await Deal.findOneAndUpdate(
-//         { leadId: newLead._id },
-//         { ...newLead.toObject(), leadId: newLead._id },
-//         { upsert: true, new: true }
-//       );
-//       console.log("📦 Deal created from Lead");
-//     }
-
-//     // --------------------------------------------------
-//     // 6️⃣ SYNC STUDENT ON CREATE
-//     // --------------------------------------------------
-//     if (newLead.leadstatus === "Student") {
-//       let student = await Student.findOne({ leadid: newLead._id });
-
-//       if (!student) {
-//         student = await Student.create({
-//           name: newLead.name,
-//           phone: newLead.phone,
-//           email: newLead.email,
-//           nexilaID: newLead.nexilaID, //nexila changes
-//           collegename: newLead.collegename,
-//           collegeRegisterId: newLead.collegeRegisterId,
-//           location: newLead.location,
-//           category: newLead.category,
-//           leadsource: newLead.leadsource,
-//           domain: newLead.domain,
-//           graduate: newLead.graduate,
-//           leadstatus: newLead.leadstatus,
-//           dateofjoin: newLead.dateofjoin,
-//           feetype: newLead.feetype,
-//           leadid: newLead._id,
-//           fees: Number(newLead.fees) || 0,
-//           feepaid: Number(newLead.feepaid) || 0,
-//           pendingfee:
-//             (Number(newLead.fees) || 0) -
-//             (Number(newLead.feepaid) || 0),
-//           assignto: newLead.assignto,
-//           lookingfor: newLead.lookingfor,
-//           noofday: newLead.noofday,
-//           internshipduration: newLead.internshipduration
-
-//         });
-
-//         console.log("student data:", student);
-//         // ✅ log creation
-//         await Studentlog.create({
-//           studentid: student._id,
-//           action: "create",
-//           source: "lead_create",
-//           updatedby: req.user?._id,
-//         });
-
-//         // create payment log if fee paid
-//         if (student.feepaid && Number(student.feepaid) > 0) {
-//           await Studentlog.create({
-//             studentid: student._id,
-//             action: "payment",
-//             source: "lead_create",
-//             payment: {
-//               amount: Number(student.feepaid),
-//               paymentMode: "cash",
-
-//             },
-//             updatedby: req.user?._id,
-//           });
-//         }
-//         console.log("Student and student log created");
-//       }
-//     }
-
-
-
-//     //  2️⃣ Prepare WhatsApp Number
-//     let phone = newLead.phone; // 🔴 make sure this field exists
-//     if (!phone) {
-//       return res.status(201).json({
-//         success: true,
-//         message: "Lead created (No phone to send WhatsApp)",
-//         data: newLead,
-//       });
-//     }
-
-//     // Convert to international format
-//     const whatsappId = phone.startsWith("91") ? phone : `91${phone}`;
-
-//     // 3️⃣ AUTO TRIGGER WhatsApp Message
-//     await axios.post(
-//       `${process.env.WATI_BASE_URL}/sendTemplateMessage` +
-//       `?whatsappNumber=${whatsappId}`,
-//       {
-
-//         template_name: "ds_dec13_link",
-//         broadcast_name: "auto_lead",
-//         parameters: [
-//           {
-//             name: "name",
-//             value: newLead.name,
-//           },
-//         ],
-//       },
-//       {
-//         headers: {
-//           Authorization: `Bearer ${process.env.WATI_API_KEY}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     )
-//       .then(res => {
-//         console.log("✅ WATI OK", res.data);
-//       })
-//       .catch(err => {
-//         console.log("❌ STATUS:", err.response?.status);
-//         console.log("❌ DATA:", err.response?.data);
-//       });
-
-//     console.log(data);
-
-//     // 4️⃣ Final Response
-//     res.status(201).json({
-//       success: true,
-//       message: "Lead created & WhatsApp sent automatically",
-//       data: newLead,
-//     });
-
-//   } catch (err) {
-//     console.error("❌ Error creating lead:", err.response?.data || err.message);
-//     res.status(500).json({
-//       success: false,
-//       message: "Lead created but WhatsApp failed",
-//     });
-//   }
-// };
-
-// ✅ List Leads (Admin sees all, Employee sees only assigned/created)
-// exports.listLeads = async (req, res) => {
-//   try {
-//     const userRole = req.user.role;
-//     const userId = req.user._id;
-//     let filter = {};
-
-//     if (userRole !== "admin") {
-//       filter = {
-//         $or: [
-//           { assignto: userId },
-//           { assignfrom: userId },
-//           { createdBy: userId },
-//           { createdBy: null }, //nexila changes
-//         ],
-//       };
-//     }
-
-//     const leads = await Lead.find(filter)
-//       .populate("assignfrom", "name email role")
-//       .populate("assignto", "name email role")
-//       .populate("createdBy", "name email role")
-//       .sort({ createdAt: -1 });
-
-//     res.status(200).json({
-//       success: true,
-//       count: leads.length,
-//       leads,
-//     });
-//   } catch (err) {
-//     console.error("❌ Error fetching leads:", err.message);
-//     res.status(500).json({ success: false, message: err.message });
-//   }
-// };
-
-
-// ✅ List Leads (Admin sees all, Employee sees assigned + created + public leads)
-// exports.listLeads = async (req, res) => {
-//   try {
-//     const userRole = req.user.role;
-//     const userId = req.user._id;
-
-//     let filter = {};
-
-//     // Admin sees everything
-//     if (userRole === "admin") {
-//       filter = {};
-//     } 
-//     else {
-//       filter = {
-//         $or: [
-//           { assignto: userId },
-//           { assignfrom: userId },
-//           { createdBy: userId },
-
-//           // ✅ PUBLIC LEADS (IMPORTANT FIX)
-//           { createdBy: { $exists: false } },
-//           { createdBy: null }
-//         ],
-//       };
-//     }
-
-//     const leads = await Lead.find(filter)
-//       .populate("assignfrom", "name email role")
-//       .populate("assignto", "name email role")
-//       .populate("createdBy", "name email role")
-//       .sort({ createdAt: -1 });
-
-//     res.status(200).json({
-//       success: true,
-//       count: leads.length,
-//       leads,
-//     });
-
-//   } catch (err) {
-//     console.error("❌ Error fetching leads:", err.message);
-//     res.status(500).json({ success: false, message: err.message });
-//   }
-// };
-
-//fetch lead to all use fixed
 exports.listLeads = async (req, res) => {
   try {
 
@@ -1265,7 +616,7 @@ exports.listLeads = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ Error fetching leads: - leadController.js:1268", err.message);
+    console.error("❌ Error fetching leads: - leadController.js:619", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -1284,7 +635,7 @@ exports.getLead = async (req, res) => {
 
     res.status(200).json({ success: true, lead });
   } catch (err) {
-    console.error("❌ Error fetching lead: - leadController.js:1287", err.message);
+    console.error("❌ Error fetching lead: - leadController.js:638", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -1302,8 +653,8 @@ exports.updateLead = async (req, res) => {
       });
     }
 
-    console.log("✏️ Updating lead: - leadController.js:1305", id);
-    console.log("📦 Incoming: - leadController.js:1306", req.body);
+    console.log("✏️ Updating lead: - leadController.js:656", id);
+    console.log("📦 Incoming: - leadController.js:657", req.body);
 
     const payload = { ...req.body };
 
@@ -1343,7 +694,7 @@ exports.updateLead = async (req, res) => {
       });
     }
 
-    console.log("✅ Lead updated - leadController.js:1346");
+    console.log("✅ Lead updated - leadController.js:697");
 
     // --------------------------------------------------
     // 2. LEAD CHANGE LOG
@@ -1447,9 +798,9 @@ exports.updateLead = async (req, res) => {
       leadId: updatedLead._id,
     });
 
-    console.log("Lead ID: - leadController.js:1450", updatedLead._id);
-    console.log("Lead Status: - leadController.js:1451", updatedLead.leadstatus);
-    console.log("Existing Student: - leadController.js:1452", existingStudent?._id || null);
+    console.log("Lead ID: - leadController.js:801", updatedLead._id);
+    console.log("Lead Status: - leadController.js:802", updatedLead.leadstatus);
+    console.log("Existing Student: - leadController.js:803", existingStudent?._id || null);
 
     // --------------------------------------------------
     // 5. CREATE OR UPDATE STUDENT
@@ -1523,7 +874,7 @@ exports.updateLead = async (req, res) => {
           { $set: { studentId: student._id } }
         );
 
-        console.log("✅ Student created: - leadController.js:1526", student._id);
+        console.log("✅ Student created: - leadController.js:877", student._id);
 
         const studentChanges = Object.keys(studentData).map((key) => ({
           field: key,
@@ -1561,7 +912,7 @@ exports.updateLead = async (req, res) => {
           { new: true, runValidators: true }
         );
 
-        console.log("✅ Existing Student updated: - leadController.js:1564", existingStudent._id);
+        console.log("✅ Existing Student updated: - leadController.js:915", existingStudent._id);
       }
     }
 
@@ -1574,14 +925,43 @@ exports.updateLead = async (req, res) => {
         leadId: updatedLead._id,
       });
     }
+// --------------------------------------------------
+// 7. SEND WATI BASED ON LEAD STATUS
+// --------------------------------------------------
 
+if (oldLead.leadstatus !== updatedLead.leadstatus) {
+
+  const status = updatedLead.leadstatus;
+
+  if (
+    ["Follow-Up 1", "Follow-Up 2", "Follow-Up 3"].includes(status)
+  ) {
+    await sendLeadFollowUpWati(updatedLead);
+  }
+
+  else if (
+    ["Not Answering", "Switch-off"].includes(status)
+  ) {
+    await sendLeadNotReachableWati(updatedLead);
+  }
+
+  else if (
+    ["Not interested", "Drop Out"].includes(status)
+  ) {
+    await sendLeadNotInterestedWati(updatedLead);
+  }
+
+  else if (status === "Student") {
+    await sendLeadStudentWati(updatedLead);
+  }
+}
     return res.json({
       success: true,
       message: "Lead updated successfully",
       lead: updatedLead,
     });
   } catch (err) {
-    console.error("❌ Error updating lead: - leadController.js:1584", err);
+    console.error("❌ Error updating lead: - leadController.js:964", err);
 
     return res.status(500).json({
       success: false,
@@ -1602,7 +982,7 @@ exports.deleteLead = async (req, res) => {
     await Lead.findByIdAndDelete(id);
     res.status(200).json({ success: true, message: "Lead deleted successfully" });
   } catch (err) {
-    console.error("❌ Error deleting lead: - leadController.js:1605", err.message);
+    console.error("❌ Error deleting lead: - leadController.js:985", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -1619,7 +999,7 @@ exports.recentLeads = async (req, res) => {
 
     res.status(200).json({ success: true, leads });
   } catch (err) {
-    console.error("❌ Error fetching recent leads: - leadController.js:1622", err.message);
+    console.error("❌ Error fetching recent leads: - leadController.js:1002", err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 };
